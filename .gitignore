@@ -1,0 +1,15 @@
+# Rust build output
+/target/
+
+# Local Checkweave state and model downloads
+.checkweave/
+/models/
+
+# Local environment and editor/OS files
+.env
+.env.*
+!.env.example
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
