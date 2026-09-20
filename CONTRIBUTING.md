@@ -17,9 +17,13 @@ between planned and implemented capabilities in documentation.
 The runtime direction is Rust. Keep workspace state lightweight, use Git's existing
 history and worktree mechanisms, and make resource use explicit. Common tasks
 should have concise CLI and MCP surfaces backed by the same implementation.
+Python is appropriate for the managed local inference worker. Keep model-specific
+dependencies outside the Rust kernel and preserve CPU inference as a fallback.
 
-There are no build or test commands yet. Add documented commands and meaningful
-checks with the first implementation. For the core, prioritize correctness across
+There are no runtime build or test commands yet. The
+[backend experiment](experiments/model-backends/README.md) documents a small
+inference comparison. Add runtime commands and meaningful checks with the first
+implementation. For the core, prioritize correctness across
 edits, interrupted runs, missed watcher events, restarts, and concurrent clients.
 
 Do not commit local evidence caches, model weights, credentials, or reproduction

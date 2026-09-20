@@ -49,16 +49,22 @@ unsupported and nondeterministic cases with explicit outcomes.
 
 ## 3. Semantic collection checks
 
-- [ ] Evaluate a native, Python-free decision-model backend.
+- [ ] Evaluate the selected local checkpoint on Checkweave tasks and simple baselines.
+- [ ] Add a managed Python inference worker behind the Rust provider boundary.
+- [ ] Probe GPU compatibility and verify CPU fallback; publish a tested platform matrix.
+- [ ] Add an optional Jev provider with explicit configuration and version identity.
 - [ ] Add typed predicates, batching, and explicit unresolved outcomes.
 - [ ] Record model/settings identity and input handling in evidence.
 - [ ] Recompute changed items without reprocessing the entire collection.
 - [ ] Keep deterministic checks usable without a model or account.
+- [ ] Make model/runtime installation automatic, cached, and reproducible.
 
 **Completion evidence:** publish a labeled task sample and measure precision,
 recall, unresolved rate, latency, memory, and end-to-end cost where applicable.
 Include an existing simple baseline. Processing coverage and judgment quality
-must be reported separately.
+must be reported separately. Cover negation, absent evidence, label-order changes,
+long inputs, multiple questions, and confident mistakes. A small exploratory
+smoke test is not sufficient to qualify a default for release.
 
 ## 4. Execution evidence
 

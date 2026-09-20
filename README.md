@@ -1,6 +1,6 @@
 # Checkweave
 
-**Composable checks. Current evidence. One local binary.**
+**Composable checks. Current evidence. One local runtime.**
 
 Checkweave is a planned Rust utility that gives AI agents a compact way to check
 collections, compare behavior, inspect execution evidence, and keep findings
@@ -11,7 +11,7 @@ The intended experience is simple: initialize a project once, let the agent use
 Checkweave, and let Checkweave handle its own upkeep.
 
 > **Status: design stage.** This repository contains the project outline. There
-> is no executable, installable release, or implemented MCP server yet. Commands
+> is no Checkweave binary, installable release, or implemented MCP server yet. Commands
 > and interfaces below describe the intended experience.
 
 ## What it should do
@@ -45,6 +45,7 @@ within a budget. The CLI and MCP should expose equivalent capabilities.
 ## Design commitments
 
 - **Rust runtime.** Distribute a native executable with predictable resource use.
+  Manage a separate Python inference worker when semantic checks need a model.
 - **Lightweight state.** Keep fingerprints, dependencies, derived results, and
   selected reproduction evidence in an ignored `.checkweave/` directory.
 - **Use Git's existing machinery.** Read committed history from Git and use
@@ -55,8 +56,10 @@ within a budget. The CLI and MCP should expose equivalent capabilities.
   single request with a compact, actionable response.
 - **Measured scope.** Preserve the difference between an observed failure, a
   model judgment, and a bounded search that found no failure.
-- **Optional model backends.** Deterministic operations should work locally
-  without an account. Semantic operations add a separately validated backend.
+- **Local inference by default.** Semantic operations should use open weights,
+  accelerate on a supported GPU, and fall back to CPU. Jev is an optional,
+  explicitly configured hosted provider. Deterministic checks need no model.
+  GLiNER2.5 base is the initial implementation choice, pending task validation.
 - **Bounded work.** Limit background activity, execution time, retained evidence,
   model calls, and response size.
 
@@ -65,6 +68,8 @@ within a budget. The CLI and MCP should expose equivalent capabilities.
 - [Architecture](docs/architecture.md): runtime boundaries, operator contract,
   automatic updates, cache policy, and agent integration.
 - [Roadmap](docs/roadmap.md): milestones and the evidence needed to complete them.
+- [Model backends](docs/model-backends.md): local inference selection, earlier
+  research, hardware policy, and the optional Jev adapter.
 - [Contributing](CONTRIBUTING.md): how to help while the design takes shape.
 
 The first milestone is a small Rust runtime that can perform a useful collection
@@ -78,7 +83,7 @@ Behavior comparison and richer execution adapters build on that same kernel.
 - [Jev](https://typesafe.ai/blog/introducing-system-one-models-and-jev): typed
   decisions as useful building blocks inside larger systems.
 - [Laya-MLX](https://github.com/mizorewww/laya-mlx): a concrete reference for local
-  decision-model inference. A native Checkweave integration remains to be evaluated.
+  decision-model inference on Apple silicon.
 
 ## License
 

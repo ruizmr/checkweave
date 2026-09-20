@@ -1,0 +1,272 @@
+[
+  {
+    "id": "change_scope-1",
+    "task": "change_scope",
+    "text": "The patch corrects a spelling error in the README.",
+    "labels": {
+      "documentation": "A change only to documentation, comments, or formatting, with no change to program behavior.",
+      "behavior": "A change to what the program does when it runs.",
+      "unknown": "There is not enough information to determine whether program behavior changes."
+    },
+    "expected": "documentation"
+  },
+  {
+    "id": "change_scope-2",
+    "task": "change_scope",
+    "text": "The patch changes the retry limit from three attempts to five.",
+    "labels": {
+      "documentation": "A change only to documentation, comments, or formatting, with no change to program behavior.",
+      "behavior": "A change to what the program does when it runs.",
+      "unknown": "There is not enough information to determine whether program behavior changes."
+    },
+    "expected": "behavior"
+  },
+  {
+    "id": "change_scope-3",
+    "task": "change_scope",
+    "text": "The patch only adjusts blank lines and indentation in a JSON file, preserving all keys and values.",
+    "labels": {
+      "documentation": "A change only to documentation, comments, or formatting, with no change to program behavior.",
+      "behavior": "A change to what the program does when it runs.",
+      "unknown": "There is not enough information to determine whether program behavior changes."
+    },
+    "expected": "documentation"
+  },
+  {
+    "id": "change_scope-4",
+    "task": "change_scope",
+    "text": "The author says they updated the server. No diff or description is available.",
+    "labels": {
+      "documentation": "A change only to documentation, comments, or formatting, with no change to program behavior.",
+      "behavior": "A change to what the program does when it runs.",
+      "unknown": "There is not enough information to determine whether program behavior changes."
+    },
+    "expected": "unknown"
+  },
+  {
+    "id": "change_scope-5",
+    "task": "change_scope",
+    "text": "A comment says the timeout is ten seconds instead of five; the executable code is unchanged.",
+    "labels": {
+      "documentation": "A change only to documentation, comments, or formatting, with no change to program behavior.",
+      "behavior": "A change to what the program does when it runs.",
+      "unknown": "There is not enough information to determine whether program behavior changes."
+    },
+    "expected": "documentation"
+  },
+  {
+    "id": "change_scope-6",
+    "task": "change_scope",
+    "text": "Although the commit is called a documentation fix, it removes the authentication check from the request handler.",
+    "labels": {
+      "documentation": "A change only to documentation, comments, or formatting, with no change to program behavior.",
+      "behavior": "A change to what the program does when it runs.",
+      "unknown": "There is not enough information to determine whether program behavior changes."
+    },
+    "expected": "behavior"
+  },
+  {
+    "id": "secret_exposure-1",
+    "task": "secret_exposure",
+    "text": "A valid production API key was accidentally included in a public error log.",
+    "labels": {
+      "yes": "The record explicitly says a real private credential was exposed to unauthorized readers.",
+      "no": "The record explicitly says that no real private credential was exposed.",
+      "unknown": "The record does not establish whether a real private credential was exposed."
+    },
+    "expected": "yes"
+  },
+  {
+    "id": "secret_exposure-2",
+    "task": "secret_exposure",
+    "text": "The example uses the literal placeholder YOUR_API_KEY; it contains no real credential.",
+    "labels": {
+      "yes": "The record explicitly says a real private credential was exposed to unauthorized readers.",
+      "no": "The record explicitly says that no real private credential was exposed.",
+      "unknown": "The record does not establish whether a real private credential was exposed."
+    },
+    "expected": "no"
+  },
+  {
+    "id": "secret_exposure-3",
+    "task": "secret_exposure",
+    "text": "The scanner flagged a suspicious string. Nobody has checked whether it is a real credential.",
+    "labels": {
+      "yes": "The record explicitly says a real private credential was exposed to unauthorized readers.",
+      "no": "The record explicitly says that no real private credential was exposed.",
+      "unknown": "The record does not establish whether a real private credential was exposed."
+    },
+    "expected": "unknown"
+  },
+  {
+    "id": "secret_exposure-4",
+    "task": "secret_exposure",
+    "text": "The exception handler replaces every credential with [REDACTED] before logging. The public logs contain only the replacements.",
+    "labels": {
+      "yes": "The record explicitly says a real private credential was exposed to unauthorized readers.",
+      "no": "The record explicitly says that no real private credential was exposed.",
+      "unknown": "The record does not establish whether a real private credential was exposed."
+    },
+    "expected": "no"
+  },
+  {
+    "id": "secret_exposure-5",
+    "task": "secret_exposure",
+    "text": "The log claims secrets were redacted, but the incident report confirms that a working private token was published.",
+    "labels": {
+      "yes": "The record explicitly says a real private credential was exposed to unauthorized readers.",
+      "no": "The record explicitly says that no real private credential was exposed.",
+      "unknown": "The record does not establish whether a real private credential was exposed."
+    },
+    "expected": "yes"
+  },
+  {
+    "id": "secret_exposure-6",
+    "task": "secret_exposure",
+    "text": "The application has a logging component and uses an external API. No log contents are provided.",
+    "labels": {
+      "yes": "The record explicitly says a real private credential was exposed to unauthorized readers.",
+      "no": "The record explicitly says that no real private credential was exposed.",
+      "unknown": "The record does not establish whether a real private credential was exposed."
+    },
+    "expected": "unknown"
+  },
+  {
+    "id": "evidence_support-1",
+    "task": "evidence_support",
+    "text": "Evidence: All ten requested records were processed successfully. Claim: Every requested record was processed.",
+    "labels": {
+      "supported": "The evidence establishes that the claim is true.",
+      "contradicted": "The evidence establishes that the claim is false.",
+      "unknown": "The evidence is insufficient to establish whether the claim is true or false."
+    },
+    "expected": "supported"
+  },
+  {
+    "id": "evidence_support-2",
+    "task": "evidence_support",
+    "text": "Evidence: Nine records were processed; one timed out and was skipped. Claim: Every requested record was processed.",
+    "labels": {
+      "supported": "The evidence establishes that the claim is true.",
+      "contradicted": "The evidence establishes that the claim is false.",
+      "unknown": "The evidence is insufficient to establish whether the claim is true or false."
+    },
+    "expected": "contradicted"
+  },
+  {
+    "id": "evidence_support-3",
+    "task": "evidence_support",
+    "text": "Evidence: The worker started successfully. Claim: Every requested record was processed.",
+    "labels": {
+      "supported": "The evidence establishes that the claim is true.",
+      "contradicted": "The evidence establishes that the claim is false.",
+      "unknown": "The evidence is insufficient to establish whether the claim is true or false."
+    },
+    "expected": "unknown"
+  },
+  {
+    "id": "evidence_support-4",
+    "task": "evidence_support",
+    "text": "Evidence: The test suite passed only on Linux. Claim: The tests passed on Windows.",
+    "labels": {
+      "supported": "The evidence establishes that the claim is true.",
+      "contradicted": "The evidence establishes that the claim is false.",
+      "unknown": "The evidence is insufficient to establish whether the claim is true or false."
+    },
+    "expected": "unknown"
+  },
+  {
+    "id": "evidence_support-5",
+    "task": "evidence_support",
+    "text": "Evidence: The Windows test run finished with two failed tests. Claim: All Windows tests passed.",
+    "labels": {
+      "supported": "The evidence establishes that the claim is true.",
+      "contradicted": "The evidence establishes that the claim is false.",
+      "unknown": "The evidence is insufficient to establish whether the claim is true or false."
+    },
+    "expected": "contradicted"
+  },
+  {
+    "id": "evidence_support-6",
+    "task": "evidence_support",
+    "text": "Evidence: The report marks the input file as modified after evaluation and the cached finding as stale. Claim: The cached finding is marked stale.",
+    "labels": {
+      "supported": "The evidence establishes that the claim is true.",
+      "contradicted": "The evidence establishes that the claim is false.",
+      "unknown": "The evidence is insufficient to establish whether the claim is true or false."
+    },
+    "expected": "supported"
+  },
+  {
+    "id": "urgency-1",
+    "task": "urgency",
+    "text": "A README contains a broken link to an optional tutorial. The application works normally.",
+    "labels": {
+      "routine": "No user-visible failure; ordinary maintenance that can wait.",
+      "minor": "A limited user-visible inconvenience with a practical workaround.",
+      "major": "A core feature is unavailable for some users and there is no practical workaround.",
+      "critical": "An ongoing complete production outage affecting all users."
+    },
+    "expected": "routine"
+  },
+  {
+    "id": "urgency-2",
+    "task": "urgency",
+    "text": "A display setting resets on refresh, but users can reselect it immediately.",
+    "labels": {
+      "routine": "No user-visible failure; ordinary maintenance that can wait.",
+      "minor": "A limited user-visible inconvenience with a practical workaround.",
+      "major": "A core feature is unavailable for some users and there is no practical workaround.",
+      "critical": "An ongoing complete production outage affecting all users."
+    },
+    "expected": "minor"
+  },
+  {
+    "id": "urgency-3",
+    "task": "urgency",
+    "text": "Some users cannot submit payments at all, and support has no workaround.",
+    "labels": {
+      "routine": "No user-visible failure; ordinary maintenance that can wait.",
+      "minor": "A limited user-visible inconvenience with a practical workaround.",
+      "major": "A core feature is unavailable for some users and there is no practical workaround.",
+      "critical": "An ongoing complete production outage affecting all users."
+    },
+    "expected": "major"
+  },
+  {
+    "id": "urgency-4",
+    "task": "urgency",
+    "text": "Every production request fails and no user can access the service.",
+    "labels": {
+      "routine": "No user-visible failure; ordinary maintenance that can wait.",
+      "minor": "A limited user-visible inconvenience with a practical workaround.",
+      "major": "A core feature is unavailable for some users and there is no practical workaround.",
+      "critical": "An ongoing complete production outage affecting all users."
+    },
+    "expected": "critical"
+  },
+  {
+    "id": "urgency-5",
+    "task": "urgency",
+    "text": "An internal comment is outdated. There is no runtime impact.",
+    "labels": {
+      "routine": "No user-visible failure; ordinary maintenance that can wait.",
+      "minor": "A limited user-visible inconvenience with a practical workaround.",
+      "major": "A core feature is unavailable for some users and there is no practical workaround.",
+      "critical": "An ongoing complete production outage affecting all users."
+    },
+    "expected": "routine"
+  },
+  {
+    "id": "urgency-6",
+    "task": "urgency",
+    "text": "Export is unavailable for one customer tier, with no alternative way to obtain their data.",
+    "labels": {
+      "routine": "No user-visible failure; ordinary maintenance that can wait.",
+      "minor": "A limited user-visible inconvenience with a practical workaround.",
+      "major": "A core feature is unavailable for some users and there is no practical workaround.",
+      "critical": "An ongoing complete production outage affecting all users."
+    },
+    "expected": "major"
+  }
+]

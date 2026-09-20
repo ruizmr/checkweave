@@ -1,0 +1,324 @@
+{
+  "model": "knowledgator/gliclass-base-v3.0",
+  "revision": "77a70e6cd52e602ed18184ef37d18bdd3741e3d5",
+  "backend": "gliclass",
+  "device": "cpu",
+  "dtype": "float32",
+  "device_name": "cpu",
+  "threads": 4,
+  "python": "3.12.9",
+  "platform": "Linux-6.8.0-138-generic-x86_64-with-glibc2.39",
+  "packages": {
+    "torch": "2.4.0",
+    "transformers": "4.46.3",
+    "gliclass": "0.1.16",
+    "gliner2": "2.0.0",
+    "numpy": "2.2.6",
+    "peft": "0.13.2",
+    "huggingface-hub": "0.36.2",
+    "tokenizers": "0.20.3",
+    "safetensors": "0.8.0"
+  },
+  "cases_sha256": "4bc52172eb26612771f2050355b288581f80665b76ec7752120e1e580d8bc782",
+  "runner_sha256": "ecc00af3a2d0940353bacd54725478d7ab5c17e49bd9a62e7f16a77584fb470a",
+  "load_seconds": 7.716343180043623,
+  "correct": 15,
+  "count": 24,
+  "median_seconds": 0.2064411676255986,
+  "results": [
+    {
+      "id": "change_scope-1",
+      "expected": "documentation",
+      "predicted": "behavior",
+      "correct": false,
+      "seconds": 0.19725966779515147,
+      "raw": {
+        "documentation": 0.16316744685173035,
+        "behavior": 0.9224473237991333,
+        "unknown": 0.7072448134422302
+      }
+    },
+    {
+      "id": "change_scope-2",
+      "expected": "behavior",
+      "predicted": "behavior",
+      "correct": true,
+      "seconds": 0.18487942311912775,
+      "raw": {
+        "documentation": 0.030653279274702072,
+        "behavior": 0.9888488054275513,
+        "unknown": 0.7347152829170227
+      }
+    },
+    {
+      "id": "change_scope-3",
+      "expected": "documentation",
+      "predicted": "documentation",
+      "correct": true,
+      "seconds": 0.19987503509037197,
+      "raw": {
+        "documentation": 0.9864063858985901,
+        "behavior": 0.45505303144454956,
+        "unknown": 0.7160924077033997
+      }
+    },
+    {
+      "id": "change_scope-4",
+      "expected": "unknown",
+      "predicted": "unknown",
+      "correct": true,
+      "seconds": 0.18774566613137722,
+      "raw": {
+        "documentation": 0.280131459236145,
+        "behavior": 0.801720142364502,
+        "unknown": 0.9819948077201843
+      }
+    },
+    {
+      "id": "change_scope-5",
+      "expected": "documentation",
+      "predicted": "behavior",
+      "correct": false,
+      "seconds": 0.25045130704529583,
+      "raw": {
+        "documentation": 0.6522570848464966,
+        "behavior": 0.9768209457397461,
+        "unknown": 0.6193361282348633
+      }
+    },
+    {
+      "id": "change_scope-6",
+      "expected": "behavior",
+      "predicted": "behavior",
+      "correct": true,
+      "seconds": 0.2055835071951151,
+      "raw": {
+        "documentation": 0.14026877284049988,
+        "behavior": 0.9735026359558105,
+        "unknown": 0.6157572865486145
+      }
+    },
+    {
+      "id": "secret_exposure-1",
+      "expected": "yes",
+      "predicted": "unknown",
+      "correct": false,
+      "seconds": 0.21039541508071125,
+      "raw": {
+        "yes": 0.7880328297615051,
+        "no": 0.85625159740448,
+        "unknown": 0.8892412781715393
+      }
+    },
+    {
+      "id": "secret_exposure-2",
+      "expected": "no",
+      "predicted": "no",
+      "correct": true,
+      "seconds": 0.1982126070652157,
+      "raw": {
+        "yes": 0.002110853558406234,
+        "no": 0.9975107908248901,
+        "unknown": 0.9849587678909302
+      }
+    },
+    {
+      "id": "secret_exposure-3",
+      "expected": "unknown",
+      "predicted": "unknown",
+      "correct": true,
+      "seconds": 0.18829804100096226,
+      "raw": {
+        "yes": 0.013679341413080692,
+        "no": 0.9841551780700684,
+        "unknown": 0.999178946018219
+      }
+    },
+    {
+      "id": "secret_exposure-4",
+      "expected": "no",
+      "predicted": "no",
+      "correct": true,
+      "seconds": 0.21799216605722904,
+      "raw": {
+        "yes": 0.3314386308193207,
+        "no": 0.9634895324707031,
+        "unknown": 0.9012341499328613
+      }
+    },
+    {
+      "id": "secret_exposure-5",
+      "expected": "yes",
+      "predicted": "yes",
+      "correct": true,
+      "seconds": 0.20515288203023374,
+      "raw": {
+        "yes": 0.9995429515838623,
+        "no": 0.25820621848106384,
+        "unknown": 0.10750685632228851
+      }
+    },
+    {
+      "id": "secret_exposure-6",
+      "expected": "unknown",
+      "predicted": "unknown",
+      "correct": true,
+      "seconds": 0.19438605103641748,
+      "raw": {
+        "yes": 0.09205858409404755,
+        "no": 0.9668790698051453,
+        "unknown": 0.9857403635978699
+      }
+    },
+    {
+      "id": "evidence_support-1",
+      "expected": "supported",
+      "predicted": "supported",
+      "correct": true,
+      "seconds": 0.24145456193946302,
+      "raw": {
+        "supported": 0.9571093916893005,
+        "contradicted": 0.758030891418457,
+        "unknown": 0.19135238230228424
+      }
+    },
+    {
+      "id": "evidence_support-2",
+      "expected": "contradicted",
+      "predicted": "contradicted",
+      "correct": true,
+      "seconds": 0.20729882805608213,
+      "raw": {
+        "supported": 0.6819016933441162,
+        "contradicted": 0.9098803997039795,
+        "unknown": 0.40071535110473633
+      }
+    },
+    {
+      "id": "evidence_support-3",
+      "expected": "unknown",
+      "predicted": "supported",
+      "correct": false,
+      "seconds": 0.1728840689174831,
+      "raw": {
+        "supported": 0.9430116415023804,
+        "contradicted": 0.8682183027267456,
+        "unknown": 0.19654156267642975
+      }
+    },
+    {
+      "id": "evidence_support-4",
+      "expected": "unknown",
+      "predicted": "supported",
+      "correct": false,
+      "seconds": 0.17682890500873327,
+      "raw": {
+        "supported": 0.9387460947036743,
+        "contradicted": 0.8965190649032593,
+        "unknown": 0.42426231503486633
+      }
+    },
+    {
+      "id": "evidence_support-5",
+      "expected": "contradicted",
+      "predicted": "supported",
+      "correct": false,
+      "seconds": 0.1766878580674529,
+      "raw": {
+        "supported": 0.9210641384124756,
+        "contradicted": 0.900102972984314,
+        "unknown": 0.4343302845954895
+      }
+    },
+    {
+      "id": "evidence_support-6",
+      "expected": "supported",
+      "predicted": "contradicted",
+      "correct": false,
+      "seconds": 0.23234957293607295,
+      "raw": {
+        "supported": 0.059117641299963,
+        "contradicted": 0.961783230304718,
+        "unknown": 0.36191609501838684
+      }
+    },
+    {
+      "id": "urgency-1",
+      "expected": "routine",
+      "predicted": "minor",
+      "correct": false,
+      "seconds": 0.23599465796723962,
+      "raw": {
+        "routine": 0.9010706543922424,
+        "minor": 0.9955149292945862,
+        "major": 0.6084030866622925,
+        "critical": 0.07733966410160065
+      }
+    },
+    {
+      "id": "urgency-2",
+      "expected": "minor",
+      "predicted": "minor",
+      "correct": true,
+      "seconds": 0.28873026208020747,
+      "raw": {
+        "routine": 0.859731137752533,
+        "minor": 0.996517539024353,
+        "major": 0.4859229326248169,
+        "critical": 0.047528110444545746
+      }
+    },
+    {
+      "id": "urgency-3",
+      "expected": "major",
+      "predicted": "major",
+      "correct": true,
+      "seconds": 0.2630285390187055,
+      "raw": {
+        "routine": 0.052386146038770676,
+        "minor": 0.7580234408378601,
+        "major": 0.9992141723632812,
+        "critical": 0.7051840424537659
+      }
+    },
+    {
+      "id": "urgency-4",
+      "expected": "critical",
+      "predicted": "critical",
+      "correct": true,
+      "seconds": 0.2343557421118021,
+      "raw": {
+        "routine": 0.014457225799560547,
+        "minor": 0.5737759470939636,
+        "major": 0.9682946801185608,
+        "critical": 0.9922516942024231
+      }
+    },
+    {
+      "id": "urgency-5",
+      "expected": "routine",
+      "predicted": "minor",
+      "correct": false,
+      "seconds": 0.24841487407684326,
+      "raw": {
+        "routine": 0.9885380268096924,
+        "minor": 0.9948862195014954,
+        "major": 0.2363332211971283,
+        "critical": 0.03917987272143364
+      }
+    },
+    {
+      "id": "urgency-6",
+      "expected": "major",
+      "predicted": "major",
+      "correct": true,
+      "seconds": 0.23442145995795727,
+      "raw": {
+        "routine": 0.019474849104881287,
+        "minor": 0.730543315410614,
+        "major": 0.9986679553985596,
+        "critical": 0.8188596367835999
+      }
+    }
+  ]
+}

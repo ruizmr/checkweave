@@ -42,7 +42,7 @@ flowchart TD
     Response --> Agent
 ```
 
-One shared worker serves each canonical working-tree root. Linked Git worktrees
+One shared Rust daemon serves each canonical working-tree root. Linked Git worktrees
 have separate workspace state even when they share a Git object database. Multiple
 agent clients should reuse that worker instead of duplicating watchers and work.
 
@@ -193,10 +193,29 @@ Batch model work inside the runtime so the agent need not make one MCP call per
 item. Record backend/model identity, question schema, relevant settings, and
 truncation or chunking decisions with results.
 
-The default deterministic path should require no account or model download. A
-local semantic backend must be validated for accuracy, latency, memory, context
-limits, and packaging. Laya-MLX is inspiration, not a selected Rust dependency;
-Python-free native inference remains an open implementation choice.
+The default semantic provider runs local open weights in a managed Python
+inference worker. The Rust daemon starts it lazily, keeps weights loaded across
+requests, batches compatible work, and communicates over framed local IPC.
+Users should not need to start a Python service or manage a virtual environment.
+Inference is the scope; training and fine-tuning are outside the runtime.
+
+Use a supported GPU when available and a CPU implementation otherwise. Probe a
+real forward pass before selecting acceleration; device discovery alone does not
+establish model compatibility. Record the actual device, precision, model
+revision, adapter version, and input serialization in result metadata and cache
+identity. Bound the worker's memory, queue, CPU threads, and idle lifetime.
+
+The deterministic path requires no account or model download. Semantic setup
+downloads a pinned runtime and checkpoint into a shared user cache on first use,
+with progress and an offline preinstallation path. A separately configured Jev
+provider may send semantic inputs to its hosted API. Local failure must never
+silently route data to a remote provider.
+
+Backends declare supported decisions, languages, input limits, and score
+semantics. Shared result types do not imply identical accuracy or calibration.
+Keep unsupported requests and insufficient evidence explicit; reject over-limit
+inputs or apply a declared chunking policy instead of silently truncating them.
+See [model backends](model-backends.md) for the selection and evaluation gates.
 
 ## Agent ergonomics
 
@@ -218,7 +237,7 @@ details should stay out of the ordinary interaction.
 
 - The first agent integration and supported release platforms.
 - The smallest useful collection and execution adapters.
-- The native semantic inference backend and checkpoint.
+- The release-qualified semantic checkpoint, packaging, and calibration policy.
 - Default resource budgets, evidence retention, and polling policy.
 - How much automatic language or test-runner discovery earns its complexity.
 - Whether optional CodeGraph integration improves source selection enough to

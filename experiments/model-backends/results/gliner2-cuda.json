@@ -1,0 +1,636 @@
+{
+  "model": "fastino/gliner2.5-base-v1",
+  "revision": "1a8bc24e00dc7300b9017c81d63e3dcdabb26596",
+  "backend": "gliner2",
+  "device": "cuda:0",
+  "dtype": "float32",
+  "device_name": "Tesla M10",
+  "threads": 4,
+  "python": "3.12.9",
+  "platform": "Linux-6.8.0-138-generic-x86_64-with-glibc2.39",
+  "packages": {
+    "torch": "2.4.0",
+    "transformers": "4.46.3",
+    "gliclass": "0.1.16",
+    "gliner2": "2.0.0",
+    "numpy": "2.2.6",
+    "peft": "0.13.2",
+    "huggingface-hub": "0.36.2",
+    "tokenizers": "0.20.3",
+    "safetensors": "0.8.0"
+  },
+  "cases_sha256": "4bc52172eb26612771f2050355b288581f80665b76ec7752120e1e580d8bc782",
+  "runner_sha256": "ecc00af3a2d0940353bacd54725478d7ab5c17e49bd9a62e7f16a77584fb470a",
+  "load_seconds": 6.794608115917072,
+  "correct": 20,
+  "count": 24,
+  "median_seconds": 0.05904165003448725,
+  "results": [
+    {
+      "id": "change_scope-1",
+      "expected": "documentation",
+      "predicted": "documentation",
+      "correct": true,
+      "seconds": 0.0608877488411963,
+      "raw": {
+        "change_scope": {
+          "value": "documentation",
+          "confidence": 0.9998246693517646,
+          "probabilities": {
+            "documentation": 0.9998246693517646,
+            "behavior": 0.00013388595159822484,
+            "unknown": 4.144469663713505e-05
+          }
+        },
+        "_meta": {
+          "feasible": true,
+          "decoder": "independent",
+          "exact": true,
+          "objective": 4.534879207611084,
+          "violations": []
+        }
+      }
+    },
+    {
+      "id": "change_scope-2",
+      "expected": "behavior",
+      "predicted": "behavior",
+      "correct": true,
+      "seconds": 0.05897858599200845,
+      "raw": {
+        "change_scope": {
+          "value": "behavior",
+          "confidence": 0.6445932145908625,
+          "probabilities": {
+            "documentation": 0.00015799660609270926,
+            "behavior": 0.6445932145908625,
+            "unknown": 0.3552487888030448
+          }
+        },
+        "_meta": {
+          "feasible": true,
+          "decoder": "independent",
+          "exact": true,
+          "objective": 0.9704169034957886,
+          "violations": []
+        }
+      }
+    },
+    {
+      "id": "change_scope-3",
+      "expected": "documentation",
+      "predicted": "documentation",
+      "correct": true,
+      "seconds": 0.057847734075039625,
+      "raw": {
+        "change_scope": {
+          "value": "documentation",
+          "confidence": 0.9974810553724922,
+          "probabilities": {
+            "documentation": 0.9974810553724922,
+            "behavior": 0.002307305340703473,
+            "unknown": 0.00021163928680441682
+          }
+        },
+        "_meta": {
+          "feasible": true,
+          "decoder": "independent",
+          "exact": true,
+          "objective": 4.01874303817749,
+          "violations": []
+        }
+      }
+    },
+    {
+      "id": "change_scope-4",
+      "expected": "unknown",
+      "predicted": "documentation",
+      "correct": false,
+      "seconds": 0.05762606719508767,
+      "raw": {
+        "change_scope": {
+          "value": "documentation",
+          "confidence": 0.9861354611750682,
+          "probabilities": {
+            "documentation": 0.9861354611750682,
+            "behavior": 9.607808815103866e-05,
+            "unknown": 0.013768460736780825
+          }
+        },
+        "_meta": {
+          "feasible": true,
+          "decoder": "independent",
+          "exact": true,
+          "objective": 2.916069507598877,
+          "violations": []
+        }
+      }
+    },
+    {
+      "id": "change_scope-5",
+      "expected": "documentation",
+      "predicted": "documentation",
+      "correct": true,
+      "seconds": 0.058749604038894176,
+      "raw": {
+        "change_scope": {
+          "value": "documentation",
+          "confidence": 0.998139528989849,
+          "probabilities": {
+            "documentation": 0.998139528989849,
+            "behavior": 0.0017280427828637785,
+            "unknown": 0.00013242822728714055
+          }
+        },
+        "_meta": {
+          "feasible": true,
+          "decoder": "independent",
+          "exact": true,
+          "objective": 4.3575286865234375,
+          "violations": []
+        }
+      }
+    },
+    {
+      "id": "change_scope-6",
+      "expected": "behavior",
+      "predicted": "behavior",
+      "correct": true,
+      "seconds": 0.060502203181385994,
+      "raw": {
+        "change_scope": {
+          "value": "behavior",
+          "confidence": 0.5016773089622351,
+          "probabilities": {
+            "documentation": 0.4914250606062496,
+            "behavior": 0.5016773089622351,
+            "unknown": 0.006897630431515367
+          }
+        },
+        "_meta": {
+          "feasible": true,
+          "decoder": "independent",
+          "exact": true,
+          "objective": 0.6528787612915039,
+          "violations": []
+        }
+      }
+    },
+    {
+      "id": "secret_exposure-1",
+      "expected": "yes",
+      "predicted": "yes",
+      "correct": true,
+      "seconds": 0.06089338497258723,
+      "raw": {
+        "secret_exposure": {
+          "value": "yes",
+          "confidence": 0.999984000824248,
+          "probabilities": {
+            "yes": 0.999984000824248,
+            "no": 5.26914503373868e-06,
+            "unknown": 1.0730030718180394e-05
+          }
+        },
+        "_meta": {
+          "feasible": true,
+          "decoder": "independent",
+          "exact": true,
+          "objective": 5.768211364746094,
+          "violations": []
+        }
+      }
+    },
+    {
+      "id": "secret_exposure-2",
+      "expected": "no",
+      "predicted": "no",
+      "correct": true,
+      "seconds": 0.058950648875907063,
+      "raw": {
+        "secret_exposure": {
+          "value": "no",
+          "confidence": 0.9999996965579542,
+          "probabilities": {
+            "yes": 1.019720263838833e-07,
+            "no": 0.9999996965579542,
+            "unknown": 2.014700193748804e-07
+          }
+        },
+        "_meta": {
+          "feasible": true,
+          "decoder": "independent",
+          "exact": true,
+          "objective": 7.759208679199219,
+          "violations": []
+        }
+      }
+    },
+    {
+      "id": "secret_exposure-3",
+      "expected": "unknown",
+      "predicted": "no",
+      "correct": false,
+      "seconds": 0.058233508141711354,
+      "raw": {
+        "secret_exposure": {
+          "value": "no",
+          "confidence": 0.8920702577515973,
+          "probabilities": {
+            "yes": 3.169217282733734e-05,
+            "no": 0.8920702577515973,
+            "unknown": 0.10789805007557529
+          }
+        },
+        "_meta": {
+          "feasible": true,
+          "decoder": "independent",
+          "exact": true,
+          "objective": 2.9120590686798096,
+          "violations": []
+        }
+      }
+    },
+    {
+      "id": "secret_exposure-4",
+      "expected": "no",
+      "predicted": "no",
+      "correct": true,
+      "seconds": 0.0594556441064924,
+      "raw": {
+        "secret_exposure": {
+          "value": "no",
+          "confidence": 0.9581030810199777,
+          "probabilities": {
+            "yes": 0.0016985994484864258,
+            "no": 0.9581030810199777,
+            "unknown": 0.04019831953153589
+          }
+        },
+        "_meta": {
+          "feasible": true,
+          "decoder": "independent",
+          "exact": true,
+          "objective": 1.803796410560608,
+          "violations": []
+        }
+      }
+    },
+    {
+      "id": "secret_exposure-5",
+      "expected": "yes",
+      "predicted": "yes",
+      "correct": true,
+      "seconds": 0.05972477491013706,
+      "raw": {
+        "secret_exposure": {
+          "value": "yes",
+          "confidence": 0.9999666457054348,
+          "probabilities": {
+            "yes": 0.9999666457054348,
+            "no": 1.5300340217577766e-05,
+            "unknown": 1.8053954347498175e-05
+          }
+        },
+        "_meta": {
+          "feasible": true,
+          "decoder": "independent",
+          "exact": true,
+          "objective": 5.812371730804443,
+          "violations": []
+        }
+      }
+    },
+    {
+      "id": "secret_exposure-6",
+      "expected": "unknown",
+      "predicted": "no",
+      "correct": false,
+      "seconds": 0.05891264998354018,
+      "raw": {
+        "secret_exposure": {
+          "value": "no",
+          "confidence": 0.9999975835255046,
+          "probabilities": {
+            "yes": 5.005401966596354e-07,
+            "no": 0.9999975835255046,
+            "unknown": 1.9159342985927793e-06
+          }
+        },
+        "_meta": {
+          "feasible": true,
+          "decoder": "independent",
+          "exact": true,
+          "objective": 6.4749932289123535,
+          "violations": []
+        }
+      }
+    },
+    {
+      "id": "evidence_support-1",
+      "expected": "supported",
+      "predicted": "supported",
+      "correct": true,
+      "seconds": 0.058699126821011305,
+      "raw": {
+        "evidence_support": {
+          "value": "supported",
+          "confidence": 0.9999996272674497,
+          "probabilities": {
+            "supported": 0.9999996272674497,
+            "contradicted": 6.33079871657158e-08,
+            "unknown": 3.0942456307864405e-07
+          }
+        },
+        "_meta": {
+          "feasible": true,
+          "decoder": "independent",
+          "exact": true,
+          "objective": 7.153810977935791,
+          "violations": []
+        }
+      }
+    },
+    {
+      "id": "evidence_support-2",
+      "expected": "contradicted",
+      "predicted": "contradicted",
+      "correct": true,
+      "seconds": 0.05852644704282284,
+      "raw": {
+        "evidence_support": {
+          "value": "contradicted",
+          "confidence": 0.9466481591211929,
+          "probabilities": {
+            "supported": 0.007125086742657593,
+            "contradicted": 0.9466481591211929,
+            "unknown": 0.04622675413614944
+          }
+        },
+        "_meta": {
+          "feasible": true,
+          "decoder": "independent",
+          "exact": true,
+          "objective": 2.2248401641845703,
+          "violations": []
+        }
+      }
+    },
+    {
+      "id": "evidence_support-3",
+      "expected": "unknown",
+      "predicted": "unknown",
+      "correct": true,
+      "seconds": 0.05765955615788698,
+      "raw": {
+        "evidence_support": {
+          "value": "unknown",
+          "confidence": 0.899499072161803,
+          "probabilities": {
+            "supported": 0.10000187615191282,
+            "contradicted": 0.0004990516862841385,
+            "unknown": 0.899499072161803
+          }
+        },
+        "_meta": {
+          "feasible": true,
+          "decoder": "independent",
+          "exact": true,
+          "objective": 2.844194173812866,
+          "violations": []
+        }
+      }
+    },
+    {
+      "id": "evidence_support-4",
+      "expected": "unknown",
+      "predicted": "contradicted",
+      "correct": false,
+      "seconds": 0.058271202025935054,
+      "raw": {
+        "evidence_support": {
+          "value": "contradicted",
+          "confidence": 0.9998388447409459,
+          "probabilities": {
+            "supported": 4.308970119875383e-05,
+            "contradicted": 0.9998388447409459,
+            "unknown": 0.00011806555785529896
+          }
+        },
+        "_meta": {
+          "feasible": true,
+          "decoder": "independent",
+          "exact": true,
+          "objective": 3.938253402709961,
+          "violations": []
+        }
+      }
+    },
+    {
+      "id": "evidence_support-5",
+      "expected": "contradicted",
+      "predicted": "contradicted",
+      "correct": true,
+      "seconds": 0.058070991886779666,
+      "raw": {
+        "evidence_support": {
+          "value": "contradicted",
+          "confidence": 0.9987867425244188,
+          "probabilities": {
+            "supported": 0.000465243109497582,
+            "contradicted": 0.9987867425244188,
+            "unknown": 0.0007480143660837052
+          }
+        },
+        "_meta": {
+          "feasible": true,
+          "decoder": "independent",
+          "exact": true,
+          "objective": 3.692507028579712,
+          "violations": []
+        }
+      }
+    },
+    {
+      "id": "evidence_support-6",
+      "expected": "supported",
+      "predicted": "supported",
+      "correct": true,
+      "seconds": 0.059420793084427714,
+      "raw": {
+        "evidence_support": {
+          "value": "supported",
+          "confidence": 0.999974430452473,
+          "probabilities": {
+            "supported": 0.999974430452473,
+            "contradicted": 1.9921885321991158e-05,
+            "unknown": 5.647662205040435e-06
+          }
+        },
+        "_meta": {
+          "feasible": true,
+          "decoder": "independent",
+          "exact": true,
+          "objective": 5.775323390960693,
+          "violations": []
+        }
+      }
+    },
+    {
+      "id": "urgency-1",
+      "expected": "routine",
+      "predicted": "routine",
+      "correct": true,
+      "seconds": 0.06059515988454223,
+      "raw": {
+        "urgency": {
+          "value": "routine",
+          "confidence": 0.9951800105166947,
+          "probabilities": {
+            "routine": 0.9951800105166947,
+            "minor": 0.004421241083920691,
+            "major": 0.0003593856450707282,
+            "critical": 3.9362754313955916e-05
+          }
+        },
+        "_meta": {
+          "feasible": true,
+          "decoder": "independent",
+          "exact": true,
+          "objective": 3.2408337593078613,
+          "violations": []
+        }
+      }
+    },
+    {
+      "id": "urgency-2",
+      "expected": "minor",
+      "predicted": "minor",
+      "correct": true,
+      "seconds": 0.05929601192474365,
+      "raw": {
+        "urgency": {
+          "value": "minor",
+          "confidence": 0.9999830570849872,
+          "probabilities": {
+            "routine": 1.3824988970024036e-05,
+            "minor": 0.9999830570849872,
+            "major": 2.6687974357536885e-06,
+            "critical": 4.491286070708398e-07
+          }
+        },
+        "_meta": {
+          "feasible": true,
+          "decoder": "independent",
+          "exact": true,
+          "objective": 5.796886920928955,
+          "violations": []
+        }
+      }
+    },
+    {
+      "id": "urgency-3",
+      "expected": "major",
+      "predicted": "major",
+      "correct": true,
+      "seconds": 0.059570103883743286,
+      "raw": {
+        "urgency": {
+          "value": "major",
+          "confidence": 0.9556960751671196,
+          "probabilities": {
+            "routine": 8.823023136445852e-06,
+            "minor": 7.420595890382964e-05,
+            "major": 0.9556960751671196,
+            "critical": 0.044220895850840075
+          }
+        },
+        "_meta": {
+          "feasible": true,
+          "decoder": "independent",
+          "exact": true,
+          "objective": 3.068943977355957,
+          "violations": []
+        }
+      }
+    },
+    {
+      "id": "urgency-4",
+      "expected": "critical",
+      "predicted": "critical",
+      "correct": true,
+      "seconds": 0.05910471407696605,
+      "raw": {
+        "urgency": {
+          "value": "critical",
+          "confidence": 0.9855784794985963,
+          "probabilities": {
+            "routine": 1.1367360619728361e-07,
+            "minor": 8.783303441159305e-08,
+            "major": 0.014421318994763005,
+            "critical": 0.9855784794985963
+          }
+        },
+        "_meta": {
+          "feasible": true,
+          "decoder": "independent",
+          "exact": true,
+          "objective": 5.4991536140441895,
+          "violations": []
+        }
+      }
+    },
+    {
+      "id": "urgency-5",
+      "expected": "routine",
+      "predicted": "routine",
+      "correct": true,
+      "seconds": 0.05917621194384992,
+      "raw": {
+        "urgency": {
+          "value": "routine",
+          "confidence": 0.9977574015734832,
+          "probabilities": {
+            "routine": 0.9977574015734832,
+            "minor": 0.0022257434691220442,
+            "major": 1.3229725677081375e-05,
+            "critical": 3.6252317174882724e-06
+          }
+        },
+        "_meta": {
+          "feasible": true,
+          "decoder": "independent",
+          "exact": true,
+          "objective": 4.712179660797119,
+          "violations": []
+        }
+      }
+    },
+    {
+      "id": "urgency-6",
+      "expected": "major",
+      "predicted": "major",
+      "correct": true,
+      "seconds": 0.05995039804838598,
+      "raw": {
+        "urgency": {
+          "value": "major",
+          "confidence": 0.9992613098405102,
+          "probabilities": {
+            "routine": 1.5505423521049359e-06,
+            "minor": 4.8917243086029585e-06,
+            "major": 0.9992613098405102,
+            "critical": 0.0007322478928290169
+          }
+        },
+        "_meta": {
+          "feasible": true,
+          "decoder": "independent",
+          "exact": true,
+          "objective": 4.270013332366943,
+          "violations": []
+        }
+      }
+    }
+  ]
+}
