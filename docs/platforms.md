@@ -1,7 +1,7 @@
 # Platforms
 
-**Status:** release tooling is configured. No GitHub Release has been published
-from this repository state, and the release workflow has not been executed.
+**Status:** the release workflow dry run passed on every target ([release run 36070429830](https://github.com/ruizmr/checkweave/actions/runs/36070429830)).
+No tag or GitHub Release has been published.
 Only combinations actually built and tested may be treated as verified.
 
 Checkweave's release artifact is a native Rust binary. Semantic CPU and CUDA
@@ -20,8 +20,8 @@ move to newer images (Ubuntu 26.04 migration is scheduled to begin 2026-10-19).
 | --- | --- | --- | --- |
 | `x86_64-unknown-linux-gnu` | `ubuntu-24.04` | `.tar.gz` | Release workflow dry run (2026-09-24): tests and release build passed on the runner. This host also smoked a copied binary. |
 | `aarch64-unknown-linux-gnu` | `ubuntu-24.04-arm` | `.tar.gz` | Release workflow dry run (2026-09-24): tests and release build passed on the runner. |
-| `x86_64-apple-darwin` | `macos-15-intel` | `.tar.gz` | First runs failed on socket paths over 104 bytes and on `/var` → `/private/var`; both are fixed. A passing run is still required. |
-| `aarch64-apple-darwin` | `macos-15` | `.tar.gz` | Same as Intel macOS. |
+| `x86_64-apple-darwin` | `macos-15-intel` | `.tar.gz` | Tests and release build passed in [release run 36070429830](https://github.com/ruizmr/checkweave/actions/runs/36070429830), after fixing socket paths over 104 bytes and `/var` → `/private/var`. |
+| `aarch64-apple-darwin` | `macos-15` | `.tar.gz` | Tests and release build passed in the same run. |
 
 Not release targets: native Windows, 32-bit x86, Linux musl, and any GPU build.
 
@@ -33,7 +33,9 @@ that WSL has a working distribution, verifies `install.sh` against
 and installs the Linux archive into `~/.local/bin`. On Windows ARM the same
 flow picks the `aarch64-unknown-linux-gnu` archive. The release workflow's
 `wsl-install` job runs `install.ps1` on `windows-2025` with Ubuntu 24.04
-under WSL2, checks a collection, and uninstalls; publishing waits on it.
+under WSL2, checks a collection, and uninstalls; publishing waits on it. It
+passed in [release run 36070429830](https://github.com/ruizmr/checkweave/actions/runs/36070429830): install, same-bytes reinstall, a complete JSONL check,
+uninstall, and a no-op second uninstall.
 
 Open the project from WSL (`wsl`, `cd` into it, `cursor .`) so Cursor starts
 the MCP server inside Linux. Keep projects in the WSL filesystem: under
