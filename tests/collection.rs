@@ -1,3 +1,5 @@
+#![cfg_attr(not(unix), allow(dead_code, unused_imports))]
+
 use std::fs;
 use std::path::{Path, PathBuf};
 use std::sync::atomic::AtomicBool;
@@ -525,6 +527,7 @@ fn additions_deletions_renames_and_ignore_rules() {
     assert_eq!(kept.sources[0].path, "keep.jsonl");
 }
 
+#[cfg(unix)]
 #[test]
 fn glob_escape_and_symlink_are_rejected() {
     let dir = ws();

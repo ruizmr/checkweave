@@ -1,3 +1,5 @@
+#![cfg_attr(not(unix), allow(dead_code, unused_imports))]
+
 //! Adversarial kernel checks against documented invariants.
 //! Failures are defects: expectations are not relaxed to match an implementation.
 
@@ -270,6 +272,7 @@ fn ignore_negation_changes_membership() {
     assert_eq!(dropped.coverage.files, 1, "{dropped:?}");
 }
 
+#[cfg(unix)]
 #[test]
 fn symlink_and_include_cannot_escape_workspace() {
     let (_tmp, root) = canonical_temp();
@@ -990,70 +993,73 @@ fn corrupt_cache_recovers_without_hiding_permission_errors() {
         "corruption recovery should quarantine garbage and open a real database"
     );
 
-    let locked = root.join("other.jsonl");
-    let mut perms = fs::metadata(&locked).unwrap().permissions();
-    use std::os::unix::fs::PermissionsExt;
-    let original = perms.mode();
-    perms.set_mode(0o000);
-    fs::set_permissions(&locked, perms).unwrap();
-    struct Restore(PathBuf, u32);
-    impl Drop for Restore {
-        fn drop(&mut self) {
-            let mut perms = fs::metadata(&self.0).unwrap().permissions();
-            perms.set_mode(self.1);
-            let _ = fs::set_permissions(&self.0, perms);
+    #[cfg(unix)]
+    {
+        let locked = root.join("other.jsonl");
+        let mut perms = fs::metadata(&locked).unwrap().permissions();
+        use std::os::unix::fs::PermissionsExt;
+        let original = perms.mode();
+        perms.set_mode(0o000);
+        fs::set_permissions(&locked, perms).unwrap();
+        struct Restore(PathBuf, u32);
+        impl Drop for Restore {
+            fn drop(&mut self) {
+                let mut perms = fs::metadata(&self.0).unwrap().permissions();
+                perms.set_mode(self.1);
+                let _ = fs::set_permissions(&self.0, perms);
+            }
         }
-    }
-    let _restore = Restore(locked.clone(), original);
-    let unreadable = fs::File::open(&locked).is_err();
-    if unreadable {
-        let both = request(&["*.jsonl"], gt("/n", 1.0), limits(10));
-        let outcome = engine.check(&both, &AtomicBool::new(false));
-        match outcome {
-            Ok(report) => {
-                assert!(
-                    report
-                        .items
-                        .iter()
-                        .all(|i| i.source.path != "other.jsonl" || i.matched != Some(true)),
-                    "unreadable input must not become a match: {report:?}"
-                );
-                assert_eq!(
-                    report
-                        .sources
-                        .iter()
-                        .filter(|s| s.path == "good.jsonl")
-                        .count(),
-                    1,
-                    "readable sibling remains: {report:?}"
-                );
-                if report.sources.iter().any(|s| s.path == "good.jsonl")
-                    && report.freshness == "validated"
-                {
-                    let good_items = report.coverage.matched;
-                    assert!(good_items >= 1, "{report:?}");
+        let _restore = Restore(locked.clone(), original);
+        let unreadable = fs::File::open(&locked).is_err();
+        if unreadable {
+            let both = request(&["*.jsonl"], gt("/n", 1.0), limits(10));
+            let outcome = engine.check(&both, &AtomicBool::new(false));
+            match outcome {
+                Ok(report) => {
+                    assert!(
+                        report
+                            .items
+                            .iter()
+                            .all(|i| i.source.path != "other.jsonl" || i.matched != Some(true)),
+                        "unreadable input must not become a match: {report:?}"
+                    );
+                    assert_eq!(
+                        report
+                            .sources
+                            .iter()
+                            .filter(|s| s.path == "good.jsonl")
+                            .count(),
+                        1,
+                        "readable sibling remains: {report:?}"
+                    );
+                    if report.sources.iter().any(|s| s.path == "good.jsonl")
+                        && report.freshness == "validated"
+                    {
+                        let good_items = report.coverage.matched;
+                        assert!(good_items >= 1, "{report:?}");
+                    }
+                }
+                Err(err) => {
+                    let text = format!("{err:#}").to_ascii_lowercase();
+                    assert!(
+                        !text.contains("corrupt") && !text.contains("quarantine"),
+                        "an unreadable data file is not cache corruption: {err:#}"
+                    );
                 }
             }
-            Err(err) => {
-                let text = format!("{err:#}").to_ascii_lowercase();
-                assert!(
-                    !text.contains("corrupt") && !text.contains("quarantine"),
-                    "an unreadable data file is not cache corruption: {err:#}"
-                );
-            }
+            assert_eq!(fs::read(root.join("good.jsonl")).unwrap(), b"{\"n\":2}\n");
+            let still = run(&mut engine, &req);
+            assert_validated_snapshot(&still);
+            assert_eq!(
+                still.coverage.matched, 1,
+                "permission error must not destroy the cache: {still:?}"
+            );
+            let header = fs::read(&cache).unwrap_or_default();
+            assert!(
+                header.starts_with(b"SQLite format 3"),
+                "permission error is not cache corruption"
+            );
         }
-        assert_eq!(fs::read(root.join("good.jsonl")).unwrap(), b"{\"n\":2}\n");
-        let still = run(&mut engine, &req);
-        assert_validated_snapshot(&still);
-        assert_eq!(
-            still.coverage.matched, 1,
-            "permission error must not destroy the cache: {still:?}"
-        );
-        let header = fs::read(&cache).unwrap_or_default();
-        assert!(
-            header.starts_with(b"SQLite format 3"),
-            "permission error is not cache corruption"
-        );
     }
 }
 

@@ -1,3 +1,5 @@
+#![cfg_attr(not(unix), allow(dead_code, unused_imports))]
+
 use checkweave::models::*;
 use std::{
     fs,
@@ -200,6 +202,7 @@ fn redaction_removes_bearer_and_secret() {
     assert!(cleaned.contains("[redacted]"));
 }
 
+#[cfg(unix)]
 #[tokio::test]
 async fn predicate_only_does_not_start_python() {
     let _lock = env_lock().await;
@@ -243,6 +246,7 @@ async fn predicate_only_does_not_start_python() {
     assert!(provider.managed_worker_pid().is_none());
 }
 
+#[cfg(unix)]
 #[tokio::test]
 async fn mock_worker_resolves_choice_and_restarts_once_after_crash() {
     let _lock = env_lock().await;
@@ -303,6 +307,7 @@ for line in sys.stdin:
     assert_ne!(key, provider.settings_fingerprint());
 }
 
+#[cfg(unix)]
 #[tokio::test]
 async fn worker_crash_twice_is_an_error() {
     let _lock = env_lock().await;
@@ -321,6 +326,7 @@ async fn worker_crash_twice_is_an_error() {
     assert!(err.contains("crashed"), "{err}");
 }
 
+#[cfg(unix)]
 #[tokio::test]
 async fn cancellation_reaps_the_worker() {
     let _lock = env_lock().await;
@@ -361,6 +367,7 @@ time.sleep(30)
     assert!(provider.managed_worker_pid().is_none());
 }
 
+#[cfg(unix)]
 #[tokio::test]
 async fn startup_timeout_reaps_the_worker() {
     let _lock = env_lock().await;
@@ -385,6 +392,7 @@ async fn startup_timeout_reaps_the_worker() {
     assert!(provider.managed_worker_pid().is_none());
 }
 
+#[cfg(unix)]
 #[tokio::test]
 async fn oversized_frame_is_rejected_before_launch() {
     let _lock = env_lock().await;
@@ -410,6 +418,7 @@ async fn oversized_frame_is_rejected_before_launch() {
     assert!(!marker.exists());
 }
 
+#[cfg(unix)]
 #[tokio::test]
 async fn offline_setup_requires_a_completed_manifest_and_uv_install_is_reused() {
     let _lock = env_lock().await;
@@ -865,6 +874,7 @@ fn settings_identity_records_pins_without_secrets() {
     assert!(!rendered.contains("sk-"));
 }
 
+#[cfg(unix)]
 #[tokio::test]
 async fn semif_forwards_predicates_and_readiness_skips_inference() {
     let _lock = env_lock().await;

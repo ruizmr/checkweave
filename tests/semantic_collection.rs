@@ -1,3 +1,5 @@
+#![cfg_attr(not(unix), allow(dead_code, unused_imports))]
+
 //! Semantic collection checks against a fake local worker protocol.
 
 use std::fs;
@@ -247,6 +249,7 @@ fn source_membership_skips_state_and_non_matches() {
     assert_eq!(found, vec!["keep.jsonl".to_string()]);
 }
 
+#[cfg(unix)]
 #[allow(clippy::await_holding_lock)] // holds the process env lock for the whole async test
 #[tokio::test]
 async fn changed_row_reuses_unchanged_text() {
@@ -323,6 +326,7 @@ async fn changed_row_reuses_unchanged_text() {
     );
 }
 
+#[cfg(unix)]
 #[allow(clippy::await_holding_lock)]
 #[tokio::test]
 async fn question_and_config_changes_invalidate_only_their_cache() {
@@ -390,6 +394,7 @@ async fn question_and_config_changes_invalidate_only_their_cache() {
     assert!(configured.coverage.fresh_model_calls >= 1);
 }
 
+#[cfg(unix)]
 #[allow(clippy::await_holding_lock)]
 #[tokio::test]
 async fn live_device_change_rechecks_unchanged_rows() {
@@ -432,6 +437,7 @@ async fn live_device_change_rechecks_unchanged_rows() {
     assert!(states.iter().any(|state| state["text"] == "yes changed"));
 }
 
+#[cfg(unix)]
 #[allow(clippy::await_holding_lock)]
 #[tokio::test]
 async fn batch_maps_duplicate_text_and_isolated_questions() {
@@ -496,6 +502,7 @@ async fn batch_maps_duplicate_text_and_isolated_questions() {
     assert_eq!(state_ids_sent.len(), 2);
 }
 
+#[cfg(unix)]
 #[allow(clippy::await_holding_lock)]
 #[tokio::test]
 async fn timeout_cancel_evidence_and_explicit_rows() {
@@ -576,6 +583,7 @@ async fn timeout_cancel_evidence_and_explicit_rows() {
     assert_ne!(cancelled.execution, "complete");
 }
 
+#[cfg(unix)]
 #[allow(clippy::await_holding_lock)]
 #[tokio::test]
 async fn over_limit_is_not_sent_and_budgets_are_global() {
@@ -675,6 +683,7 @@ async fn over_limit_is_not_sent_and_budgets_are_global() {
     assert_eq!(sent, 3);
 }
 
+#[cfg(unix)]
 #[allow(clippy::await_holding_lock)]
 #[tokio::test]
 async fn worker_caps_split_questions_and_pairs() {
