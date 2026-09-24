@@ -1,0 +1,1 @@
+{"op":"not","predicate":{"op":"exists","path":"/owner"}}

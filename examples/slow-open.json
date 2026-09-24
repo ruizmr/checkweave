@@ -1,0 +1,1 @@
+{"op":"all","predicates":[{"op":"eq","path":"/status","value":"open"},{"op":"gt","path":"/duration_ms","value":100}]}

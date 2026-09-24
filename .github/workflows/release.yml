@@ -1,0 +1,177 @@
+# Tag pushes of v* publish GitHub Release archives. workflow_dispatch builds
+# the same artifacts and does not create a release. Nothing here publishes on
+# pull requests. Targets are native runners from the GitHub-hosted runners
+# reference (checked 2026-09-21); cross toolchains are not required.
+name: Release
+on:
+  push:
+    tags:
+      - "v[0-9]*"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: ${{ matrix.target }}
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - runner: ubuntu-24.04
+            target: x86_64-unknown-linux-gnu
+            ext: tar.gz
+          - runner: ubuntu-24.04-arm
+            target: aarch64-unknown-linux-gnu
+            ext: tar.gz
+          - runner: macos-15
+            target: aarch64-apple-darwin
+            ext: tar.gz
+          - runner: macos-15-intel
+            target: x86_64-apple-darwin
+            ext: tar.gz
+          - runner: windows-2025
+            target: x86_64-pc-windows-msvc
+            ext: zip
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.target }}
+      - uses: Swatinem/rust-cache@v2
+        with:
+          key: ${{ matrix.target }}
+      - name: Resolve version
+        id: ver
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ "$GITHUB_REF_TYPE" = "tag" ]; then
+            ver="${GITHUB_REF_NAME#v}"
+          else
+            base=$(sed -n 's/^version = "\([^"]*\)".*/\1/p' Cargo.toml | head -n 1)
+            ver="${base}-g${GITHUB_SHA:0:7}"
+          fi
+          case "$ver" in
+            *[!0-9A-Za-z._+-]*|"")
+              echo "invalid version: $ver" >&2
+              exit 1
+              ;;
+          esac
+          echo "version=$ver" >> "$GITHUB_OUTPUT"
+      - name: Test
+        shell: bash
+        run: cargo test --locked --all-targets --target "${{ matrix.target }}"
+      - name: Build
+        shell: bash
+        run: cargo build --locked --release --target "${{ matrix.target }}"
+      - name: Package
+        shell: bash
+        env:
+          VERSION: ${{ steps.ver.outputs.version }}
+          TARGET: ${{ matrix.target }}
+          ARCHIVE_EXT: ${{ matrix.ext }}
+        run: |
+          set -euo pipefail
+          if [ "$ARCHIVE_EXT" = "zip" ]; then
+            bin_name="checkweave.exe"
+          else
+            bin_name="checkweave"
+          fi
+          built="target/${TARGET}/release/${bin_name}"
+          test -f "$built"
+          stage=$(mktemp -d)
+          root="${stage}/checkweave-${VERSION}-${TARGET}"
+          mkdir -p "${root}/docs"
+          cp "$built" "${root}/${bin_name}"
+          cp LICENSE "${root}/LICENSE"
+          cp docs/usage.md docs/platforms.md "${root}/docs/"
+          chmod 755 "${root}/${bin_name}"
+          mkdir -p dist
+          archive="${PWD}/dist/checkweave-${VERSION}-${TARGET}.${ARCHIVE_EXT}"
+          member="checkweave-${VERSION}-${TARGET}"
+          if [ "$ARCHIVE_EXT" = "zip" ]; then
+            # Windows bsdtar supports zip. Prefer tar.exe over Git's tar.
+            if command -v tar.exe >/dev/null 2>&1; then
+              tar.exe -a -cf "$archive" -C "$stage" "$member"
+              list=$(tar.exe -tf "$archive")
+            else
+              tar -a -cf "$archive" -C "$stage" "$member"
+              list=$(tar -tf "$archive")
+            fi
+            needle="checkweave.exe"
+          else
+            tar -C "$stage" -czf "$archive" "$member"
+            list=$(tar -tzf "$archive")
+            needle="checkweave"
+          fi
+          if ! printf '%s\n' "$list" | grep -q "/${needle}$"; then
+            echo "archive is missing ${needle}" >&2
+            printf '%s\n' "$list" >&2
+            exit 1
+          fi
+          rm -rf "$stage"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.target }}
+          path: dist/checkweave-*
+          if-no-files-found: error
+
+  publish:
+    name: Publish GitHub Release
+    needs: build
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          path: dist
+          merge-multiple: true
+      - name: Checksums
+        shell: bash
+        run: |
+          set -euo pipefail
+          ver="${GITHUB_REF_NAME#v}"
+          for triple in \
+            x86_64-unknown-linux-gnu \
+            aarch64-unknown-linux-gnu \
+            aarch64-apple-darwin \
+            x86_64-apple-darwin
+          do
+            test -f "dist/checkweave-${ver}-${triple}.tar.gz"
+          done
+          test -f "dist/checkweave-${ver}-x86_64-pc-windows-msvc.zip"
+          cp scripts/install.sh scripts/uninstall.sh scripts/install.ps1 scripts/uninstall.ps1 dist/
+          (
+            cd dist
+            sha256sum \
+              checkweave-* \
+              install.sh uninstall.sh install.ps1 uninstall.ps1 \
+              | LC_ALL=C sort -k2 > SHA256SUMS
+            sha256sum -c SHA256SUMS
+          )
+      - name: GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          overwrite_files: true
+          prerelease: ${{ contains(github.ref_name, '-') }}
+          files: |
+            dist/checkweave-*
+            dist/install.sh
+            dist/uninstall.sh
+            dist/install.ps1
+            dist/uninstall.ps1
+            dist/SHA256SUMS
+          body: |
+            Native archives for this tag. Each archive contains the checkweave binary, LICENSE, and docs.
+            SHA256SUMS lists the archives and the install scripts.
+            Assets were produced by `cargo test --locked --all-targets` and `cargo build --locked --release` on the runners in `.github/workflows/release.yml`.
+            Review `install.sh` or `install.ps1` before running either one. See `docs/platforms.md` for which targets a given release actually built.
+            The binary includes check, compare, replay, semantic, trace, model setup/evaluate, run handles, and deinit. The Python trace helper is embedded and written to the user cache; a source checkout is not required. The local default does not fall back to a hosted provider. A local Q4 sample is not the BF16 JevBench score and is not a release qualification.

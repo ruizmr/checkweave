@@ -1,7 +1,12 @@
 # Roadmap
 
-**Status:** the repository is at the design stage. Milestones below are planned;
-only the initial project outline is complete.
+**Status:** working prototype. The milestone lists below are still the
+completion gates. A checked box means that gate's evidence is recorded, not
+merely that source exists. See [verification](verification.md) and
+[implementation](implementation.md). Windows and macOS have not been executed.
+A local Q4 sample exists and is not the 534-item board. A paired agent study
+ran; both arms were correct, and the tool arm only printed `--help`, so an
+efficacy benefit is still open.
 
 The first goal is to establish the experience: initialize once, make a useful
 request, edit an input, and receive an updated result with unchanged work reused.
