@@ -1,5 +1,14 @@
 # Execution evidence
 
+Use a trace when reading a Python script leaves you unsure which branch ran
+or where a value changed. Checkweave runs the script and returns recorded
+events, source lines, and supported local values for your assistant to inspect.
+See the [trace command](usage.md#trace) for a minimal request; this page
+explains what is captured and how to interpret it.
+
+To check a fix, run a **new trace**. Replaying a trace runs its saved source
+snapshot, which is useful for revisiting the original behavior.
+
 **Status:** Python line-level adapter implemented in `src/trace.rs` and
 `python/checkweave_trace.py`. This is a direct-observation capture, not a
 sandbox and not a causal debugger.

@@ -1,8 +1,37 @@
-# Usage
+# Command reference
 
-**Status:** working prototype. No GitHub Release is published. Platform limits are in [platforms](platforms.md).
+For a guided first check, start with [Getting started](getting-started.md).
+For use through a coding assistant, see [Using Checkweave through MCP](mcp.md).
+This page lists command syntax and result fields.
 
-One JSON document on stdout for every successful command. Diagnostics on stderr. Exit `0` success, `1` runtime, `2` usage, `130` interrupt. `--workspace` defaults to the current directory. Linked Git worktrees are separate workspaces.
+As of 2026-09-24, the cross-platform build and Windows WSL installer have
+passed the [release dry run](platforms.md). A tagged release has not yet been
+published; install from source for now.
+
+## Choose a command
+
+| You want to… | Command |
+| --- | --- |
+| Connect a project to Cursor | `init --agent cursor` |
+| Find records that match a rule | `check` |
+| Find an input where two programs behave differently | `compare` |
+| Inspect what happened inside a Python script | `trace` |
+| Classify text or ask a model a question about each record | `semantic` |
+| Read the evidence behind an earlier result | `evidence ID` |
+| Rerun a saved comparison or trace | `replay` |
+| Prepare or directly query the optional model | `model setup` / `model evaluate` |
+| Start, inspect, or cancel longer work | `run start` / `run status` / `run cancel` |
+| Check or stop the local background worker | `status` / `shutdown` |
+| Remove Checkweave's Cursor integration | `deinit` |
+
+## Command conventions
+
+Every successful command prints one JSON document. Diagnostics go to stderr.
+Exit codes are `0` for a returned report, `1` for a runtime error, `2` for a
+usage error, and `130` for interruption. A returned report can contain findings
+or incomplete work: read its outcome and coverage before treating it as a pass.
+`--workspace` defaults to the current directory. Linked Git worktrees are
+separate workspaces.
 
 ```sh
 checkweave --workspace ROOT <command>
@@ -12,11 +41,25 @@ checkweave --workspace ROOT <command>
 
 ## Build and install
 
-No release asset exists yet. Build from this tree:
+With Rust 1.88 or later installed, run this from the Checkweave source checkout:
+
+```sh
+cargo install --path . --locked
+checkweave --help
+```
+
+Ensure Cargo's binary directory (normally `~/.cargo/bin`) is on your `PATH`.
+Use a WSL terminal on Windows. The commands below cover custom installation
+paths and the future release-download route.
+
+To install a locally built binary with checksum verification:
 
 ```sh
 cargo build --locked --release
+# Linux / WSL:
 sha256sum target/release/checkweave
+# macOS:
+shasum -a 256 target/release/checkweave
 sh scripts/install.sh \
   --binary target/release/checkweave \
   --checksum "<64 hex digits>" \
@@ -31,40 +74,15 @@ sh scripts/install.sh --version 0.1.0 --bin-dir "$HOME/.local/bin"
 
 `--version 0.1.0` and `v0.1.0` are tag `v0.1.0` on `ruizmr/checkweave`. This fails until that tag exists. `CHECKWEAVE_RELEASE_BASE` is the download prefix (default `https://github.com/ruizmr/checkweave/releases/download`). Local `--archive` and `--binary` require `--checksum`. Pass exactly one of `--version`, `--archive`, or `--binary`. Archive layout is in [platforms](platforms.md).
 
-Windows (installs the Linux build into WSL2; run `wsl --install` first if WSL is missing):
+After a tagged release is published, the Windows installer can install the
+Linux build into WSL2. Download both install scripts from that release and
+run the following from their directory. Run `wsl --install` first if WSL is missing:
 
 ```powershell
 powershell -NoProfile -ExecutionPolicy Bypass -File .\install.ps1 -Version 0.1.0
 ```
 
 `-Distro NAME` picks a WSL distribution other than the default, and `-BinDir` is a path inside Linux. `-Archive FILE -Checksum SHA256` installs a downloaded Linux archive; `install.sh` must sit next to `install.ps1`. Then open the project from WSL (`wsl`, `cd` into it, `cursor .`) and run `checkweave init` there. See [platforms](platforms.md#windows-through-wsl2).
-
-## Uninstall
-
-Deletes one selected file. It does not stop a worker and does not delete source, Git data, `.checkweave/`, model caches, or Cursor config.
-
-```sh
-checkweave --workspace ROOT shutdown
-sh scripts/uninstall.sh --bin-dir "$HOME/.local/bin"
-```
-
-On Windows, `powershell -NoProfile -File .\uninstall.ps1` removes the binary from the default WSL distribution (`-Distro`, `-BinDir` as above).
-
-`--bin PATH` removes that file instead. A missing file is success. A directory is left in place and the script fails. A second run is success.
-
-`checkweave deinit` (alias `uninit`) removes only managed Cursor entries and
-keeps `.checkweave/`. JSON reports `removed`, `preserved`, and `"state": "kept"`.
-It deletes `mcpServers.checkweave` when the command file name is `checkweave`
-or `checkweave.exe`, and deletes `.cursor/rules/checkweave.mdc` only when the
-file contains `checkweave:managed`. Anything else is listed under `preserved`
-and left on disk. Other MCP servers stay. Uninstall does not call `deinit`.
-
-`init --agent cursor` writes only:
-
-- `.cursor/mcp.json` key `mcpServers.checkweave` (`command` plus `args`: `--workspace`, the root, `mcp`)
-- `.cursor/rules/checkweave.mdc` when that file is absent or already contains `checkweave:managed`
-
-Other MCP servers are kept. An existing `checkweave.mdc` without `checkweave:managed` is left unchanged and `init` reports that on `rule`. A `checkweave` MCP entry whose command is not `checkweave` / `checkweave.exe` is a conflict and is not overwritten. `.checkweave/` is disposable cache; delete that directory yourself if you want it gone.
 
 ## Initialize
 
@@ -74,6 +92,13 @@ checkweave init --agent cursor
 ```
 
 `--agent` defaults to `cursor`. `none` only creates `.checkweave/` (marker, ignore). `init` is idempotent. The JSON result has `root`, `state_dir`, and `integration`.
+
+`init --agent cursor` writes only:
+
+- `.cursor/mcp.json` key `mcpServers.checkweave` (`command` plus `args`: `--workspace`, the root, `mcp`)
+- `.cursor/rules/checkweave.mdc` when that file is absent or already contains `checkweave:managed`
+
+Other MCP servers are kept. An existing `checkweave.mdc` without `checkweave:managed` is left unchanged and `init` reports that on `rule`. A `checkweave` MCP entry whose command is not `checkweave` / `checkweave.exe` is a conflict and is not overwritten. `.checkweave/` is disposable cache; delete that directory yourself if you want it gone.
 
 ## Check
 
@@ -169,23 +194,18 @@ checkweave semantic --request-file semantic.json
 
 ## Model
 
-Deterministic `check` does not download a model. Local failure never calls a hosted API.
+Only `semantic` and `model evaluate` need a decision model. Use a model when
+checking text requires interpretation, such as deciding whether a bug report
+contains reproduction steps. Exact field and value checks use `check`.
 
-Absent `[model]` selects profile `default`: SemIf option-logit on
-`Qwen/Qwen3.5-4B` revision `851bf6e806efd8d0a36b00ddf55e13ccb7b8cd0a`, SemIf
-code `1f2dea3e25379f9dfc98cb83c324f00ab5deda37`. CPU uses GGUF
-`bartowski/Qwen_Qwen3.5-4B-GGUF` revision
-`4168f45a16a1290d65a4ec0fa312ae917a4c15d6`, file
-`Qwen_Qwen3.5-4B-Q4_K_M.gguf` (3013027808 bytes). On this host that Q4 file
-scored 63/64 supported labels and 11/12 predicate-gold items. GLiNER2.5 base
-scored 50/64 on the same labels. Neither sample is the 534-item JevBench
-board, and the Q4 score is not the published BF16 score. Details:
-[semantic validation](semantic-validation.md). djev is a research candidate,
-not a profile. Automatic GPU selection is not a release claim. A Tesla M10
-cannot hold the BF16 checkpoint; this host stays on the CPU wheel and Q4
-with `n_gpu_layers` 0. Explicit CUDA that fails the fit gate is an error.
-macOS, Windows, and ROCm were not run. Measurements:
-[Python worker](python-worker.md) and [providers](providers.md).
+The default runs locally using SemIf with Qwen3.5-4B. First use needs a Python
+runtime and several gigabytes of model downloads; cached installations can
+work offline. Quality and device support are still being evaluated. See
+[model providers](providers.md) for pinned versions, supported devices, and
+configuration details, and [semantic validation](semantic-validation.md) for
+measured accuracy.
+
+Create `checkweave.toml` in the workspace to change the defaults:
 
 ```toml
 [model]
@@ -195,22 +215,15 @@ device = "auto"
 threads = 4
 ```
 
-`profile = "lightweight"` is `fastino/gliner2.5-base-v1` revision
-`1a8bc24e00dc7300b9017c81d63e3dcdabb26596`. Predicates are unsupported on that
-profile. A 64-label sample scored 50/64 on both CPU and CUDA, with eight wrong
-labels at softmax ≥ 0.8 ([semantic validation](semantic-validation.md)). That
-sample is not a release qualification.
+| Profile | Use |
+| --- | --- |
+| `default` | SemIf with Qwen3.5-4B; supports choices, ordered ratings, and true/false questions |
+| `lightweight` | GLiNER2.5 base; supports choices and ordered ratings, but not true/false questions |
 
-`device` is `auto`, `cpu`, `mps`, `cuda`, or `cuda:<index>`. `auto` probes; an explicit device does not silently move. Jev is opt-in:
-
-```toml
-[model]
-provider = "jev"
-model = "jev-1.13.0"
-api_key_env = "TYPESAFE_API_KEY"
-```
-
-`jev-latest` is rejected. The token stays in the environment.
+`device` accepts `auto`, `cpu`, `mps`, `cuda`, or `cuda:<index>`. Availability
+of a setting does not mean it has been tested on every platform. The
+[worker matrix](python-worker.md#platform-matrix) records actual model runs.
+An explicit device does not silently move to another device.
 
 ```sh
 checkweave model setup
@@ -218,7 +231,12 @@ checkweave model setup --offline
 checkweave model evaluate --request-file eval.json
 ```
 
-`--offline` succeeds only when the cache is already present. Cache directory: `$CHECKWEAVE_CACHE_DIR`, else `$XDG_CACHE_HOME/checkweave`, else `~/.cache/checkweave`. `CHECKWEAVE_PYTHON` uses an existing interpreter and skips the managed env. The managed install materializes the embedded canonical `python/checkweave_worker` package; setup does not need this checkout. `model setup` installs that environment. It does not return a warm model. Weights load on the first readiness or evaluate. Default `startup_timeout_ms` is `600000` (10 minutes), allowed `1..=1800000`. `model evaluate` with no `timeout_ms` uses 180000 so a cold CPU load can finish. An explicit `timeout_ms` is strict. An omitted semantic `timeout_ms` is also 180000, whether `limits` is absent or present without that field. Other semantic limit fields keep their defaults. An explicit value, including 30000, is strict. `0` is rejected. The hard cap is 600000. Deterministic `check` still defaults to 30000. On this host the Q4 worker was ready in about 25 s ([Python worker](python-worker.md)); a user-path semantic cold check was 45.8 s. A 30 s budget is not enough for that cold start.
+`setup` prepares the runtime environment; it does not keep a model warm.
+Weights load on the first model request. `--offline` requires the necessary
+setup cache to exist. Model requests have a default three-minute budget;
+first installation or a cold load can take longer than a warm request.
+
+`eval.json` can ask a choice question about text supplied directly:
 
 ```json
 {
@@ -235,7 +253,32 @@ checkweave model evaluate --request-file eval.json
 }
 ```
 
-`kind` is `choice`, `ordinal` (`levels` with `label`, `description`, `value`), or `predicate` (`statement`). Scores are not coverage. Provider behavior: [providers](providers.md). Lightweight GLiNER still returns predicate as `unsupported`.
+Questions can be `choice`, `ordinal` (ordered `levels` with `label`,
+`description`, and `value`), or `predicate` (a `statement`). Model scores are
+judgments to review; processing every record does not make every answer correct.
+
+Hosted Jev requires an explicit choice in `checkweave.toml`:
+
+```toml
+[model]
+provider = "jev"
+model = "jev-1.13.0"
+api_key_env = "TYPESAFE_API_KEY"
+```
+
+Set the token in that environment variable. `jev-latest` is rejected so results
+can be tied to a specific model. With this provider, semantic inputs are sent
+to its API. A local model failure never switches to hosted inference.
+
+For advanced setup, the cache directory is `$CHECKWEAVE_CACHE_DIR`, then
+`$XDG_CACHE_HOME/checkweave`, then `~/.cache/checkweave`. `CHECKWEAVE_PYTHON`
+selects an existing interpreter instead of a managed environment. The worker
+package is embedded in the binary, so setup needs no source checkout.
+Default `startup_timeout_ms` is 600000 (allowed 1..=1800000).
+Omitted `timeout_ms` for `model evaluate` or `semantic` is 180000; explicit
+values are strict, `0` is rejected, and the maximum is 600000. Deterministic
+`check` defaults to 30000. Exact cache identity and setup behavior are in
+[providers](providers.md).
 
 ## Runs and MCP
 
@@ -249,3 +292,29 @@ checkweave mcp
 `request.json` is one `WorkRequest`: `operation` of `check`, `evidence`, `compare`, `replay`, `semantic`, `trace`, `model_setup`, or `model_evaluate`, plus that operation's fields. Not `run_start`, `run_status`, `run_cancel`, or `shutdown`. The snapshot has `id`, `state` (`queued`, `running`, `complete`, `cancelled`, `failed`), `operation`, and optional `detail`, `result`, `error`.
 
 `mcp` is the stdio server. Tools: `checkweave_check`, `checkweave_evidence`, `checkweave_status`, `checkweave_compare`, `checkweave_replay`, `checkweave_semantic`, `checkweave_trace`, `checkweave_trace_page`, `checkweave_model_setup`, `checkweave_model_evaluate`, `checkweave_run_start`, `checkweave_run_status`, `checkweave_run_cancel`. Compare, trace, replay, and semantic run work and are not all read-only. `init --agent cursor` points Cursor at this process.
+
+## Uninstall
+
+To remove the Cursor integration, run `checkweave deinit` in the project
+before removing the binary. This keeps the local evidence cache.
+
+If you installed with `cargo install`, remove the binary with
+`cargo uninstall checkweave`. For the shell installer, use the commands below.
+The uninstall script deletes one selected binary; it does not stop a worker
+or delete source, Git data, `.checkweave/`, model caches, or Cursor config.
+
+```sh
+checkweave --workspace ROOT shutdown
+sh scripts/uninstall.sh --bin-dir "$HOME/.local/bin"
+```
+
+On Windows, `powershell -NoProfile -File .\uninstall.ps1` removes the binary from the default WSL distribution (`-Distro`, `-BinDir` as above).
+
+`--bin PATH` removes that file instead. A missing file is success. A directory is left in place and the script fails. A second run is success.
+
+`checkweave deinit` (alias `uninit`) removes only managed Cursor entries and
+keeps `.checkweave/`. JSON reports `removed`, `preserved`, and `"state": "kept"`.
+It deletes `mcpServers.checkweave` when the command file name is `checkweave`
+or `checkweave.exe`, and deletes `.cursor/rules/checkweave.mdc` only when the
+file contains `checkweave:managed`. Anything else is listed under `preserved`
+and left on disk. Other MCP servers stay. Uninstall does not call `deinit`.

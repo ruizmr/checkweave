@@ -1,10 +1,13 @@
 # Contributing
 
-Checkweave is a working prototype. Start with the [README](README.md),
-[usage](docs/usage.md), [architecture](docs/architecture.md), and
-[roadmap](docs/roadmap.md).
+Checkweave is a local-first code-intelligence tool for developers and coding
+assistants. Its first cross-platform build has passed the release dry run;
+the next priorities are in the [roadmap](docs/roadmap.md).
+Start with the [README](README.md) and [Getting started](docs/getting-started.md),
+then use the [command reference](docs/usage.md) and
+[architecture](docs/architecture.md) when working on an implementation.
 
-Useful early contributions include:
+Useful contributions include:
 
 - A concrete agent task that currently requires repeated manual work.
 - A small fixture showing the input, expected result, and supporting evidence.

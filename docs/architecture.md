@@ -1,247 +1,136 @@
 # Architecture
 
-**Status:** proposed design; no runtime is implemented yet.
+Checkweave is a local tool for behavior checks and execution evidence. A person or a coding assistant asks for one operation. A workspace daemon runs it and returns a compact JSON result plus handles to retained evidence.
 
-Checkweave is a local incremental evaluation engine for AI agents. The kernel owns
-execution, input tracking, result reuse, and evidence retrieval. Adapters supply
-specific capabilities such as collection reading, behavior comparison, runtime
-capture, and semantic judgment.
+It does not index arbitrary symbols, and it does not review a repository on its own. Deterministic operations need no model and no account.
 
-## Product boundary
+## Boundaries
 
-The user initializes a workspace once. The agent requests a task, receives a
-compact result, and can follow references to supporting evidence. Checkweave
-maintains its derived state automatically.
+Execution, the workspace cache, and local inference stay on the machine. An explicitly configured hosted provider is outside that boundary: hosted Jev runs only when you select it. Workspace state lives in an ignored `.checkweave/` directory. Model weights live in the user cache. Setup uses the network when it has to install dependencies or download a model.
 
-The runtime must earn its installation by reducing repeated agent work. A task
-should produce something directly usable: a record to inspect, a differing input,
-an observed value, or a finding that needs rechecking.
+The assistant that called the tool may send the returned evidence to its own model provider. Local-first covers Checkweave's own execution, cache, and local inference. It leaves out an explicitly configured hosted provider, and it leaves out the assistant's own provider.
 
-The first implementation will use Rust. Proposed components include SQLite for
-local metadata, native filesystem notifications with reconciliation, and the
-official Rust MCP SDK. Exact dependencies and versions will be selected during
-implementation.
+`compare` and `trace` run programs with ordinary local permissions. A Git worktree isolates source for one side of a comparison. It is not a sandbox. Inherited environment and other external state are untracked.
 
-## Runtime structure
+Semantic checks are optional. The default local profile is SemIf on pinned Qwen3.5-4B, CPU Q4. Hosted Jev is selected explicitly and is never a fallback when local inference fails. See [platforms](platforms.md) for which operating systems the release build covers. Model devices are not part of that matrix.
+
+## How a request moves
 
 ```mermaid
 flowchart TD
-    Agent[Agent through MCP or CLI] --> Request[Task interface]
-    Request --> Scheduler[Bounded operator scheduler]
-    Files[Workspace files] --> Watch[Watcher and reconciliation]
-    Watch --> State[Fingerprints and dependencies]
-    State --> Scheduler
-    Scheduler --> Native[Native operators]
-    Scheduler --> Workers[Execution adapters]
-    Scheduler --> Models[Optional decision backend]
-    Native --> Results[Results and selected evidence]
-    Workers --> Results
-    Models --> Results
-    Results --> State
-    Results --> Response[Compact response with evidence references]
-    Response --> Agent
+  person[Person or assistant]
+  cli[CLI]
+  mcp[MCP stdio tools]
+  daemon[Workspace daemon]
+  cache[".checkweave cache"]
+  ops[check compare trace]
+  semantic[semantic]
+  model[Python model worker]
+  weights[User model cache]
+
+  person --> cli
+  person --> mcp
+  cli --> daemon
+  mcp --> daemon
+  daemon --> ops
+  daemon --> semantic
+  ops --> cache
+  semantic --> cache
+  semantic --> model
+  model --> weights
+  cache --> daemon
+  daemon --> person
 ```
 
-One shared Rust daemon serves each canonical working-tree root. Linked Git worktrees
-have separate workspace state even when they share a Git object database. Multiple
-agent clients should reuse that worker instead of duplicating watchers and work.
+The diagram is a workspace operation. `check`, `compare`, and `trace` do not start the model worker. `semantic` starts it when a request needs a decision. `init`, `deinit`, and `help` do not start the daemon. `init` writes workspace and editor files directly. `deinit` asks a daemon that is already running to exit, then removes the managed editor files, and it does not start one. `help` only prints usage.
 
-The MCP launcher starts or connects to the worker automatically. Local IPC uses a
-Unix socket or Windows named pipe. The worker owns writes to SQLite; queries read
-consistent published results. Startup, process locking, version negotiation,
-crash recovery, and idle shutdown are internal lifecycle concerns.
+Cursor does not need a separate daemon command. Its MCP entry runs `checkweave --workspace` with the absolute workspace root and the `mcp` subcommand. That process connects to the daemon or starts it.
 
-No separately managed system service should be required for ordinary use.
+## Source modules
 
-## Lightweight workspace state
-
-The working tree is authoritative for current files. Git is authoritative for
-committed revisions. `.checkweave/` is a disposable cache with bounded retained
-evidence, not a parallel repository history.
-
-| Record | Minimum purpose |
+| Module | Role |
 | --- | --- |
-| Source | Workspace-relative identity, size, modification metadata, content fingerprint, and last checked generation |
-| Evaluation | Operator/version, parameters, input references, execution policy, status, and result |
-| Dependency | The source or evaluation another evaluation actually depends on |
-| Evidence | Selected inputs, outputs, or events needed to inspect or reproduce a result |
+| `src/main.rs` | CLI. Prints JSON results. |
+| `src/mcp.rs` | MCP tools on stdio. Same daemon requests as the CLI. |
+| `src/daemon.rs` | One worker per canonical worktree: lock, idle exit, Unix socket, watch, reconcile, run handles. |
+| `src/workspace.rs` | Root discovery, `init` / `deinit`, Cursor MCP entry and managed rule. |
+| `src/collection.rs` | JSON Lines checks and item cache. |
+| `src/types.rs` | Shared requests, limits, predicates, coverage. |
+| `src/sources.rs` | Membership, globs, and content fingerprints. |
+| `src/compare.rs` | Before/after comparison, reduction, retained reproduction. |
+| `src/execute.rs` | Run one argv with JSON on stdin and JSON on stdout. No shell. |
+| `src/trace.rs` | Python trace capture and snapshot replay. |
+| `src/semantic.rs` | Semantic collection check over text fields. |
+| `src/models.rs` | Provider boundary: local SemIf, local GLiNER, optional Jev. |
+| `python/checkweave_trace.py` | Embedded trace helper, materialized under the user cache. |
+| `python/checkweave_worker/` | Embedded inference worker, materialized under the user cache. |
 
-Source identity and content identity are distinct: two paths with the same bytes
-can have different roles. A file fingerprint identifies observed bytes; it does
-not retain them. When reproduction requires dirty or untracked input, preserve
-the selected bytes under the evidence retention budget. Report when required
-evidence has expired or was never captured.
+Supported platforms talk to the daemon over a Unix socket. Named-pipe code exists for native Windows; native Windows is not a release target ([platforms](platforms.md)).
 
-Use Git objects for historical reads. Use temporary Git worktrees only when an
-operation needs to execute a committed revision. Comparing a dirty working tree
-requires an adapter to capture the relevant uncommitted state without changing
-the user's work. Initial adapters should support narrowly defined inputs rather
-than imply that arbitrary environments can be reconstructed.
+## Lifecycle
 
-## Composable operators
+`init` finds the workspace root. Inside a Git checkout that root is the worktree top. Linked worktrees do not share `.checkweave/` even when they share Git objects. Outside Git, the root is an existing Checkweave workspace or the directory you named. Init is idempotent. The default agent is Cursor: unrelated MCP servers stay, and Checkweave writes its own `mcpServers` entry and a managed `.cursor/rules/checkweave.mdc`. `init --agent none` skips those files. `deinit` removes the managed entry and the managed rule. It leaves the cache.
 
-An operator consumes typed values or source references and returns a typed result
-with dependency and evidence metadata. The initial vocabulary is a design sketch:
+A workspace operation starts the daemon if it is not running. `init`, `deinit`, and `help` do not start it. One daemon serves that canonical root. Clients wait while the daemon holds its lock, and they respawn a daemon if nothing holds the lock. Protocol mismatch is rejected. Idle shutdown is internal. Ordinary use does not install a system service.
 
-| Operator | Responsibility |
+The daemon watches the worktree with native notifications when that works, and it falls back to polling when it does not. Startup reconciliation runs even when no event arrived. Watch events are hints. A query still identifies the bytes it read.
+
+On Windows, use WSL and open the project from the WSL filesystem. Projects under `/mnt/c` are slow, and native change events there are unreliable, so the daemon polls.
+
+## Data flow
+
+**Check.** Globs select JSON Lines files. Each line is one JSON value: an object, array, or scalar. The predicate is explicit. The report lists coverage and a bounded set of rows, with path, line, and fingerprint. Evidence for the report id is retained until the cache drops it. A missing handle means the evidence is gone, not that the check passed.
+
+**Compare.** You name two targets. Each target reads one JSON value from stdin and writes one JSON value to stdout. Inputs are supplied or generated. The report lists stable differences and keeps a reproduction. Reduction is optional and defaults to off; when it is on, it shrinks one stable difference inside the same budget. If a side is a committed revision, Checkweave reads Git and may use a temporary worktree. Commands run only for that request. Filesystem events do not launch them. Parser failures, crashes, timeouts, and truncated output are unsupported outcomes, not semantic differences.
+
+**Trace.** You name a Python script. The helper records workspace call, line, return, and exception events and bounded scalar locals, with source lines. Nested imports follow the script. Native code and subprocesses are outside the trace.
+
+**Semantic.** You name globs, a JSON Pointer to the text, and typed questions. Unchanged items can be reused when the question, settings, and input fingerprints match. The Rust daemon owns the request. The Python worker loads weights, batches compatible calls, and returns decisions. Provenance includes the model identity and settings. Unsupported questions and inputs that do not fit the declared limits stay visible.
+
+**Replay.** `replay --kind compare` runs the current targets, or the named revisions, on the retained input. `outcome_reproduced` requires the fingerprints and outputs to match the retained run. `replay --kind trace` executes the retained snapshot. Editing the script afterward does not change that snapshot.
+
+## Reuse and result meaning
+
+In-flight deduplication applies to a deterministic collection check. Compare, trace, replay, semantic calls, and model setup are not folded together while they run.
+
+Item reuse for `check` keys on the predicate and the record bytes. A second check of unchanged rows can be cache hits. Membership is part of the result: a new matching file changes the collection even though it was absent last time.
+
+Semantic reuse additionally depends on the questions and the provider identity. A recorded model answer is an observation from that run. Replaying it is not a new prediction.
+
+Keep these apart when you read a result:
+
+| Dimension | What it means |
 | --- | --- |
-| `select` | Enumerate or narrow a declared input scope |
-| `map` | Apply an operation independently to items |
-| `judge` | Evaluate a typed predicate or rubric using a configured model |
-| `execute` | Invoke a supported program or test adapter and capture observations |
-| `compare` | Compare values or execution observations under explicit rules |
-| `aggregate` | Combine results and compute exact counts or coverage |
-| `search` | Explore candidates within a budget, optionally reducing a found case |
+| Execution | Complete, partial, failed, or cancelled. Interrupted work is not published as complete. |
+| Basis | Direct observation, deterministic derivation, or model judgment. |
+| Scope | The files, revisions, and environment the operation actually used. |
+| Coverage | Rows evaluated, matched, unmatched, skipped, unresolved, or a search budget. Coverage is not accuracy. |
+| Freshness | Validated against the recorded inputs, stale, or unknown. The workspace can change after the response. |
+| Evidence | Retained inputs, outputs, events, or a reproduction id. Expiry is reported. |
 
-Operators declare their schema, implementation version, dependencies, execution
-requirements, and reuse policy. Composition is an internal facility. The first
-release should favor built-in implementations and task recipes; a public plugin
-ABI or general workflow language needs separate justification.
+No difference from compare is not equivalence. A difference is not automatically a regression. Event order in a trace is not a cause.
 
-Examples of compositions:
+## Operations
 
-- **Collection check:** enumerate records, evaluate predicates, collect matches,
-  and report skipped or unresolved records.
-- **Behavior comparison:** generate inputs, execute both versions, compare
-  observations, reduce a difference, and emit a reproduction.
-- **Execution inspection:** capture events through an adapter, index the
-  available relationships, and retrieve observations relevant to the request.
-- **Revalidation:** inspect changed dependencies and rerun the required subgraph.
+CLI output is JSON. MCP tool arguments for an operation are the operation's own fields. The check tool takes `include` and `predicate` directly, not a wrapped request object. The same pattern is used for the other operation-specific tools.
 
-## Results preserve their meaning
+| CLI | MCP tool | What it returns |
+| --- | --- | --- |
+| `check` | `checkweave_check` | Predicate results for JSON Lines. |
+| `evidence` | `checkweave_evidence` | Retained collection, trace, or semantic evidence. The MCP tool takes `id` only. |
+| `status` | `checkweave_status` | Workspace and worker status. |
+| `compare` | `checkweave_compare` | Differences and a reproduction. Reduction only when `reduce` is set; it defaults to off. |
+| `replay` | `checkweave_replay` | Compare or trace replay. |
+| `semantic` | `checkweave_semantic` | Model decisions for selected text. |
+| `trace` | `checkweave_trace` | Python execution events. |
+| `evidence --offset` / `--limit` | `checkweave_trace_page` | A later page of stored trace events. On MCP, pagination is this tool. `checkweave_evidence` takes `id` only. |
+| `model setup` | `checkweave_model_setup` | Install or reuse the configured runtime. Does not by itself return a warm model. |
+| `model evaluate` | `checkweave_model_evaluate` | One typed decision batch, outside a collection scan. |
+| `run start` / `status` / `cancel` | `checkweave_run_start` / `checkweave_run_status` / `checkweave_run_cancel` | A handle for longer work, its snapshot, and cancellation. |
+| `init`, `deinit`, `shutdown`, `mcp` | — | Setup, teardown, daemon stop, and the stdio server. `daemon` is a hidden entrypoint. |
 
-Keep these dimensions separate:
+`shutdown` asks the workspace worker to exit. Shared deterministic checks keep running for other clients when you cancel a run handle you own.
 
-| Dimension | Examples |
-| --- | --- |
-| Execution | Complete, partial, failed, cancelled |
-| Basis | Direct observation, deterministic derivation, model judgment |
-| Scope | Named records, declared input domain, revision, execution environment |
-| Coverage | Items evaluated, skipped, failed, or unresolved; search budget used |
-| Freshness | Validated against recorded inputs, stale, or unknown |
-| Evidence | Original records, outputs, events, and reproduction references |
+## Not in this tree
 
-Evaluating every record establishes processing coverage, not classification
-accuracy. A before/after difference establishes changed behavior; the intended
-specification determines whether it is a regression. Finding no counterexample
-within a budget does not establish equivalence. Event order alone does not
-establish causation.
-
-Return small summaries and stable handles to bounded details. Include original
-source references where available. Missing observations and unsupported adapter
-scope remain visible.
-
-## Automatic updates
-
-The normal path is:
-
-1. Receive a filesystem event and mark the affected path dirty.
-2. Coalesce a short burst of edits while respecting ignore rules.
-3. Re-read event-marked inputs and confirm changes with fingerprints. Metadata
-   checks can accelerate broader reconciliation; they are not content identity.
-4. Refresh cheap derived state and invalidate dependent evaluations.
-5. Recompute expensive results when a request needs them, within its budget.
-6. Publish completed results together with the input generations they used.
-
-New events arriving during evaluation remain pending. Before publication, check
-whether relevant inputs changed; an obsolete result must not be presented as the
-current result. A historical result may still be useful when its inputs are clear.
-
-Watchers are hints. Reconcile on startup, after overflow or uncertain events, and
-when a query needs freshness beyond what the watcher can establish. Use bounded
-polling where native notifications are unreliable. Handle adds, deletes, renames,
-atomic editor saves, directory changes, ignore-rule changes, and Git checkouts.
-
-Collection membership is itself a dependency. A newly added matching file must
-invalidate a collection result even though that file was absent from the previous
-evaluation's dependency list.
-
-A query should identify the state it validated, not claim that the workspace
-cannot change after the response. Adapters that cannot capture a coherent input
-set must disclose that limitation.
-
-## Scheduling and reuse
-
-- Bound CPU work, subprocesses, memory, model requests, output size, and retained
-  evidence. Keep expensive work away from the protocol's responsive I/O path.
-- Deduplicate equivalent in-flight work where reuse is valid.
-- Make cancellation and partial progress explicit. Interrupted work must not
-  publish as a completed evaluation.
-- Include operator version, parameters, input fingerprints, and relevant
-  configuration/environment dependencies in reuse decisions.
-- Treat stochastic, effectful, and externally dependent operators according to
-  their declared policies. A recorded model response is an observation from a
-  specific run; replaying it is different from making a new prediction.
-- Track dependency completeness. Untracked environment or external state limits
-  freshness claims and can require fresh execution.
-
-Use file-level dependency tracking initially. Finer granularity should follow
-measurements showing that its extra bookkeeping reduces useful work.
-
-Workspace changes automatically trigger bookkeeping and inexpensive analysis.
-They do not implicitly authorize repeated external actions or unlimited execution.
-Worktrees isolate source changes; they are not a security sandbox for executed
-programs. Execution adapters must state their containment and side-effect model.
-
-## Model backend boundary
-
-Typed decision models can evaluate records, rank candidates, or help select
-relevant observations. Exact comparisons, dependency maintenance, counting, and
-coverage accounting remain native operations.
-
-Batch model work inside the runtime so the agent need not make one MCP call per
-item. Record backend/model identity, question schema, relevant settings, and
-truncation or chunking decisions with results.
-
-The default semantic provider runs local open weights in a managed Python
-inference worker. The Rust daemon starts it lazily, keeps weights loaded across
-requests, batches compatible work, and communicates over framed local IPC.
-Users should not need to start a Python service or manage a virtual environment.
-Inference is the scope; training and fine-tuning are outside the runtime.
-
-Use a supported GPU when available and a CPU implementation otherwise. Probe a
-real forward pass before selecting acceleration; device discovery alone does not
-establish model compatibility. Record the actual device, precision, model
-revision, adapter version, and input serialization in result metadata and cache
-identity. Bound the worker's memory, queue, CPU threads, and idle lifetime.
-
-The deterministic path requires no account or model download. Semantic setup
-downloads a pinned runtime and checkpoint into a shared user cache on first use,
-with progress and an offline preinstallation path. A separately configured Jev
-provider may send semantic inputs to its hosted API. Local failure must never
-silently route data to a remote provider.
-
-Backends declare supported decisions, languages, input limits, and score
-semantics. Shared result types do not imply identical accuracy or calibration.
-Keep unsupported requests and insufficient evidence explicit; reject over-limit
-inputs or apply a declared chunking policy instead of silently truncating them.
-See [model backends](model-backends.md) for the selection and evaluation gates.
-
-## Agent ergonomics
-
-The target setup command is `checkweave init`. It should be idempotent, discover
-the workspace, create local state, and configure the selected supported agent
-integration without replacing unrelated settings. Use a short, managed instruction
-block with concrete triggers for using the tools.
-
-Expose a small set of task-oriented operations. Tool names and schemas remain
-open until the first useful operation is implemented and evaluated. The CLI and
-MCP should use the same underlying request and response types.
-
-For longer work, return a run handle with progress and cancellation. Keep useful
-results near the front of the response, offer bounded expansion, and explain
-incomplete work with a concrete next step. Routine cache and worker lifecycle
-details should stay out of the ordinary interaction.
-
-## Open decisions
-
-- The first agent integration and supported release platforms.
-- The smallest useful collection and execution adapters.
-- The release-qualified semantic checkpoint, packaging, and calibration policy.
-- Default resource budgets, evidence retention, and polling policy.
-- How much automatic language or test-runner discovery earns its complexity.
-- Whether optional CodeGraph integration improves source selection enough to
-  justify an additional adapter.
-
-Resolve these with runnable examples and measurements. The project should remain
-useful with a small set of well-supported operations.
+A general operator graph, a public plugin ABI, a custom workflow language, distributed execution, and a repository snapshot store are not implemented. Built-in operations are the ones in the table above. Extra language adapters and optional source-intelligence integrations are future work. They belong on the roadmap only after the current operations show a need ([roadmap](roadmap.md)).

@@ -1,8 +1,18 @@
-# Platforms
+# Supported platforms
 
-**Status:** the release workflow dry run passed on every target ([release run 36070429830](https://github.com/ruizmr/checkweave/actions/runs/36070429830)).
-No tag or GitHub Release has been published.
-Only combinations actually built and tested may be treated as verified.
+Checkweave runs on Linux and macOS. On Windows, run it inside WSL2.
+
+| Your system | How to run Checkweave | Verified on 2026-09-24 |
+| --- | --- | --- |
+| Linux, Intel/AMD or ARM64 | Native binary | Tests, build, and packaging |
+| macOS, Intel or Apple silicon | Native binary | Tests, build, and packaging |
+| Windows | Linux binary inside WSL2 | x86_64 install, reinstall, collection check, and uninstall |
+
+The [release dry run](https://github.com/ruizmr/checkweave/actions/runs/36070429830)
+passed, but no tag or GitHub Release has been published as of 2026-09-24.
+Follow [Getting started](getting-started.md) to install from source.
+Native Windows is not yet supported. The rest of this page records exact
+build targets and packaging details.
 
 Checkweave's release artifact is a native Rust binary. Semantic CPU and CUDA
 runs are not part of that matrix.
@@ -53,10 +63,10 @@ Windows is not a release target.
 matrix. The Windows job may fail without failing the workflow.
 
 The release workflow runs `cargo test --locked --all-targets` and
-`cargo build --locked --release` on each pinned runner. It uploads archives
-only when the push is a `v*` tag such as `v0.1.0`. `workflow_dispatch` builds
-artifacts for inspection and does not create a GitHub Release. Nothing in the
-current tree has pushed such a tag.
+`cargo build --locked --release` on each pinned runner. It publishes archives
+to a GitHub Release only when the push is a `v*` tag such as `v0.1.0`.
+`workflow_dispatch` uploads workflow artifacts for inspection and does not
+create a GitHub Release.
 
 ## Archive and checksum layout
 

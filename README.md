@@ -1,92 +1,69 @@
 # Checkweave
 
-**Composable checks. Current evidence. One local runtime.**
+**Local-first code intelligence for safer code changes.**
 
-Checkweave is a local Rust runtime for AI agents. It checks JSON Lines collections, compares two programs on shared inputs, records Python execution events, and can ask a configured decision model. CLI and MCP use the same requests. Derived state lives in an ignored `.checkweave/` directory.
+Checkweave helps a developer or a coding assistant check how code behaves, using concrete evidence from your own machine. You point it at a before-and-after change, a Python run, or a data file, and it returns a specific result you can read, keep, or turn into a test.
 
-> **Status: working prototype.** The binary, worker, and MCP server are in this tree. No GitHub Release is published. Build from source until a tag exists. Release targets are Linux (x86_64, aarch64) and macOS (Intel, Apple silicon); all four pass tests and release builds on GitHub runners. Windows runs the Linux build through WSL2 via `install.ps1`; native Windows is not supported. The local default profile is SemIf on pinned Qwen3.5-4B. A Q4 CPU sample scored 63/64 labels; that is not the BF16 JevBench score. `profile = "lightweight"` is GLiNER2.5 base (50/64 on the same labels). Jev is opt-in. djev is not a profile. Details: [implementation](docs/implementation.md) and [verification](docs/verification.md).
+## What you can do
 
-## Quickstart
-
-```sh
-cargo build --locked --release
-cargo run --locked --release -- --workspace . init --agent none
-```
-
-```sh
-printf '%s\n' '{"n":1}' '{"n":2}' > items.jsonl
-cargo run --locked --release -- --workspace . check \
-  --include 'items.jsonl' \
-  --predicate '{"op":"gt","path":"/n","value":1}'
-```
-
-`init --agent cursor` (the default) adds a managed Cursor MCP entry and rule without replacing other servers. Commands, install, and uninstall: [usage](docs/usage.md).
-
-Deterministic checks need no model. Absent `[model]` selects the SemIf default. `model setup` installs the Python environment only; it does not leave a warm model.
-
-```sh
-checkweave model setup
-checkweave model setup --offline
-```
-
-Hosted Jev runs only when `provider = "jev"` is set. A local failure does not switch to it.
-
-## Commands
-
-| Command | Role |
-| --- | --- |
-| `init --agent cursor\|none` | Workspace state and optional Cursor integration |
-| `check` | JSONL predicate check |
-| `evidence ID` | Collection store, then trace, then semantic evidence |
-| `status` / `shutdown` | Worker status / ask it to exit |
-| `deinit` | Remove managed Cursor MCP and rule entries only |
-| `compare` / `replay` | Before/after runs, or replay compare or trace evidence |
-| `semantic` | JSONL text judged by the configured model |
-| `trace` | Python line events for one explicit script |
-| `model setup` / `model evaluate` | Cache the configured model, or score typed questions |
-| `run start` / `run status` / `run cancel` | Handle for the same operations |
-| `mcp` | Stdio MCP server |
-
-`daemon` is hidden. Full flags and JSON examples: [usage](docs/usage.md).
-
-## What it does
-
-| Agent task | Checkweave's job | Useful result |
+| You want to | What you get | Why it helps |
 | --- | --- | --- |
-| Check every item in a collection | Enumerate inputs, apply deterministic or semantic predicates, and track coverage | Matching records, unresolved cases, and source references |
-| Investigate a behavior change | Run two implementations on shared inputs and reduce a differing case | A small input, before/after outputs, and a runnable reproduction |
-| Understand an execution | Capture supported runtime events and retrieve the relevant observations | Values, events, and the source locations available from the adapter |
-| Revisit an earlier conclusion | Track its input dependencies and revalidate after changes | A current result or an explicit account of what needs rechecking |
+| Compare code before and after a change | An input where the versions produce different outputs | Catch unintended changes and turn the case into a regression test |
+| Inspect a Python run | Recorded events, source lines, and supported local values | Follow a failing run to the code that needs attention |
+| Check JSONL fixtures or config exports | Records that match a rule, with counts and source locations | Find missing fields or invalid values across a collection |
+| Ask questions about text | Optional model judgments tied to individual records | Flag bug reports that may lack reproduction steps, for example |
 
-These capabilities compose. A finding can feed another check; a failing input can be replayed after an edit; a collection scan can reuse results for unchanged items. `semantic` is the collection judgment command. `model evaluate` scores states you pass in directly.
+JSONL means one JSON record per line. The first three checks need no account and no model.
 
-## Design commitments
+Checkweave adds a concrete case, match, or line to the tests and review you already do.
 
-- **Rust runtime.** Distribute a native executable with predictable resource use. Manage a separate Python inference worker when semantic checks need a model.
-- **Lightweight state.** Keep fingerprints, dependencies, derived results, and selected reproduction evidence in an ignored `.checkweave/` directory.
-- **Use Git's existing machinery.** Read committed history from Git and use ordinary temporary worktrees when historical execution needs them.
-- **Automatic maintenance.** Watch files, reconcile after downtime or missed events, and revalidate relevant inputs before presenting a result as current.
-- **Composable internals, small agent interface.** Common tasks should fit in a single request with a compact, actionable response.
-- **Measured scope.** Preserve the difference between an observed failure, a model judgment, and a bounded search that found no failure.
-- **Local inference by default.** Profile `default` is SemIf on pinned Qwen3.5-4B. The local Q4 sample is 63/64 labels, separate from the BF16 board. Profile `lightweight` is GLiNER2.5 base. Jev is an explicitly configured hosted provider, never a silent fallback. djev is not implemented. Deterministic checks need no model.
-- **Bounded work.** Limit background activity, execution time, retained evidence, model calls, and response size.
+## From a coding assistant
 
-## Project outline
+MCP (Model Context Protocol) lets your coding assistant call Checkweave tools. You ask a question in the chat, the assistant calls Checkweave, Checkweave returns the evidence, and the assistant explains the result or proposes a fix.
 
-- [Usage](docs/usage.md): commands, install, and the Cursor files `init` writes.
-- [Platforms](docs/platforms.md): release runners and what has actually been executed.
-- [Architecture](docs/architecture.md): runtime boundaries, operator contract, automatic updates, cache policy, and agent integration.
-- [Roadmap](docs/roadmap.md): milestones and the evidence needed to complete them.
-- [Verification](docs/verification.md): required evidence and the runs recorded so far.
-- [Behavior](docs/behavior.md), [execution evidence](docs/execution-evidence.md), [providers](docs/providers.md), [semantic collections](docs/semantic-collections.md).
-- [Open-model decision](docs/open-model-decision.md): why Qwen3.5-4B is the local default, and which scores are BF16 versus this host's Q4 sample.
-- [Contributing](CONTRIBUTING.md).
+> Which records in `notes.jsonl` are missing an owner? Call Checkweave and tell me what it found.
+
+How to connect an editor, and more prompts, are in the [MCP guide](docs/mcp.md).
+
+## On your machine
+
+Checkweave runs checks and stores their evidence on your machine. Its optional
+semantic checks use a local model by default; first use may download the runtime
+and model weights. Hosted inference requires explicit configuration, and a local
+failure never switches to it. Your coding assistant may still send returned
+evidence to its own AI provider.
+
+## Install
+
+Build from this checkout. You need Rust 1.88 or newer. On Windows, use WSL and a Linux checkout.
+
+```sh
+cargo install --path . --locked
+export PATH="$HOME/.cargo/bin:$PATH"
+cd /path/to/your/project
+checkweave init
+```
+
+`init` configures **Cursor** for this project. Other MCP clients can be
+[connected manually](docs/mcp.md). The first check needs no account and no model.
+The [getting started](docs/getting-started.md) tutorial runs it in a temporary folder.
+
+## Release status
+
+On 2026-09-24, the release dry run passed on Linux, macOS, and Windows through
+WSL2. A tagged release has not yet been published. See the
+[platform matrix](docs/platforms.md) for exactly what was tested.
+
+Today, collection checks read JSONL, comparisons run programs that accept and
+return JSON, and tracing supports Python. Model judgments remain experimental.
+
+Every page is listed in the [documentation index](docs/README.md). What works now, and what comes next, is on the [roadmap](docs/roadmap.md).
 
 ## Inspiration
 
-- [CodeGraph](https://github.com/colbymchenry/codegraph): initialization, automatic updates, and compact tools that agents reach for naturally.
-- [Jev](https://typesafe.ai/blog/introducing-system-one-models-and-jev): typed decisions as useful building blocks inside larger systems.
-- [Laya-MLX](https://github.com/mizorewww/laya-mlx): a concrete reference for local decision-model inference on Apple silicon.
+- [CodeGraph](https://github.com/colbymchenry/codegraph): compact local tools an assistant can call.
+- [Jev](https://typesafe.ai/blog/introducing-system-one-models-and-jev): typed decisions as building blocks.
+- [Laya-MLX](https://github.com/mizorewww/laya-mlx): a reference for local decision-model inference on Apple silicon.
 
 ## License
 

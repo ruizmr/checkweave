@@ -1,4 +1,9 @@
-# Integration note
+# Integration work log
+
+This page preserves implementation and test snapshots from development. For
+current setup instructions, read [Using Checkweave through MCP](mcp.md).
+[Verification](verification.md) records the later cross-platform release run;
+the limitations and pending checks below describe the time of each note.
 
 ## What is wired
 

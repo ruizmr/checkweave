@@ -1,5 +1,14 @@
 # Semantic collections
 
+Use a semantic check when a rule needs to interpret text: for example, “Does
+each bug report describe steps to reproduce the problem?” Supply records as
+JSON Lines, choose the text field and question, and Checkweave returns model
+judgments with references to the records. For an exact rule such as a missing
+field or a numeric limit, use the [model-free check command](usage.md#check).
+
+The [semantic command example](usage.md#semantic-collection) shows the smallest
+request. The rest of this page describes result fields and caching.
+
 A semantic collection check reads the same workspace membership as a deterministic collection check, extracts one string from each JSON Lines record, and judges that string with the managed model provider. Counting, limits, and freshness stay in Rust. The model does not decide which files exist or which records were skipped.
 
 The local checkpoint is whatever the provider is configured to run. The current local pin is a provisional open-weight candidate, not a release-qualified default. Hosted Jev is used only when `checkweave.toml` selects it. This adapter does not choose or download a different model on its own.

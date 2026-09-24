@@ -1,102 +1,104 @@
 # Roadmap
 
-**Status:** working prototype. The milestone lists below are still the
-completion gates. A checked box means that gate's evidence is recorded, not
-merely that source exists. See [verification](verification.md) and
-[implementation](implementation.md). Linux and macOS targets pass on GitHub runners; Windows is supported through WSL2 only.
-A local Q4 sample exists and is not the 534-item board. A paired agent study
-ran; both arms were correct, and the tool arm only printed `--help`, so an
-efficacy benefit is still open.
+## Position after the first cross-platform build
 
-The first goal is to establish the experience: initialize once, make a useful
-request, edit an input, and receive an updated result with unchanged work reused.
+Checkweave runs on your machine today. You can check JSON Lines with an explicit predicate, compare two commands, trace a Python script, and optionally ask a configured model about text in those records. The command-line interface and the editor connection use the same workspace daemon. How the pieces fit is in [architecture](architecture.md).
 
-## 0. Project outline
+On 2026-09-24, [GitHub Actions run 36070429830](https://github.com/ruizmr/checkweave/actions/runs/36070429830) built, tested, and packaged Linux x86_64, Linux ARM64, macOS Intel, and macOS Apple silicon. The Windows installer smoke passed with Ubuntu 24.04 on a Windows runner. Publish was skipped. There is no GitHub Release and no tag. Platform limits are in [platforms](platforms.md). What that run establishes is in [verification](verification.md).
 
-- [x] Define the product and its boundaries.
-- [x] Record the Rust runtime, lightweight cache, and Git integration decisions.
-- [x] Outline composable operators and automatic maintenance.
-- [x] Publish the initial documentation under an open-source license.
+Those builds and their tests passed. Model judgments are a separate qualification. An assistant benefit is a separate measurement. In the paired study in [performance](performance.md), both arms solved three tasks, and the Checkweave arm ran only `--help`.
 
-## 1. A useful kernel
+## Usable today
 
-- [ ] Create the Rust binary and shared request/response types.
-- [ ] Implement idempotent workspace initialization and ignored local state.
-- [ ] Implement worker startup, locking, reconnection, and idle shutdown.
-- [ ] Add fingerprints, dependency tracking, and bounded SQLite result storage.
-- [ ] Add native watching, startup reconciliation, and a polling fallback.
-- [ ] Expose one deterministic collection check through CLI and MCP.
-- [ ] Add one supported agent integration with concise usage instructions.
+| Capability | Usable today | Evidence |
+| --- | --- | --- |
+| JSON Lines check | Explicit predicates, row reports, coverage, freshness, and item caching, with no model required. | [tests/collection.rs](../tests/collection.rs), [tests/adversarial.rs](../tests/adversarial.rs); [check reference](usage.md#check) |
+| Compare and replay | Two commands, supplied or generated JSON, stable differences, optional reduction, a retained reproduction, and a committed revision in a temporary worktree. Replay uses the retained input. | [tests/compare.rs](../tests/compare.rs), [examples/behavior](../examples/behavior/); [behavior](behavior.md) |
+| Python trace and replay | Call, line, return, and exception events with source lines. Replay uses the retained snapshot. | [tests/trace.rs](../tests/trace.rs); [execution-evidence](execution-evidence.md) |
+| Shared worker and setup | One daemon per worktree, idle exit, distinct linked worktrees, and Cursor `init` that keeps unrelated servers. | [tests/daemon.rs](../tests/daemon.rs), [tests/workspace.rs](../tests/workspace.rs); [usage](usage.md) |
+| Semantic check | Optional model judgments over selected text. Deterministic checks stay available without a model. | [semantic-collections](semantic-collections.md), [semantic-validation](semantic-validation.md) |
+| Cross-platform build | The dry-run archives above. A published download is still ahead. | [verification](verification.md), [platforms](platforms.md) |
 
-Start with a structured collection such as JSONL and explicit predicates such as
-required fields and value constraints. The first adapter should exercise
-enumeration, item-level results, coverage, caching, and useful error reporting.
+A test name records the scenario it ran. It does not close every clause of an original gate. The gate list, the mapping, and what is still open are in [verification](verification.md).
 
-**Completion evidence:** initialize a fixture workspace, check a collection, edit
-a few inputs, and repeat. Results must match a clean evaluation while unchanged
-evaluations are reused. Repeat across a stopped worker, an interrupted update,
-file creation/deletion, and a Git checkout. Concurrent clients must share work;
-linked worktrees must remain distinct.
+## Priorities
 
-## 2. Behavior comparison
+### 1. First public release and a straightforward first session
 
-- [ ] Add a narrowly scoped execution adapter with explicit inputs and outputs.
-- [ ] Run before/after targets against shared generated or supplied inputs.
-- [ ] Emit concrete differences and reduce a supported failing input.
-- [ ] Preserve enough evidence to replay a finding after an edit.
-- [ ] Use standard Git reads and temporary worktrees where execution requires them.
-- [ ] Reuse the kernel's lifecycle, dependency, budget, and result machinery.
+Publish a tagged build through the tested release workflow. The first session should be obvious: install, `init`, check one collection, edit a row, and read the new result. Setup time and limits belong in that path before someone hits them. Install steps live in [getting started](getting-started.md).
 
-**Completion evidence:** a small public corpus of behavior-preserving changes and
-intentional differences. Report discovered differences, incorrect regression
-claims, time and executions used, and whether emitted reproductions run. Include
-unsupported and nondeterministic cases with explicit outcomes.
+Acceptance:
 
-## 3. Semantic collection checks
+- A tag and a GitHub Release with the four native archives, and the WSL installer path the dry run already smoked.
+- Install, upgrade, and removal of those published assets, with unrelated editor configuration left in place.
+- A first session a new user can finish from the docs: one check, one edit, and the updated result.
 
-- [ ] Evaluate the selected local checkpoint on Checkweave tasks and simple baselines.
-- [ ] Add a managed Python inference worker behind the Rust provider boundary.
-- [ ] Probe GPU compatibility and verify CPU fallback; publish a tested platform matrix.
-- [ ] Add an optional Jev provider with explicit configuration and version identity.
-- [ ] Add typed predicates, batching, and explicit unresolved outcomes.
-- [ ] Record model/settings identity and input handling in evidence.
-- [ ] Recompute changed items without reprocessing the entire collection.
-- [ ] Keep deterministic checks usable without a model or account.
-- [ ] Make model/runtime installation automatic, cached, and reproducible.
+**Done when:** those three are true for the published artifacts, on the platforms the release claims.
 
-**Completion evidence:** publish a labeled task sample and measure precision,
-recall, unresolved rate, latency, memory, and end-to-end cost where applicable.
-Include an existing simple baseline. Processing coverage and judgment quality
-must be reported separately. Cover negation, absent evidence, label-order changes,
-long inputs, multiple questions, and confident mistakes. A small exploratory
-smoke test is not sufficient to qualify a default for release.
+### 2. Make the tools useful in everyday assistant work
 
-## 4. Execution evidence
+Make the tool descriptions and editor guidance help an assistant choose the
+right check during a real debugging or review task. Then compare the same tasks
+with Checkweave and without it. Include tasks described in ordinary language,
+so the study tests discovery as well as explicitly requested tool use.
 
-- [ ] Select one runtime or test adapter for structured event capture.
-- [ ] Tie observations to the source and execution that produced them.
-- [ ] Return bounded relevant events and values through the common result surface.
-- [ ] Revalidate or replay supported observations when inputs change.
+Acceptance:
 
-**Completion evidence:** debugging tasks where recorded observations help locate
-a failure. Record instrumentation overhead and unsupported scope. Distinguish
-observed relationships from inferred explanations.
+- Runnable recipes for debugging, checking a refactor, and validating project data.
+- Recorded tool use for both guided prompts and ordinary task descriptions.
+- Both arms scored for correctness and missed bugs.
+- Time and tokens recorded for both arms.
 
-## 5. Release ergonomics
+**Done when:** the assistant uses the operations and the results show where
+Checkweave improves correctness or reduces effort, and where it does not. Use
+those findings to revise the integration before adding more adapters. The study in [performance](performance.md), where the Checkweave arm ran only `--help`, leaves this open.
 
-- [ ] Publish native binaries for the tested platforms.
-- [ ] Verify install/init, agent configuration preservation, upgrade, and removal.
-- [ ] Test recovery from worker crashes, watcher failures, and cache corruption.
-- [ ] Measure idle resource use, cold startup, repeated-query latency, and disk use.
-- [ ] Demonstrate a complete agent task with and without Checkweave.
+### 3. Harden everyday use and measure the released artifacts
 
-**Completion evidence:** an agent can discover and use the right operation after
-initialization, without manual cache management or repeated setup instructions.
-Publish the supported-platform and adapter limits alongside the release.
+Keep the tests that already pass, including the preserving and differing compare cases in [examples/behavior](../examples/behavior/) and [tests/compare.rs](../tests/compare.rs). Add the recovery cases that still lack a recorded end-to-end result. Measure the published binaries.
 
-## Scope discipline
+Acceptance:
 
-Each milestone must produce useful behavior before broadening its adapters.
-Keep a general plugin framework, custom workflow language, distributed execution,
-and repository snapshot system outside the initial scope. Add finer dependency
-tracking and more automation when measured workloads justify them.
+- Existing collection, compare, trace, daemon, adversarial, and workspace tests stay in the suite.
+- Recorded runs for a Git checkout of the checked files, a missed watch event, and environment regressions the current test names do not cover.
+- Idle CPU and memory, cold startup, repeated-query latency, and disk use for a
+  release build, with its exact version recorded.
+- Debugging tasks that assess whether traces locate failures, with measured
+  instrumentation overhead and explicit unsupported cases.
+
+**Done when:** those runs and figures exist, and the suites above still pass. Earlier debug timings stay historical. Details are in [verification](verification.md).
+
+### 4. Qualify model usefulness and hardware
+
+Deterministic checks stay usable with no model. Quality and device support are their own gate. Pins, privacy, and setup stay in [providers](providers.md), [platforms](platforms.md), and [semantic validation](semantic-validation.md).
+
+Acceptance:
+
+- An independent labeled sample and a simple baseline.
+- Precision, recall, unresolved rate, confident errors, negation, absent evidence, label-order changes, long inputs, and multiple questions.
+- Latency, memory, and end-to-end cost where a cost exists.
+- A real accelerator probe and CPU fallback, recorded only for devices that were run.
+
+**Done when:** those reports exist. The held-out Q4 sample (63/64 supported labels, 11/12 predicate gold) stays a sample, and `release_qualified` stays false, until then.
+
+### Later: broader adapters, from evidence
+
+Another language, test runner, or source index waits on use from the priorities above.
+
+**Done when:** a recorded gap in the current operations shows that the adapter is the next step.
+
+## Where the original gates stand
+
+[Verification](verification.md) keeps the original requirement list and the historical metrics:
+
+| Area | Standing |
+| --- | --- |
+| Runtime, initialization, shared worker, collection, cache, limits, compare, Git reads, trace | Named tests ran in the release workflow. Mapping is in [verification](verification.md). |
+| Checkout and missed watch events | No recorded end-to-end match yet. Priority 3. |
+| Semantic quality and devices | The Q4 sample is recorded. Qualification is priority 4. |
+| Assistant benefit | The study ran `--help` only. Priority 2. |
+| Published install, upgrade, removal, and release performance | The dry run packaged the targets. Priorities 1 and 3. |
+
+## Out of scope
+
+Distributed execution, a plugin ABI, a custom workflow language, a general operator graph, and a repository snapshot store stay out. Built-in operations are the ones in [architecture](architecture.md).

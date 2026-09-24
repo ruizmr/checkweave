@@ -1,9 +1,23 @@
 # Implementation work log
 
-The full project scope remains the five milestones in [roadmap.md](roadmap.md).
-This file records development and evidence; unchecked release gates stay open.
+This is a historical development log. For current capabilities and priorities,
+read the [roadmap](roadmap.md); for current release evidence, read
+[verification](verification.md). Dated entries below describe the tree and
+artifacts at the time of each run.
 
-## Current work
+## Cross-platform baseline — 2026-09-24
+
+[Release run 36070429830](https://github.com/ruizmr/checkweave/actions/runs/36070429830)
+passed tests, builds, and packaging on Linux x86_64/ARM64 and macOS Intel/Apple
+silicon. The Windows WSL2 installer smoke also passed. This was a manual dry run;
+the publishing job was skipped, and no release or tag was published as of this
+date. Native Windows and semantic model devices are outside that matrix.
+
+The documentation refresh now describes these implemented capabilities and
+separates them from publication, agent-usefulness, and model-quality work.
+Earlier local binary hashes and measurements below remain historical.
+
+## Historical work
 
 2026-09-21: starting the Rust implementation. Cursor CLI workers use
 `grok-4.7-high-fast` with explicit contracts and disjoint file ownership. The

@@ -1,5 +1,15 @@
 # Behavior comparison
 
+Use a comparison when you want to know whether a refactor changed a program's
+output. Checkweave runs both versions with the same input, records differences,
+and can shrink a failing input into an easier case to investigate. That case
+can help you write a regression test.
+
+Start with the runnable example in [Getting started](getting-started.md).
+This page is the detailed request and evidence reference. Each program must
+accept JSON on stdin and return JSON on stdout. A difference tells you what
+changed; deciding whether the change is a bug still requires the intended behavior.
+
 The behavior adapter runs two explicit targets on the same inputs and reports
 what the runs actually did. It does not watch the filesystem, and a filesystem
 event never starts a command. [`execute::run`](../src/execute.rs) is the only
