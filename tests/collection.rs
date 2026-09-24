@@ -1117,15 +1117,24 @@ fn report_budget_bounds_large_values_and_escaped_paths() {
     assert_eq!(again.freshness, "validated");
     assert_eq!(again.coverage.matched, wide.coverage.matched);
     assert_ipc_fits(&again);
+    #[cfg(unix)]
+    escaped_paths_stop_at_report_metadata_budget();
+}
 
+/// Backslashes double when JSON-escaped. Windows cannot put them in names.
+#[cfg(unix)]
+fn escaped_paths_stop_at_report_metadata_budget() {
+    // PATH_MAX is 4096 on Linux and 1024 on macOS.
+    let levels = if cfg!(target_os = "linux") { 15 } else { 4 };
     let meta = ws();
     let root = meta.path();
     let mut dir = root.to_path_buf();
-    for depth in 0..15 {
+    for depth in 0..levels {
         dir.push(format!("d{depth:02}_{}", "\\".repeat(180)));
     }
     fs::create_dir_all(&dir).unwrap();
-    let created = 1_300;
+    let escaped = 2 * dir.strip_prefix(root).unwrap().as_os_str().len();
+    let created = (2 * REPORT_JSON_BUDGET / escaped).max(1_300);
     for index in 0..created {
         fs::write(dir.join(format!("{index}.jsonl")), b"{\"a\":1}\n").unwrap();
     }

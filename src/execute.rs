@@ -162,13 +162,20 @@ pub fn source_fingerprints(root: &Path, target: &Target) -> Result<BTreeMap<Stri
 /// ESRCH when the group is already empty; a recycled pid is a narrow race
 /// shared by process-group supervision, not a sandbox boundary.
 struct ProcessGroup {
+    #[cfg(unix)]
     pid: Option<u32>,
     armed: bool,
 }
 
 impl ProcessGroup {
     fn arm(pid: Option<u32>) -> Self {
-        Self { pid, armed: true }
+        #[cfg(not(unix))]
+        let _ = pid;
+        Self {
+            #[cfg(unix)]
+            pid,
+            armed: true,
+        }
     }
 
     fn kill(&mut self) {
