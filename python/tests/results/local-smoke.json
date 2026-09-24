@@ -1,0 +1,76 @@
+{
+  "host": "Linux x86_64",
+  "python": "/tmp/checkweave-backends.ER6XYe/venv/bin/python",
+  "python_version": "3.12.9",
+  "offline": true,
+  "checkpoint": "fastino/gliner2.5-base-v1",
+  "revision": "1a8bc24e00dc7300b9017c81d63e3dcdabb26596",
+  "note": "GLiNER2.5 is a provisional local adapter, not a release-qualified default. Sessions below were run on 2026-09-21 against the existing experiment environment without modifying it.",
+  "cpu": {
+    "device_arg": "cpu",
+    "exit_code": 0,
+    "wall_clock_seconds_including_load_eval_and_shutdown": 10.7,
+    "selected_device": "cpu",
+    "parameter_device": "cpu",
+    "input_device": "cpu",
+    "precision": "float32",
+    "accelerator": "cpu",
+    "choice_label": "documentation",
+    "choice_scores": {
+      "documentation": 0.9999834168962155,
+      "behavior": 1.658310378440373e-05
+    },
+    "ordinal_label": "low",
+    "ordinal_scores": {
+      "low": 0.6984679345657476,
+      "high": 0.30153206543425237
+    },
+    "ordinal_expected_value": 3.0153206543425237,
+    "ordinal_value_derived": true,
+    "predicate_status": "unsupported",
+    "over_limit_max_input_tokens": 8,
+    "over_limit_serialized_tokens": 38,
+    "over_limit_status": "unresolved",
+    "over_limit_omitted": null
+  },
+  "batch_coupling_cpu": {
+    "texts": 2,
+    "comparison": "choice schema alone versus the same choice schema batched with a separate ordinal schema",
+    "max_abs_score_delta": 0.0,
+    "labels_unchanged": true
+  },
+  "cuda": {
+    "device_arg": "cuda:0",
+    "gpu": "Tesla M10",
+    "exit_code": 0,
+    "wall_clock_seconds_including_load_eval_and_shutdown": 11.9,
+    "selected_device": "cuda:0",
+    "parameter_device": "cuda:0",
+    "input_device": "cuda:0",
+    "precision": "float32",
+    "accelerator": "cuda",
+    "labels": {
+      "note": "documentation",
+      "code": "behavior"
+    },
+    "note_scores": {
+      "documentation": 0.9999834170069175,
+      "behavior": 1.6582993082447884e-05
+    }
+  },
+  "auto": {
+    "device_arg": "auto",
+    "exit_code": 0,
+    "wall_clock_seconds_including_load_eval_and_shutdown": 11.3,
+    "selected_device": "cuda:0",
+    "device_fallback": null,
+    "parameter_device": "cuda:0",
+    "input_device": "cuda:0",
+    "label": "documentation"
+  },
+  "cpu_cuda_score_delta_on_shared_sentence": {
+    "documentation": 1.107e-10,
+    "behavior": 1.107e-10,
+    "labels_match": true
+  }
+}

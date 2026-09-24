@@ -1,0 +1,281 @@
+{
+  "python": "/tmp/checkweave-semif-venv/bin/python",
+  "backend": "semif",
+  "device_arg": "cpu",
+  "threads": 4,
+  "offline": true,
+  "load_seconds": 24.540597175015137,
+  "wall_seconds": 47.27814931399189,
+  "writer_stayed_open_for_second_request": true,
+  "ready": {
+    "version": 1,
+    "ready": true,
+    "provenance": {
+      "provider": "local",
+      "model": "Qwen/Qwen3.5-4B",
+      "revision": "851bf6e806efd8d0a36b00ddf55e13ccb7b8cd0a",
+      "adapter_version": "checkweave-semif-1",
+      "device": "cpu",
+      "precision": "gguf-q4_k_m",
+      "score_semantics": {
+        "choice": "exclusive_softmax",
+        "ordinal": "exclusive_softmax",
+        "ordinal_value": "adapter_derived_expected_level",
+        "predicate": "exclusive_softmax_over_supported_insufficient_contradicted",
+        "probability_status": "conditional option score over quantized weights; uncalibrated as decision confidence; not a BF16 quality measurement"
+      },
+      "input_policy": "full_serialized_input_including_schema_and_labels; reject_over_limit; no_truncation; omitted_nothing",
+      "runtime_versions": {
+        "semif_code": "1f2dea3e25379f9dfc98cb83c324f00ab5deda37",
+        "prompt_version": "direct-options-v1",
+        "transformers": "5.17.0",
+        "llama_cpp_python": "0.3.35",
+        "python": "3.12.9",
+        "torch": "2.10.0+cpu",
+        "llama-cpp-python": "0.3.35",
+        "huggingface-hub": "1.31.0",
+        "tokenizers": "0.23.2"
+      },
+      "device_requested": "cpu",
+      "device_fallback": null,
+      "accelerator": "cpu",
+      "parameter_device": "cpu",
+      "input_device": "cpu",
+      "threads": 4,
+      "offline": true,
+      "language": "en",
+      "backend": "semif",
+      "code_pin": "1f2dea3e25379f9dfc98cb83c324f00ab5deda37",
+      "tokenizer_revision": "851bf6e806efd8d0a36b00ddf55e13ccb7b8cd0a",
+      "gguf_revision": "4168f45a16a1290d65a4ec0fa312ae917a4c15d6",
+      "gguf": {
+        "file": "Qwen_Qwen3.5-4B-Q4_K_M.gguf",
+        "bytes": 3013027808,
+        "sha256": "13c16f426047e2de38cd075bdade4a7bcbc8c774384876f677740cda65f8a983"
+      },
+      "prompt_version": "direct-options-v1",
+      "readout": "gguf-quantized",
+      "n_gpu_layers": 0,
+      "context_tokens": 4096
+    }
+  },
+  "first": {
+    "version": 1,
+    "id": "smoke-1",
+    "results": [
+      {
+        "state_id": "note",
+        "question_id": "deployed",
+        "status": "resolved",
+        "label": "supported",
+        "value": true,
+        "scores": {
+          "supported": 0.9984132842112603,
+          "insufficient": 0.0011158607598744338,
+          "contradicted": 0.00047085502886534745
+        },
+        "score_semantics": "exclusive_softmax",
+        "reason": null
+      },
+      {
+        "state_id": "note",
+        "question_id": "scope",
+        "status": "resolved",
+        "label": "behavior",
+        "value": null,
+        "scores": {
+          "documentation": 0.12446387249379978,
+          "behavior": 0.8755361275062001
+        },
+        "score_semantics": "exclusive_softmax",
+        "reason": null
+      }
+    ],
+    "provenance": {
+      "provider": "local",
+      "model": "Qwen/Qwen3.5-4B",
+      "revision": "851bf6e806efd8d0a36b00ddf55e13ccb7b8cd0a",
+      "adapter_version": "checkweave-semif-1",
+      "device": "cpu",
+      "precision": "gguf-q4_k_m",
+      "score_semantics": {
+        "choice": "exclusive_softmax",
+        "ordinal": "exclusive_softmax",
+        "ordinal_value": "adapter_derived_expected_level",
+        "predicate": "exclusive_softmax_over_supported_insufficient_contradicted",
+        "probability_status": "conditional option score over quantized weights; uncalibrated as decision confidence; not a BF16 quality measurement"
+      },
+      "input_policy": "full_serialized_input_including_schema_and_labels; reject_over_limit; no_truncation; omitted_nothing",
+      "runtime_versions": {
+        "semif_code": "1f2dea3e25379f9dfc98cb83c324f00ab5deda37",
+        "prompt_version": "direct-options-v1",
+        "transformers": "5.17.0",
+        "llama_cpp_python": "0.3.35",
+        "python": "3.12.9",
+        "torch": "2.10.0+cpu",
+        "llama-cpp-python": "0.3.35",
+        "huggingface-hub": "1.31.0",
+        "tokenizers": "0.23.2"
+      },
+      "device_requested": "cpu",
+      "device_fallback": null,
+      "accelerator": "cpu",
+      "parameter_device": "cpu",
+      "input_device": "cpu",
+      "threads": 4,
+      "offline": true,
+      "language": "en",
+      "backend": "semif",
+      "code_pin": "1f2dea3e25379f9dfc98cb83c324f00ab5deda37",
+      "tokenizer_revision": "851bf6e806efd8d0a36b00ddf55e13ccb7b8cd0a",
+      "gguf_revision": "4168f45a16a1290d65a4ec0fa312ae917a4c15d6",
+      "gguf": {
+        "file": "Qwen_Qwen3.5-4B-Q4_K_M.gguf",
+        "bytes": 3013027808,
+        "sha256": "13c16f426047e2de38cd075bdade4a7bcbc8c774384876f677740cda65f8a983"
+      },
+      "prompt_version": "direct-options-v1",
+      "readout": "gguf-quantized",
+      "n_gpu_layers": 0,
+      "context_tokens": 4096
+    }
+  },
+  "second": {
+    "version": 1,
+    "id": "smoke-2",
+    "results": [
+      {
+        "state_id": "note",
+        "question_id": "scope",
+        "status": "resolved",
+        "label": "behavior",
+        "value": null,
+        "scores": {
+          "documentation": 0.12446387249379978,
+          "behavior": 0.8755361275062001
+        },
+        "score_semantics": "exclusive_softmax",
+        "reason": null
+      }
+    ],
+    "provenance": {
+      "provider": "local",
+      "model": "Qwen/Qwen3.5-4B",
+      "revision": "851bf6e806efd8d0a36b00ddf55e13ccb7b8cd0a",
+      "adapter_version": "checkweave-semif-1",
+      "device": "cpu",
+      "precision": "gguf-q4_k_m",
+      "score_semantics": {
+        "choice": "exclusive_softmax",
+        "ordinal": "exclusive_softmax",
+        "ordinal_value": "adapter_derived_expected_level",
+        "predicate": "exclusive_softmax_over_supported_insufficient_contradicted",
+        "probability_status": "conditional option score over quantized weights; uncalibrated as decision confidence; not a BF16 quality measurement"
+      },
+      "input_policy": "full_serialized_input_including_schema_and_labels; reject_over_limit; no_truncation; omitted_nothing",
+      "runtime_versions": {
+        "semif_code": "1f2dea3e25379f9dfc98cb83c324f00ab5deda37",
+        "prompt_version": "direct-options-v1",
+        "transformers": "5.17.0",
+        "llama_cpp_python": "0.3.35",
+        "python": "3.12.9",
+        "torch": "2.10.0+cpu",
+        "llama-cpp-python": "0.3.35",
+        "huggingface-hub": "1.31.0",
+        "tokenizers": "0.23.2"
+      },
+      "device_requested": "cpu",
+      "device_fallback": null,
+      "accelerator": "cpu",
+      "parameter_device": "cpu",
+      "input_device": "cpu",
+      "threads": 4,
+      "offline": true,
+      "language": "en",
+      "backend": "semif",
+      "code_pin": "1f2dea3e25379f9dfc98cb83c324f00ab5deda37",
+      "tokenizer_revision": "851bf6e806efd8d0a36b00ddf55e13ccb7b8cd0a",
+      "gguf_revision": "4168f45a16a1290d65a4ec0fa312ae917a4c15d6",
+      "gguf": {
+        "file": "Qwen_Qwen3.5-4B-Q4_K_M.gguf",
+        "bytes": 3013027808,
+        "sha256": "13c16f426047e2de38cd075bdade4a7bcbc8c774384876f677740cda65f8a983"
+      },
+      "prompt_version": "direct-options-v1",
+      "readout": "gguf-quantized",
+      "n_gpu_layers": 0,
+      "context_tokens": 4096
+    }
+  },
+  "over_limit": {
+    "version": 1,
+    "id": "smoke-limit",
+    "results": [
+      {
+        "state_id": "note",
+        "question_id": "scope",
+        "status": "unresolved",
+        "label": null,
+        "value": null,
+        "scores": null,
+        "reason": "serialized input is 113 tokens, over the limit of 8; rejected with no truncation; omitted nothing",
+        "omitted": null,
+        "token_count": 113
+      }
+    ],
+    "provenance": {
+      "provider": "local",
+      "model": "Qwen/Qwen3.5-4B",
+      "revision": "851bf6e806efd8d0a36b00ddf55e13ccb7b8cd0a",
+      "adapter_version": "checkweave-semif-1",
+      "device": "cpu",
+      "precision": "gguf-q4_k_m",
+      "score_semantics": {
+        "choice": "exclusive_softmax",
+        "ordinal": "exclusive_softmax",
+        "ordinal_value": "adapter_derived_expected_level",
+        "predicate": "exclusive_softmax_over_supported_insufficient_contradicted",
+        "probability_status": "conditional option score over quantized weights; uncalibrated as decision confidence; not a BF16 quality measurement"
+      },
+      "input_policy": "full_serialized_input_including_schema_and_labels; reject_over_limit; no_truncation; omitted_nothing",
+      "runtime_versions": {
+        "semif_code": "1f2dea3e25379f9dfc98cb83c324f00ab5deda37",
+        "prompt_version": "direct-options-v1",
+        "transformers": "5.17.0",
+        "llama_cpp_python": "0.3.35",
+        "python": "3.12.9",
+        "torch": "2.10.0+cpu",
+        "llama-cpp-python": "0.3.35",
+        "huggingface-hub": "1.31.0",
+        "tokenizers": "0.23.2"
+      },
+      "device_requested": "cpu",
+      "device_fallback": null,
+      "accelerator": "cpu",
+      "parameter_device": "cpu",
+      "input_device": "cpu",
+      "threads": 4,
+      "offline": true,
+      "language": "en",
+      "backend": "semif",
+      "code_pin": "1f2dea3e25379f9dfc98cb83c324f00ab5deda37",
+      "tokenizer_revision": "851bf6e806efd8d0a36b00ddf55e13ccb7b8cd0a",
+      "gguf_revision": "4168f45a16a1290d65a4ec0fa312ae917a4c15d6",
+      "gguf": {
+        "file": "Qwen_Qwen3.5-4B-Q4_K_M.gguf",
+        "bytes": 3013027808,
+        "sha256": "13c16f426047e2de38cd075bdade4a7bcbc8c774384876f677740cda65f8a983"
+      },
+      "prompt_version": "direct-options-v1",
+      "readout": "gguf-quantized",
+      "n_gpu_layers": 0,
+      "context_tokens": 4096
+    }
+  },
+  "shutdown": {
+    "version": 1,
+    "id": "bye",
+    "shutdown": true
+  },
+  "quality_claim": "Q4_K_M smoke only. Scores are uncalibrated. This is not a BF16 JevBench measurement."
+}

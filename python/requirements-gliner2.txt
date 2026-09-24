@@ -1,0 +1,13 @@
+# Optional lightweight profile. Verified together on 2026-09-21 with Python 3.12.9
+# in /tmp/checkweave-backends.ER6XYe/venv (Linux x86_64, torch 2.4.0+cu121).
+# Do not install these pins into the SemIf environment: torch and transformers
+# conflict with python/requirements-semif.txt.
+
+gliner2==2.0.0
+torch==2.4.0
+transformers==4.46.3
+huggingface-hub==0.36.2
+tokenizers==0.20.3
+safetensors==0.8.0
+numpy==2.2.6
+pydantic>=2,<3

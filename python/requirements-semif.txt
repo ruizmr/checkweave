@@ -1,0 +1,33 @@
+# Default local profile. Pins are SemIf pyproject.toml at code
+# 1f2dea3e25379f9dfc98cb83c324f00ab5deda37. Install into a separate
+# environment from the GLiNER2.5 venv.
+#
+# On this Tesla M10 host the worker uses the llama.cpp CPU path, so install
+# the CPU torch wheel before the package (the package requires torch, and the
+# default PyPI torch wheel is not the CPU build):
+#
+#   python -m venv /tmp/checkweave-semif-venv
+#   /tmp/checkweave-semif-venv/bin/pip install 'torch==2.10.0' \
+#     --index-url https://download.pytorch.org/whl/cpu
+#   CMAKE_BUILD_PARALLEL_LEVEL=6 \
+#     /tmp/checkweave-semif-venv/bin/pip install -r python/requirements-semif.txt
+#
+# llama-cpp-python==0.3.35 is an sdist on this platform. Cap native build
+# jobs at 6. Install the CPU torch wheel first so the SemIf requirement
+# does not replace it with a CUDA wheel.
+#
+# BF16 GPU scoring needs a single CUDA device that can hold the weights.
+# That is not this M10. Do not install a CUDA torch here and call it BF16.
+
+semif-phase1[llamacpp] @ git+https://github.com/TheoLeeCJ/SemIf.git@1f2dea3e25379f9dfc98cb83c324f00ab5deda37
+
+torch==2.10.0
+transformers==5.17.0
+accelerate==1.12.0
+safetensors==0.8.0
+huggingface-hub==1.31.0
+tokenizers==0.23.2
+numpy==2.2.6
+sentencepiece==0.2.1
+protobuf==7.36.1
+llama-cpp-python==0.3.35

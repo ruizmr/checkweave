@@ -1,0 +1,5 @@
+# Default install profile for the local worker. See requirements-semif.txt.
+# The lightweight GLiNER2.5 profile is requirements-gliner2.txt and uses a
+# different torch/transformers generation. Do not merge the two files.
+
+-r requirements-semif.txt
