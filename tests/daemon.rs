@@ -49,7 +49,7 @@ fn workspace() -> (TempTree, Workspace) {
 }
 
 fn socket_of(ws: &Workspace) -> PathBuf {
-    ws.state_dir.join("daemon.sock")
+    PathBuf::from(daemon::endpoint_name(ws))
 }
 
 async fn wait_until(mut ready: impl FnMut() -> bool, limit: Duration) -> bool {
@@ -630,6 +630,47 @@ async fn client_waits_past_ready_timeout_while_lock_is_held() {
         String::from_utf8_lossy(&output.stderr)
     );
     let _ = daemon::shutdown_if_running(&ws).await;
+}
+
+#[cfg(unix)]
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+async fn long_workspace_path_uses_a_private_short_socket() {
+    use std::os::unix::fs::PermissionsExt;
+    let Some(bin) = bin() else {
+        return;
+    };
+    let dir = TempTree::new();
+    let root = dir.path().join("w".repeat(120));
+    fs::create_dir_all(&root).unwrap();
+    Workspace::initialize(&root, "none").unwrap();
+    let ws = Workspace::discover(&root).unwrap();
+    let endpoint = socket_of(&ws);
+    assert!(
+        !endpoint.starts_with(&ws.state_dir),
+        "{}",
+        endpoint.display()
+    );
+    assert!(endpoint.as_os_str().len() <= 100, "{}", endpoint.display());
+    let output = tokio::process::Command::new(bin)
+        .arg("--workspace")
+        .arg(&root)
+        .arg("status")
+        .env("CHECKWEAVE_IDLE_SECONDS", "5")
+        .stdin(Stdio::null())
+        .output()
+        .await
+        .unwrap();
+    assert!(
+        output.status.success(),
+        "{}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+    assert!(endpoint.exists());
+    let parent = endpoint.parent().unwrap();
+    let mode = fs::metadata(parent).unwrap().permissions().mode() & 0o777;
+    assert_eq!(mode, 0o700);
+    assert!(daemon::shutdown_if_running(&ws).await.unwrap());
+    assert!(wait_until(|| !endpoint.exists(), Duration::from_secs(5)).await);
 }
 
 #[test]

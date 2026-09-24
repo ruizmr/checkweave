@@ -387,3 +387,20 @@ fn containment_claim_matches_this_host() {
         .status()
         .expect("python3 is required for execution tests");
 }
+
+#[cfg(unix)]
+#[test]
+fn sources_resolve_through_a_symlinked_workspace_root() {
+    let base = tempfile::tempdir().unwrap();
+    let real = base.path().join("real");
+    std::fs::create_dir_all(&real).unwrap();
+    std::fs::write(real.join("a.py"), b"print(1)\n").unwrap();
+    let linked = base.path().join("linked");
+    std::os::unix::fs::symlink(&real, &linked).unwrap();
+    let mut remaining = 1024;
+    let hash = checkweave::execute::fingerprint_file(&linked, "a.py", &mut remaining).unwrap();
+    assert_eq!(hash, blake3::hash(b"print(1)\n").to_hex().to_string());
+    assert!(
+        checkweave::execute::fingerprint_file(&linked, "../real/a.py", &mut remaining).is_err()
+    );
+}

@@ -121,11 +121,12 @@ pub fn validate_workspace_relative(relative: &str) -> Result<()> {
 
 pub fn resolve_source(root: &Path, relative: &str) -> Result<PathBuf> {
     validate_workspace_relative(relative)?;
+    let root = root.canonicalize().context("resolve workspace root")?;
     let resolved = root
         .join(relative)
         .canonicalize()
         .context("resolve source/cwd")?;
-    ensure!(resolved.starts_with(root), "source/cwd escapes workspace");
+    ensure!(resolved.starts_with(&root), "source/cwd escapes workspace");
     Ok(resolved)
 }
 

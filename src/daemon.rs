@@ -40,6 +40,7 @@ const WRITE_TIMEOUT: Duration = Duration::from_secs(30);
 const READY_TIMEOUT: Duration = Duration::from_secs(15);
 const STARTING_TIMEOUT: Duration = Duration::from_secs(120);
 const RESPAWN_INTERVAL: Duration = Duration::from_millis(500);
+const MAX_SPAWNS: u32 = 5;
 const ENGINE_WAIT: Duration = Duration::from_secs(5);
 const LOG_LIMIT: u64 = 1024 * 1024;
 const LOG_KEEP: usize = 256 * 1024;
@@ -160,6 +161,7 @@ pub async fn request(workspace: &Workspace, request: Request) -> anyhow::Result<
     let limit = started + STARTING_TIMEOUT;
     let mut deadline = started + READY_TIMEOUT;
     let mut last_spawn: Option<Instant> = None;
+    let mut spawns = 0;
     let (last_error, starting) = loop {
         match assess(workspace) {
             Assess::Fatal(error) => return Err(error),
@@ -179,9 +181,11 @@ pub async fn request(workspace: &Workspace, request: Request) -> anyhow::Result<
         let starting = matches!(state, Assess::Starting);
         let now = Instant::now();
         if matches!(state, Assess::Absent | Assess::Stale)
+            && spawns < MAX_SPAWNS
             && last_spawn.is_none_or(|at| now.duration_since(at) >= RESPAWN_INTERVAL)
         {
             spawn_daemon(workspace, idle_seconds)?;
+            spawns += 1;
             last_spawn = Some(now);
             deadline = deadline.max(now + READY_TIMEOUT);
         }
@@ -195,9 +199,17 @@ pub async fn request(workspace: &Workspace, request: Request) -> anyhow::Result<
         }
         tokio::time::sleep(Duration::from_millis(40)).await;
     };
-    let detail = last_error.to_string();
-    let waited = started.elapsed().as_secs();
     let log = workspace.state_dir.join("daemon.log");
+    let mut detail = last_error.to_string();
+    if let Some(line) = fs::read_to_string(&log).ok().and_then(|text| {
+        text.lines()
+            .rev()
+            .find(|line| !line.trim().is_empty())
+            .map(str::to_owned)
+    }) {
+        detail = format!("{detail}; daemon log: {line}");
+    }
+    let waited = started.elapsed().as_secs();
     if starting {
         Err(anyhow!(
             "daemon still starting after {waited}s while holding the initialization lock ({detail}); see {}",
@@ -1037,12 +1049,23 @@ where
     Ok(())
 }
 
-fn endpoint_name(workspace: &Workspace) -> String {
+/// Socket paths are capped at 104 bytes on macOS and 108 on Linux, including
+/// the terminator.
+#[cfg(unix)]
+const MAX_SOCKET_PATH: usize = 100;
+
+/// Where the daemon listens. Unix uses `.checkweave/daemon.sock` unless that
+/// path is too long for a socket, then a per-user directory under the temp dir.
+pub fn endpoint_name(workspace: &Workspace) -> String {
     #[cfg(unix)]
     {
-        workspace
-            .state_dir
-            .join("daemon.sock")
+        let local = workspace.state_dir.join("daemon.sock");
+        if local.as_os_str().len() <= MAX_SOCKET_PATH {
+            return local.to_string_lossy().into_owned();
+        }
+        let hash = blake3::hash(workspace.root.as_os_str().as_encoded_bytes());
+        fallback_socket_dir()
+            .join(format!("{}.sock", &hash.to_hex()[..24]))
             .to_string_lossy()
             .into_owned()
     }
@@ -1067,12 +1090,56 @@ type ServerConn = tokio::net::windows::named_pipe::NamedPipeServer;
 #[cfg(windows)]
 type ClientConn = tokio::net::windows::named_pipe::NamedPipeClient;
 
+#[cfg(unix)]
+fn fallback_socket_dir() -> PathBuf {
+    // SAFETY: getuid has no preconditions and cannot fail.
+    let uid = unsafe { libc::getuid() };
+    let name = format!("checkweave-{uid}");
+    let temp = std::env::temp_dir().join(&name);
+    // Leave room for "/<24 hex>.sock".
+    if temp.as_os_str().len() + 30 <= MAX_SOCKET_PATH {
+        temp
+    } else {
+        Path::new("/tmp").join(name)
+    }
+}
+
+/// The fallback directory may sit in a shared /tmp, so it must be a real
+/// directory owned by this user and closed to everyone else.
+#[cfg(unix)]
+fn ensure_private_dir(dir: &Path) -> anyhow::Result<()> {
+    use std::os::unix::fs::{DirBuilderExt, MetadataExt, PermissionsExt};
+    match fs::DirBuilder::new().mode(0o700).create(dir) {
+        Ok(()) => {}
+        Err(error) if error.kind() == io::ErrorKind::AlreadyExists => {}
+        Err(error) => return Err(error).with_context(|| format!("create {}", dir.display())),
+    }
+    let meta = fs::symlink_metadata(dir).with_context(|| format!("stat {}", dir.display()))?;
+    // SAFETY: getuid has no preconditions and cannot fail.
+    let uid = unsafe { libc::getuid() };
+    if !meta.is_dir() || meta.uid() != uid {
+        bail!(
+            "{} is not a directory owned by the current user",
+            dir.display()
+        );
+    }
+    if meta.permissions().mode() & 0o077 != 0 {
+        fs::set_permissions(dir, fs::Permissions::from_mode(0o700))
+            .with_context(|| format!("chmod 0700 {}", dir.display()))?;
+    }
+    Ok(())
+}
+
 fn bind_listener(endpoint: &str) -> anyhow::Result<Listener> {
     #[cfg(unix)]
     {
         let path = Path::new(endpoint);
         if let Some(parent) = path.parent() {
-            fs::create_dir_all(parent)?;
+            if parent == fallback_socket_dir() {
+                ensure_private_dir(parent)?;
+            } else {
+                fs::create_dir_all(parent)?;
+            }
         }
         let _ = fs::remove_file(path);
         let listener = tokio::net::UnixListener::bind(path)
@@ -1097,7 +1164,20 @@ fn bind_listener(endpoint: &str) -> anyhow::Result<Listener> {
 async fn connect_endpoint(endpoint: &str) -> io::Result<ClientConn> {
     #[cfg(unix)]
     {
-        tokio::net::UnixStream::connect(endpoint).await
+        let path = Path::new(endpoint);
+        if let Some(parent) = path.parent().filter(|dir| *dir == fallback_socket_dir()) {
+            use std::os::unix::fs::{MetadataExt, PermissionsExt};
+            let meta = fs::symlink_metadata(parent)?;
+            // SAFETY: getuid has no preconditions and cannot fail.
+            let uid = unsafe { libc::getuid() };
+            if !meta.is_dir() || meta.uid() != uid || meta.permissions().mode() & 0o077 != 0 {
+                return Err(io::Error::new(
+                    io::ErrorKind::PermissionDenied,
+                    format!("{} is not private to the current user", parent.display()),
+                ));
+            }
+        }
+        tokio::net::UnixStream::connect(path).await
     }
     #[cfg(windows)]
     {
