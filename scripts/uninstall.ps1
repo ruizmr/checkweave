@@ -1,47 +1,48 @@
 #Requires -Version 5.1
 <#
 .SYNOPSIS
-Remove one selected checkweave.exe binary.
+Remove the checkweave binary that install.ps1 placed inside WSL.
 
 .DESCRIPTION
-Deletes only the selected file. Does not stop a worker and does not delete
-workspace .checkweave caches, agent configuration, source files, or model
-downloads. See docs/usage.md for the manual removal procedure. There is no
-command yet that edits a managed agent block.
+Deletes only ~/.local/bin/checkweave (or -BinDir) in the selected WSL
+distribution. Does not stop a worker and does not delete workspace
+.checkweave caches, agent configuration, source files, or model downloads.
+See docs/usage.md.
 #>
 [CmdletBinding()]
 param(
-    [string]$Bin = "",
+    [string]$Distro = "",
     [string]$BinDir = ""
 )
 
 $ErrorActionPreference = "Stop"
 
-if (-not $BinDir) {
-    if ($env:CHECKWEAVE_BIN_DIR) {
-        $BinDir = $env:CHECKWEAVE_BIN_DIR
-    } else {
-        $BinDir = Join-Path $env:USERPROFILE ".local\bin"
-    }
-}
-
-if (-not $Bin) {
-    $Bin = Join-Path $BinDir "checkweave.exe"
-}
-
-if (-not $Bin -or $Bin -eq "/" -or $Bin -eq "\") {
-    throw "Refusing empty or root path."
-}
-
-if (-not (Test-Path -LiteralPath $Bin)) {
-    Write-Output "no binary at $Bin (no other files were modified)"
+if (-not (Get-Command wsl.exe -ErrorAction SilentlyContinue)) {
+    Write-Output "WSL is not installed; nothing to remove."
     exit 0
 }
 
-$item = Get-Item -LiteralPath $Bin -Force
-if ($item.PSIsContainer) {
-    throw "Refusing to remove directory $Bin"
+$prefix = @()
+if ($Distro) { $prefix = @("-d", $Distro) }
+
+$local = Join-Path $PSScriptRoot "uninstall.sh"
+if (Test-Path -LiteralPath $local -PathType Leaf) {
+    $full = (Resolve-Path -LiteralPath $local).ProviderPath
+    $script = (& wsl.exe @prefix -e wslpath -a -u $full | Select-Object -Last 1).Trim()
+    if ($LASTEXITCODE -ne 0) { throw "wslpath failed for $full" }
+    $shArgs = @("sh", $script)
+    if ($BinDir) { $shArgs += @("--bin-dir", $BinDir) }
+} else {
+    # Same checks as uninstall.sh: remove one regular file, nothing else.
+    $body = 'bin="${1:-$HOME/.local/bin}/checkweave"; ' +
+        'if [ ! -e "$bin" ] && [ ! -L "$bin" ]; then echo "no binary at $bin (no other files were modified)"; exit 0; fi; ' +
+        'if [ ! -f "$bin" ]; then echo "refusing to remove non-file $bin" >&2; exit 1; fi; ' +
+        'rm -f -- "$bin" && echo "removed $bin (workspace cache and agent configuration were not modified)"'
+    $shArgs = @("sh", "-c", $body, "uninstall")
+    if ($BinDir) { $shArgs += $BinDir }
 }
 
-Remove-Item -LiteralPath $Bin -Force
-Write-Output "removed $Bin (workspace cache and agent configuration were not modified)"
+& wsl.exe @prefix -e @shArgs
+if ($LASTEXITCODE -ne 0) {
+    throw "uninstall inside WSL failed ($LASTEXITCODE)"
+}

@@ -3,7 +3,7 @@
 **Status:** working prototype. The milestone lists below are still the
 completion gates. A checked box means that gate's evidence is recorded, not
 merely that source exists. See [verification](verification.md) and
-[implementation](implementation.md). Windows and macOS have not been executed.
+[implementation](implementation.md). Both Linux targets pass on GitHub runners; macOS awaits a passing run; Windows is supported through WSL2 only.
 A local Q4 sample exists and is not the 534-item board. A paired agent study
 ran; both arms were correct, and the tool arm only printed `--help`, so an
 efficacy benefit is still open.

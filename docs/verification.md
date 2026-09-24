@@ -47,8 +47,9 @@ not mark a milestone complete.
 Still open: the 534-item board on this machine, native CUDA, release-workflow
 execution on the five runners, and a demonstrated agent-efficacy benefit.
 The paired study finished all three tasks in both arms; the Checkweave arm
-only ran `--help` ([performance](performance.md)). Native Windows and macOS
-remain configured only. No GitHub Release or tag has been published. The
+only ran `--help` ([performance](performance.md)). macOS awaits a passing
+run after the socket-path fix; Windows ships through WSL2 and native Windows
+is not a target. No GitHub Release or tag has been published. The
 recorded release binary predates the integration-polish and provider GPU
 bootstrap; the final artifact waits on
 `/tmp/checkweave-development/final-source-ready.json`.

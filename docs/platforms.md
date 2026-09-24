@@ -18,18 +18,37 @@ move to newer images (Ubuntu 26.04 migration is scheduled to begin 2026-10-19).
 
 | Rust target | Runner label | Archive | Verification |
 | --- | --- | --- | --- |
-| `x86_64-unknown-linux-gnu` | `ubuntu-24.04` | `.tar.gz` | This host built `cargo build --locked --release` and smoked a copied binary. The GitHub runner job has not run. |
-| `aarch64-unknown-linux-gnu` | `ubuntu-24.04-arm` | `.tar.gz` | Workflow configured. Not run. |
-| `x86_64-apple-darwin` | `macos-15-intel` | `.tar.gz` | Workflow configured. Not run. |
-| `aarch64-apple-darwin` | `macos-15` | `.tar.gz` | Workflow configured. Not run. |
-| `x86_64-pc-windows-msvc` | `windows-2025` | `.zip` | Workflow configured. Not run. |
+| `x86_64-unknown-linux-gnu` | `ubuntu-24.04` | `.tar.gz` | Release workflow dry run (2026-09-24): tests and release build passed on the runner. This host also smoked a copied binary. |
+| `aarch64-unknown-linux-gnu` | `ubuntu-24.04-arm` | `.tar.gz` | Release workflow dry run (2026-09-24): tests and release build passed on the runner. |
+| `x86_64-apple-darwin` | `macos-15-intel` | `.tar.gz` | First runs failed on socket paths over 104 bytes and on `/var` → `/private/var`; both are fixed. A passing run is still required. |
+| `aarch64-apple-darwin` | `macos-15` | `.tar.gz` | Same as Intel macOS. |
 
-Not release targets: 32-bit x86, Windows ARM, Linux musl, and any GPU build.
+Not release targets: native Windows, 32-bit x86, Linux musl, and any GPU build.
 
-`.github/workflows/ci.yml` runs `cargo test --locked` on `ubuntu-latest`,
+## Windows through WSL2
+
+Windows runs the Linux archive inside WSL2. `scripts/install.ps1` checks
+that WSL has a working distribution, verifies `install.sh` against
+`SHA256SUMS`, and runs it in that distribution; `install.sh` then verifies
+and installs the Linux archive into `~/.local/bin`. On Windows ARM the same
+flow picks the `aarch64-unknown-linux-gnu` archive. The release workflow's
+`wsl-install` job runs `install.ps1` on `windows-2025` with Ubuntu 24.04
+under WSL2, checks a collection, and uninstalls; publishing waits on it.
+
+Open the project from WSL (`wsl`, `cd` into it, `cursor .`) so Cursor starts
+the MCP server inside Linux. Keep projects in the WSL filesystem: under
+`/mnt/c` file access is slow and native change events are unreliable, so the
+daemon falls back to polling.
+
+Native Windows builds compile, and `ci.yml` still runs them with
+`continue-on-error`. The first native test run failed about 30 tests
+(verbatim `\\?\` paths, process termination, named-pipe shutdown), so native
+Windows is not a release target.
+
+`.github/workflows/ci.yml` runs fmt, clippy, and
+`cargo test --locked --all-targets --no-fail-fast` on `ubuntu-latest`,
 `macos-latest`, and `windows-latest`. That is a separate, floating-label test
-matrix. This document does not record a result for it. macOS and Windows remain
-unverified until those jobs, or the release jobs, have actually succeeded.
+matrix. The Windows job may fail without failing the workflow.
 
 The release workflow runs `cargo test --locked --all-targets` and
 `cargo build --locked --release` on each pinned runner. It uploads archives
@@ -46,12 +65,11 @@ checkweave-0.1.0-x86_64-unknown-linux-gnu.tar.gz
 ```
 
 The tag is `v` plus that version. The other names follow the same pattern.
-Windows uses `.zip` and the `x86_64-pc-windows-msvc` target. Each archive
-contains one top-level directory of the same stem:
+Each archive contains one top-level directory of the same stem:
 
 ```text
 checkweave-0.1.0-x86_64-unknown-linux-gnu/
-  checkweave          (checkweave.exe on Windows)
+  checkweave
   LICENSE
   docs/usage.md
   docs/platforms.md
@@ -65,11 +83,7 @@ the release. Verify before extracting:
 sha256sum -c SHA256SUMS
 ```
 
-On Windows PowerShell:
-
-```powershell
-Get-FileHash -Algorithm SHA256 .\checkweave-0.1.0-x86_64-pc-windows-msvc.zip
-```
+On Windows, `install.ps1` does this check itself.
 
 Download URLs, once a release exists, follow the GitHub convention:
 

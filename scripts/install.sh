@@ -138,7 +138,7 @@ detect_target() {
     Darwin:x86_64) printf '%s %s\n' x86_64-apple-darwin tar.gz ;;
     Darwin:arm64|Darwin:aarch64) printf '%s %s\n' aarch64-apple-darwin tar.gz ;;
     *)
-      printf 'unsupported platform %s %s; Windows uses install.ps1\n' "$os" "$mach" >&2
+      printf 'unsupported platform %s %s; on Windows run install.ps1, which installs into WSL\n' "$os" "$mach" >&2
       return 1
       ;;
   esac

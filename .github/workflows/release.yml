@@ -2,6 +2,8 @@
 # the same artifacts and does not create a release. Nothing here publishes on
 # pull requests. Targets are native runners from the GitHub-hosted runners
 # reference (checked 2026-09-21); cross toolchains are not required.
+# Windows is supported through WSL2 with the Linux archive; the wsl-install
+# job runs install.ps1 against that archive on a Windows runner.
 name: Release
 on:
   push:
@@ -33,9 +35,6 @@ jobs:
           - runner: macos-15-intel
             target: x86_64-apple-darwin
             ext: tar.gz
-          - runner: windows-2025
-            target: x86_64-pc-windows-msvc
-            ext: zip
     steps:
       - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@stable
@@ -120,9 +119,50 @@ jobs:
           path: dist/checkweave-*
           if-no-files-found: error
 
+  wsl-install:
+    name: Windows install through WSL
+    needs: build
+    runs-on: windows-2025
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: x86_64-unknown-linux-gnu
+          path: dist
+      - uses: Vampire/setup-wsl@v7
+        with:
+          distribution: Ubuntu-24.04
+      - name: install.ps1 into WSL, then check a collection
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          $archive = Get-ChildItem dist -Filter "checkweave-*-x86_64-unknown-linux-gnu.tar.gz" | Select-Object -First 1
+          $sum = (Get-FileHash -Algorithm SHA256 -LiteralPath $archive.FullName).Hash
+          .\scripts\install.ps1 -Archive $archive.FullName -Checksum $sum
+          .\scripts\install.ps1 -Archive $archive.FullName -Checksum $sum
+          $check = @'
+          set -eu
+          export PATH="$HOME/.local/bin:$PATH"
+          ws=$(mktemp -d)
+          printf '%s\n' '{"n":1}' '{"n":2}' > "$ws/items.jsonl"
+          checkweave --workspace "$ws" init --agent none
+          checkweave --workspace "$ws" check --include items.jsonl --predicate '{"op":"gt","path":"/n","value":1}' | tee "$ws/out.json"
+          grep -q '"execution": "complete"' "$ws/out.json"
+          grep -q '"matched": 1,' "$ws/out.json"
+          checkweave --workspace "$ws" shutdown
+          '@
+          $check = $check -replace "`r", ""
+          [IO.File]::WriteAllText("$PWD\wsl-check.sh", $check)
+          $path = (wsl.exe -e wslpath -a -u "$PWD\wsl-check.sh").Trim()
+          wsl.exe -e sh $path
+          if ($LASTEXITCODE -ne 0) { throw "WSL check failed" }
+          .\scripts\uninstall.ps1
+          .\scripts\uninstall.ps1
+
   publish:
     name: Publish GitHub Release
-    needs: build
+    needs: [build, wsl-install]
     if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
     runs-on: ubuntu-24.04
     timeout-minutes: 20
@@ -147,7 +187,6 @@ jobs:
           do
             test -f "dist/checkweave-${ver}-${triple}.tar.gz"
           done
-          test -f "dist/checkweave-${ver}-x86_64-pc-windows-msvc.zip"
           cp scripts/install.sh scripts/uninstall.sh scripts/install.ps1 scripts/uninstall.ps1 dist/
           (
             cd dist
@@ -170,7 +209,7 @@ jobs:
             dist/uninstall.ps1
             dist/SHA256SUMS
           body: |
-            Native archives for this tag. Each archive contains the checkweave binary, LICENSE, and docs.
+            Native archives for Linux and macOS. Windows runs the Linux archive through WSL2: run install.ps1 from PowerShell. Each archive contains the checkweave binary, LICENSE, and docs.
             SHA256SUMS lists the archives and the install scripts.
             Assets were produced by `cargo test --locked --all-targets` and `cargo build --locked --release` on the runners in `.github/workflows/release.yml`.
             Review `install.sh` or `install.ps1` before running either one. See `docs/platforms.md` for which targets a given release actually built.

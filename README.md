@@ -4,7 +4,7 @@
 
 Checkweave is a local Rust runtime for AI agents. It checks JSON Lines collections, compares two programs on shared inputs, records Python execution events, and can ask a configured decision model. CLI and MCP use the same requests. Derived state lives in an ignored `.checkweave/` directory.
 
-> **Status: working prototype.** The binary, worker, and MCP server are in this tree. No GitHub Release is published. Build from source until a tag exists. Linux x86_64 is the host that has been built locally; Windows and macOS release jobs are configured and have not been run. The local default profile is SemIf on pinned Qwen3.5-4B. A Q4 CPU sample scored 63/64 labels; that is not the BF16 JevBench score. `profile = "lightweight"` is GLiNER2.5 base (50/64 on the same labels). Jev is opt-in. djev is not a profile. Details: [implementation](docs/implementation.md) and [verification](docs/verification.md).
+> **Status: working prototype.** The binary, worker, and MCP server are in this tree. No GitHub Release is published. Build from source until a tag exists. Release targets are Linux (x86_64, aarch64) and macOS (Intel, Apple silicon); both Linux targets pass on GitHub runners, and macOS fixes await a passing run. Windows runs the Linux build through WSL2 via `install.ps1`; native Windows is not supported. The local default profile is SemIf on pinned Qwen3.5-4B. A Q4 CPU sample scored 63/64 labels; that is not the BF16 JevBench score. `profile = "lightweight"` is GLiNER2.5 base (50/64 on the same labels). Jev is opt-in. djev is not a profile. Details: [implementation](docs/implementation.md) and [verification](docs/verification.md).
 
 ## Quickstart
 

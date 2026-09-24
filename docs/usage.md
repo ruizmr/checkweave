@@ -23,7 +23,7 @@ sh scripts/install.sh \
   --bin-dir "$HOME/.local/bin"
 ```
 
-Do not pipe a script into a shell. The installers do not use `sudo`, do not write `/usr/local`, and do not edit shell rc, agent config, or workspace data. Default binary path is `$HOME/.local/bin/checkweave` (`%USERPROFILE%\.local\bin\checkweave.exe` on Windows), or `CHECKWEAVE_BIN_DIR` / `--bin-dir`. Add that directory to `PATH` yourself. A second install with the same bytes leaves the file in place. A new checksum replaces only that binary, via a temporary name in the same directory. A bad checksum leaves the old file.
+Do not pipe a script into a shell. The installers do not use `sudo`, do not write `/usr/local`, and do not edit shell rc, agent config, or workspace data. Default binary path is `$HOME/.local/bin/checkweave` (inside WSL on Windows), or `CHECKWEAVE_BIN_DIR` / `--bin-dir`. Add that directory to `PATH` yourself. A second install with the same bytes leaves the file in place. A new checksum replaces only that binary, via a temporary name in the same directory. A bad checksum leaves the old file.
 
 ```sh
 sh scripts/install.sh --version 0.1.0 --bin-dir "$HOME/.local/bin"
@@ -31,11 +31,13 @@ sh scripts/install.sh --version 0.1.0 --bin-dir "$HOME/.local/bin"
 
 `--version 0.1.0` and `v0.1.0` are tag `v0.1.0` on `ruizmr/checkweave`. This fails until that tag exists. `CHECKWEAVE_RELEASE_BASE` is the download prefix (default `https://github.com/ruizmr/checkweave/releases/download`). Local `--archive` and `--binary` require `--checksum`. Pass exactly one of `--version`, `--archive`, or `--binary`. Archive layout is in [platforms](platforms.md).
 
-Windows:
+Windows (installs the Linux build into WSL2; run `wsl --install` first if WSL is missing):
 
 ```powershell
-powershell -NoProfile -File .\scripts\install.ps1 -Version 0.1.0 -BinDir "$env:USERPROFILE\.local\bin"
+powershell -NoProfile -ExecutionPolicy Bypass -File .\install.ps1 -Version 0.1.0
 ```
+
+`-Distro NAME` picks a WSL distribution other than the default, and `-BinDir` is a path inside Linux. `-Archive FILE -Checksum SHA256` installs a downloaded Linux archive; `install.sh` must sit next to `install.ps1`. Then open the project from WSL (`wsl`, `cd` into it, `cursor .`) and run `checkweave init` there. See [platforms](platforms.md#windows-through-wsl2).
 
 ## Uninstall
 
@@ -45,6 +47,8 @@ Deletes one selected file. It does not stop a worker and does not delete source,
 checkweave --workspace ROOT shutdown
 sh scripts/uninstall.sh --bin-dir "$HOME/.local/bin"
 ```
+
+On Windows, `powershell -NoProfile -File .\uninstall.ps1` removes the binary from the default WSL distribution (`-Distro`, `-BinDir` as above).
 
 `--bin PATH` removes that file instead. A missing file is success. A directory is left in place and the script fails. A second run is success.
 
