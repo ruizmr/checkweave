@@ -13,3 +13,12 @@
 Thumbs.db
 *.swp
 *.swo
+
+# Python worker and validation artifacts
+__pycache__/
+*.py[cod]
+.venv/
+.pytest_cache/
+
+# Generated local code index
+.codegraph/

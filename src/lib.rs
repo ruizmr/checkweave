@@ -1,0 +1,11 @@
+pub mod collection;
+pub mod compare;
+pub mod daemon;
+pub mod execute;
+pub mod mcp;
+pub mod models;
+pub mod semantic;
+pub mod sources;
+pub mod trace;
+pub mod types;
+pub mod workspace;
