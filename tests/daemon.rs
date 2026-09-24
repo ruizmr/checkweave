@@ -1,3 +1,5 @@
+#![cfg_attr(not(unix), allow(dead_code, unused_imports))]
+
 use std::fs::{self, OpenOptions};
 use std::path::{Path, PathBuf};
 use std::process::Stdio;
@@ -106,6 +108,7 @@ async fn status_reports_identity_and_reconnection() {
     drop(server);
 }
 
+#[cfg(unix)]
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn malformed_and_disconnected_clients_do_not_poison_worker() {
     let (_dir, ws) = workspace();
@@ -142,6 +145,7 @@ async fn malformed_and_disconnected_clients_do_not_poison_worker() {
     assert_eq!(status["protocol"], PROTOCOL_VERSION);
 }
 
+#[cfg(unix)]
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn protocol_version_mismatch_is_rejected_and_worker_stays_up() {
     let (_dir, ws) = workspace();
@@ -234,6 +238,7 @@ async fn client_refuses_wrong_protocol_and_workspace() {
     drop(lock);
 }
 
+#[cfg(unix)]
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn slow_client_does_not_block_status() {
     let (_dir, ws) = workspace();
@@ -252,6 +257,7 @@ async fn slow_client_does_not_block_status() {
     assert_eq!(status["pid"], std::process::id());
 }
 
+#[cfg(unix)]
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn oversized_frame_does_not_kill_worker() {
     let (_dir, ws) = workspace();
@@ -409,6 +415,7 @@ async fn shutdown_request_clears_owned_socket() {
     assert!(finished.unwrap().is_ok());
 }
 
+#[cfg(unix)]
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn process_lifecycle_when_binary_is_built() {
     let Some(bin) = bin() else {
