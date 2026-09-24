@@ -1,0 +1,71 @@
+{
+  "status": "one_paired_sample",
+  "interpretation": "One log from each arm is a single paired sample. Token counts are not a cost or benefit estimate. A smaller input-token count is not evidence that Checkweave helped.",
+  "baseline": {
+    "status": "parsed",
+    "path": "/tmp/checkweave-agent-study/baseline/agent-stream.jsonl",
+    "json_events": 130,
+    "tool_call_events": 28,
+    "tool_call_started": 14,
+    "tool_call_completed": 14,
+    "duration_ms": 36903.0,
+    "usage": {
+      "input_tokens": 56390,
+      "output_tokens": 3261,
+      "cache_read_tokens": 95104,
+      "cache_write_tokens": 0
+    },
+    "usage_raw": {
+      "inputTokens": 56390,
+      "outputTokens": 3261,
+      "cacheReadTokens": 95104,
+      "cacheWriteTokens": 0
+    },
+    "result_type": "result",
+    "is_error": false
+  },
+  "checkweave": {
+    "status": "parsed",
+    "path": "/tmp/checkweave-agent-study/checkweave/agent-stream.jsonl",
+    "json_events": 164,
+    "tool_call_events": 32,
+    "tool_call_started": 16,
+    "tool_call_completed": 16,
+    "duration_ms": 45245.0,
+    "usage": {
+      "input_tokens": 40567,
+      "output_tokens": 4483,
+      "cache_read_tokens": 102400,
+      "cache_write_tokens": 0
+    },
+    "usage_raw": {
+      "inputTokens": 40567,
+      "outputTokens": 4483,
+      "cacheReadTokens": 102400,
+      "cacheWriteTokens": 0
+    },
+    "result_type": "result",
+    "is_error": false
+  },
+  "checkweave_shell_use": {
+    "functional_calls": 0,
+    "help_calls": 1,
+    "functional_argv": [],
+    "help_argv": [
+      {
+        "argv": [
+          "checkweave",
+          "--help"
+        ]
+      }
+    ],
+    "adoption": "tool_discovery_only"
+  },
+  "baseline_shell_use": {
+    "functional_calls": 0,
+    "help_calls": 0,
+    "functional_argv": [],
+    "help_argv": [],
+    "adoption": "not_invoked"
+  }
+}

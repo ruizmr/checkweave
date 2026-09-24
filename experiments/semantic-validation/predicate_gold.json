@@ -1,0 +1,210 @@
+{
+  "frozen_before_model_run": true,
+  "source": "synthetic",
+  "split": "heldout",
+  "schema": {
+    "adapter": "checkweave-semif-1",
+    "code_pin": "1f2dea3e25379f9dfc98cb83c324f00ab5deda37",
+    "option_order": ["supported", "insufficient", "contradicted"],
+    "options": {
+      "supported": "The evidence establishes the claim",
+      "insufficient": "The evidence does not establish either",
+      "contradicted": "The evidence establishes the opposite"
+    },
+    "protocol_note": "The worker keeps the insufficient option as label and sets status unresolved. That remap is still the insufficient option. These rows are not the GLiNER unsupported-predicate capability checks."
+  },
+  "cases": [
+    {
+      "id": "sv-pgold-01",
+      "family": "predicate_gold",
+      "source": "synthetic",
+      "split": "heldout",
+      "language": "en",
+      "text": "The archive lists 40 objects and the operator counted 40 objects in the bucket.",
+      "questions": [
+        {
+          "kind": "predicate",
+          "id": "claim",
+          "statement": "The counted object total matches the archive.",
+          "expectation": {"type": "label", "status": "resolved", "label": "supported"}
+        }
+      ]
+    },
+    {
+      "id": "sv-pgold-02",
+      "family": "predicate_gold",
+      "source": "synthetic",
+      "split": "heldout",
+      "language": "en",
+      "text": "All four replicas sent an acknowledgement for the write.",
+      "questions": [
+        {
+          "kind": "predicate",
+          "id": "claim",
+          "statement": "Every replica acknowledged the write.",
+          "expectation": {"type": "label", "status": "resolved", "label": "supported"}
+        }
+      ]
+    },
+    {
+      "id": "sv-pgold-03",
+      "family": "predicate_gold",
+      "source": "synthetic",
+      "split": "heldout",
+      "language": "en",
+      "text": "The status page update went out at 09:12 and the customer replied to that update.",
+      "questions": [
+        {
+          "kind": "predicate",
+          "id": "claim",
+          "statement": "The customer received the status update.",
+          "expectation": {"type": "label", "status": "resolved", "label": "supported"}
+        }
+      ]
+    },
+    {
+      "id": "sv-pgold-04",
+      "family": "predicate_gold",
+      "source": "synthetic",
+      "split": "heldout",
+      "language": "en",
+      "text": "The restore finished and the manifest checksum matched the stored file.",
+      "questions": [
+        {
+          "kind": "predicate",
+          "id": "claim",
+          "statement": "The restore finished with a matching checksum.",
+          "expectation": {"type": "label", "status": "resolved", "label": "supported"}
+        }
+      ]
+    },
+    {
+      "id": "sv-pgold-05",
+      "family": "predicate_gold",
+      "source": "synthetic",
+      "split": "heldout",
+      "language": "en",
+      "text": "The health probe failed three times in a row during the window.",
+      "questions": [
+        {
+          "kind": "predicate",
+          "id": "claim",
+          "statement": "The health probe succeeded during the window.",
+          "expectation": {"type": "label", "status": "resolved", "label": "contradicted"}
+        }
+      ]
+    },
+    {
+      "id": "sv-pgold-06",
+      "family": "predicate_gold",
+      "source": "synthetic",
+      "split": "heldout",
+      "language": "en",
+      "text": "The note records only the hostname.",
+      "questions": [
+        {
+          "kind": "predicate",
+          "id": "claim",
+          "statement": "The note records the full request body.",
+          "expectation": {"type": "label", "status": "resolved", "label": "contradicted"}
+        }
+      ]
+    },
+    {
+      "id": "sv-pgold-07",
+      "family": "predicate_gold",
+      "source": "synthetic",
+      "split": "heldout",
+      "language": "en",
+      "text": "The customer was not charged for the replacement shipment.",
+      "questions": [
+        {
+          "kind": "predicate",
+          "id": "claim",
+          "statement": "The customer was charged for the replacement shipment.",
+          "expectation": {"type": "label", "status": "resolved", "label": "contradicted"}
+        }
+      ]
+    },
+    {
+      "id": "sv-pgold-08",
+      "family": "predicate_gold",
+      "source": "synthetic",
+      "split": "heldout",
+      "language": "en",
+      "text": "Nine of the ten rows were copied and one row was skipped.",
+      "questions": [
+        {
+          "kind": "predicate",
+          "id": "claim",
+          "statement": "Every requested row was copied.",
+          "expectation": {"type": "label", "status": "resolved", "label": "contradicted"}
+        }
+      ]
+    },
+    {
+      "id": "sv-pgold-09",
+      "family": "predicate_gold",
+      "source": "synthetic",
+      "split": "heldout",
+      "language": "en",
+      "text": "The backup started at 01:00. The note does not say whether it finished.",
+      "questions": [
+        {
+          "kind": "predicate",
+          "id": "claim",
+          "statement": "The backup finished successfully.",
+          "expectation": {"type": "label", "status": "resolved", "label": "insufficient"}
+        }
+      ]
+    },
+    {
+      "id": "sv-pgold-10",
+      "family": "predicate_gold",
+      "source": "synthetic",
+      "split": "heldout",
+      "language": "en",
+      "text": "A ticket was opened at 09:00. The assignee has not been chosen.",
+      "questions": [
+        {
+          "kind": "predicate",
+          "id": "claim",
+          "statement": "The customer was told about the ticket.",
+          "expectation": {"type": "label", "status": "resolved", "label": "insufficient"}
+        }
+      ]
+    },
+    {
+      "id": "sv-pgold-11",
+      "family": "predicate_gold",
+      "source": "synthetic",
+      "split": "heldout",
+      "language": "en",
+      "text": "The service recovered. The write-up ends there.",
+      "questions": [
+        {
+          "kind": "predicate",
+          "id": "claim",
+          "statement": "Every queued job completed before the recovery.",
+          "expectation": {"type": "label", "status": "resolved", "label": "insufficient"}
+        }
+      ]
+    },
+    {
+      "id": "sv-pgold-12",
+      "family": "predicate_gold",
+      "source": "synthetic",
+      "split": "heldout",
+      "language": "en",
+      "text": "The account file lists a phone number and nothing about a call.",
+      "questions": [
+        {
+          "kind": "predicate",
+          "id": "claim",
+          "statement": "An agent called the customer.",
+          "expectation": {"type": "label", "status": "resolved", "label": "insufficient"}
+        }
+      ]
+    }
+  ]
+}

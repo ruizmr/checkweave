@@ -1,0 +1,468 @@
+{
+  "harness": "experiments/agent-tasks/perf_harness.py",
+  "measured_at_unix": 1790047695.6376457,
+  "loadavg_start": "16.64 48.59 45.71 10/6372 4103305",
+  "filesystem": {
+    "path": "/tmp",
+    "target": "/",
+    "source": "/dev/mapper/ubuntu--vg-ubuntu--lv",
+    "fstype": "ext4",
+    "role": "physical_filesystem_sample"
+  },
+  "conditions": "Samples were taken on this host while other work was running. They describe this run. They are not an intrinsic latency of the CLI. A tmpfs result is a diagnostic and does not replace a physical-filesystem sample.",
+  "platform": {
+    "system": "Linux",
+    "release": "6.8.0-138-generic",
+    "machine": "x86_64",
+    "python": "3.12.9",
+    "uname": "Linux guardian 6.8.0-138-generic #138-Ubuntu SMP PREEMPT_DYNAMIC Fri Jul 31 22:41:49 UTC 2026 x86_64"
+  },
+  "binary": {
+    "path": "/home/overseer1/projects/jevish/target/debug/checkweave",
+    "size_bytes": 178818120,
+    "sha256": "109f1f7169fdef9ea5b467fc1c8de4e1fd6f11c4c0267c2cfe83952c6c8cf498",
+    "file": "ELF 64-bit LSB pie executable, x86-64, version 1 (SYSV), dynamically linked, interpreter /lib64/ld-linux-x86-64.so.2, for GNU/Linux 3.2.0, BuildID[sha1]=8d61f6dcd2270f5429ed44a31c378856044dcf11, with debug_info, not stripped",
+    "build_id": "8d61f6dcd2270f5429ed44a31c378856044dcf11",
+    "profile": "debug",
+    "profile_signals": {
+      "path_has_debug": true,
+      "path_has_release": false,
+      "file_mentions_debug_info": true,
+      "file_mentions_stripped": false
+    }
+  },
+  "limits": {
+    "predicate": {
+      "op": "gt",
+      "path": "/n",
+      "value": 1
+    },
+    "include": "**/*.jsonl",
+    "max_results": 1,
+    "other_limits": "CLI defaults (max_files 1000, max_bytes 33554432, max_records 100000, timeout_ms 30000) except the large corpus timeout_ms",
+    "large_timeout_ms": 120000,
+    "small_records": 40,
+    "large_files": 4,
+    "large_records_per_file": 2000,
+    "cold_samples": 8,
+    "warm_samples": 20,
+    "changed_samples": 8,
+    "help_samples": 8,
+    "idle_samples": 4,
+    "idle_seconds": 2
+  },
+  "fixture_spec_sha256": "6005b0cea5f7314040353c0a260cce5ef0c23fa3d3b8f68c7396c4ce717e9c0d",
+  "notes": [
+    "Wall-clock samples include process spawn and JSON printing.",
+    "elapsed_ms is the value the check report itself records.",
+    "Warm samples reuse one daemon process. Cold check samples shut that process down first.",
+    "A changed row uses a record body that has not been seen before, so the record cache misses once.",
+    "Idle exit is the daemon process leaving after CHECKWEAVE_IDLE_SECONDS with no further client calls.",
+    "Recovery, crash, and cache-corruption cases are left to scripts/acceptance.py."
+  ],
+  "small_fixture_sha256": "ba265fcd68dcdaa27be460bff6cdf793fa80f4cb1f660d901488104724e3c93b",
+  "empty_cache_first_check": {
+    "wall_ms": 300.99,
+    "elapsed_ms": 8,
+    "coverage": {
+      "cache_hits": 0,
+      "cache_misses": 40,
+      "evaluated": 40,
+      "files": 1,
+      "matched": 38,
+      "records": 40,
+      "skipped": 0,
+      "unmatched": 2,
+      "unresolved": 0
+    }
+  },
+  "warm_unchanged": {
+    "wall_ms": {
+      "n": 20,
+      "min": 233.06995094753802,
+      "median": 241.0941260168329,
+      "p95_nearest_rank": 256.33833510801196,
+      "max": 256.36420701630414,
+      "samples_ms": [
+        240.913,
+        238.648,
+        233.07,
+        238.502,
+        245.34,
+        256.364,
+        235.348,
+        241.627,
+        256.338,
+        242.086,
+        245.399,
+        252.469,
+        238.411,
+        236.527,
+        254.324,
+        237.692,
+        240.851,
+        247.586,
+        238.228,
+        241.275
+      ]
+    },
+    "report_elapsed_ms": {
+      "n": 20,
+      "min": 7.0,
+      "median": 8.0,
+      "p95_nearest_rank": 15.0,
+      "max": 67.0,
+      "samples_ms": [
+        8.0,
+        8.0,
+        8.0,
+        14.0,
+        8.0,
+        8.0,
+        14.0,
+        8.0,
+        9.0,
+        8.0,
+        8.0,
+        67.0,
+        7.0,
+        13.0,
+        13.0,
+        8.0,
+        15.0,
+        8.0,
+        9.0,
+        8.0
+      ]
+    },
+    "daemon_pid": 4103455,
+    "daemon_pid_stable": true,
+    "cache_hits": 40,
+    "cache_misses": 0
+  },
+  "changed_one_record": {
+    "wall_ms": {
+      "n": 8,
+      "min": 233.59241615980864,
+      "median": 245.30237703584135,
+      "p95_nearest_rank": 258.4954728372395,
+      "max": 258.4954728372395,
+      "samples_ms": [
+        253.568,
+        257.907,
+        236.214,
+        233.592,
+        258.495,
+        240.466,
+        246.247,
+        244.358
+      ]
+    },
+    "report_elapsed_ms": {
+      "n": 8,
+      "min": 8.0,
+      "median": 13.0,
+      "p95_nearest_rank": 39.0,
+      "max": 39.0,
+      "samples_ms": [
+        8.0,
+        13.0,
+        39.0,
+        13.0,
+        13.0,
+        8.0,
+        8.0,
+        13.0
+      ]
+    },
+    "cache_hits": 39,
+    "cache_misses": 1,
+    "daemon_pid_unchanged": true
+  },
+  "disk_small": {
+    "state_dir_bytes": 4247444,
+    "workspace_bytes": 4248391,
+    "state_files": [
+      {
+        "name": ".gitignore",
+        "bytes": 2
+      },
+      {
+        "name": "cache.sqlite",
+        "bytes": 90112
+      },
+      {
+        "name": "cache.sqlite-shm",
+        "bytes": 32768
+      },
+      {
+        "name": "cache.sqlite-wal",
+        "bytes": 4124152
+      },
+      {
+        "name": "daemon.json",
+        "bytes": 256
+      },
+      {
+        "name": "daemon.lock",
+        "bytes": 0
+      },
+      {
+        "name": "daemon.log",
+        "bytes": 84
+      },
+      {
+        "name": "init.lock",
+        "bytes": 0
+      },
+      {
+        "name": "workspace.json",
+        "bytes": 70
+      }
+    ],
+    "sqlite": {
+      "path": "/tmp/checkweave-perf-rpn_gsix/latency/.checkweave/cache.sqlite",
+      "file_bytes": 90112,
+      "page_size": 4096,
+      "page_count": 24,
+      "allocated_bytes": 98304,
+      "freelist_pages": 0,
+      "tables": {
+        "items": 48,
+        "meta": 2,
+        "report_sources": 29,
+        "reports": 29
+      },
+      "reports_rows": 29,
+      "reports_payload_bytes_sum": 23681,
+      "family_bytes": 4247032
+    }
+  },
+  "cold_check_daemon_respawn": {
+    "wall_ms": {
+      "n": 8,
+      "min": 285.5419418774545,
+      "median": 302.9554534005001,
+      "p95_nearest_rank": 553.5857761278749,
+      "max": 553.5857761278749,
+      "samples_ms": [
+        296.131,
+        312.217,
+        298.496,
+        321.699,
+        303.352,
+        302.559,
+        553.586,
+        285.542
+      ]
+    },
+    "report_elapsed_ms": {
+      "n": 8,
+      "min": 9.0,
+      "median": 11.0,
+      "p95_nearest_rank": 14.0,
+      "max": 14.0,
+      "samples_ms": [
+        11.0,
+        11.0,
+        9.0,
+        14.0,
+        9.0,
+        14.0,
+        9.0,
+        12.0
+      ]
+    },
+    "meaning": "CLI process plus daemon spawn plus a fully cached check"
+  },
+  "idle_exit": {
+    "configured_idle_seconds": 2,
+    "observed_from_check_return_ms": {
+      "n": 4,
+      "min": 2055.6016431655735,
+      "median": 2055.9045338304713,
+      "p95_nearest_rank": 2356.756724882871,
+      "max": 2356.756724882871,
+      "samples_ms": [
+        2055.848,
+        2055.961,
+        2356.757,
+        2055.602
+      ]
+    },
+    "meaning": "time from check process return until daemon pid is no longer alive"
+  },
+  "disk_large": {
+    "files": 4,
+    "records": 8000,
+    "input_sha256": "860b8911a8454e7be0d187b7ed0e813fc8801b988013d37d17ccfa6afa0f6158",
+    "first_check_wall_ms": 1171.571,
+    "first_check_elapsed_ms": 1036,
+    "first_coverage": {
+      "cache_hits": 0,
+      "cache_misses": 8000,
+      "evaluated": 8000,
+      "files": 4,
+      "matched": 5716,
+      "records": 8000,
+      "skipped": 0,
+      "unmatched": 2284,
+      "unresolved": 0
+    },
+    "after_first_check": {
+      "state_dir_bytes": 2875982,
+      "workspace_bytes": 3067995,
+      "state_files": [
+        {
+          "name": ".gitignore",
+          "bytes": 2
+        },
+        {
+          "name": "cache.sqlite",
+          "bytes": 4096
+        },
+        {
+          "name": "cache.sqlite-shm",
+          "bytes": 32768
+        },
+        {
+          "name": "cache.sqlite-wal",
+          "bytes": 2838712
+        },
+        {
+          "name": "daemon.json",
+          "bytes": 252
+        },
+        {
+          "name": "daemon.lock",
+          "bytes": 0
+        },
+        {
+          "name": "daemon.log",
+          "bytes": 84
+        },
+        {
+          "name": "init.lock",
+          "bytes": 0
+        },
+        {
+          "name": "workspace.json",
+          "bytes": 68
+        }
+      ],
+      "sqlite": {
+        "path": "/tmp/checkweave-perf-rpn_gsix/large/.checkweave/cache.sqlite",
+        "file_bytes": 4096,
+        "page_size": 4096,
+        "page_count": 400,
+        "allocated_bytes": 1638400,
+        "freelist_pages": 0,
+        "tables": {
+          "items": 8000,
+          "meta": 2,
+          "report_sources": 4,
+          "reports": 1
+        },
+        "reports_rows": 1,
+        "reports_payload_bytes_sum": 1376,
+        "family_bytes": 2875576
+      }
+    },
+    "second_check_wall_ms": 2153.419,
+    "second_check_elapsed_ms": 2030,
+    "second_coverage": {
+      "cache_hits": 8000,
+      "cache_misses": 0,
+      "evaluated": 8000,
+      "files": 4,
+      "matched": 5716,
+      "records": 8000,
+      "skipped": 0,
+      "unmatched": 2284,
+      "unresolved": 0
+    },
+    "after_second_check": {
+      "state_dir_bytes": 5808038,
+      "workspace_bytes": 6000051,
+      "state_files": [
+        {
+          "name": ".gitignore",
+          "bytes": 2
+        },
+        {
+          "name": "cache.sqlite",
+          "bytes": 1646592
+        },
+        {
+          "name": "cache.sqlite-shm",
+          "bytes": 32768
+        },
+        {
+          "name": "cache.sqlite-wal",
+          "bytes": 4128272
+        },
+        {
+          "name": "daemon.json",
+          "bytes": 252
+        },
+        {
+          "name": "daemon.lock",
+          "bytes": 0
+        },
+        {
+          "name": "daemon.log",
+          "bytes": 84
+        },
+        {
+          "name": "init.lock",
+          "bytes": 0
+        },
+        {
+          "name": "workspace.json",
+          "bytes": 68
+        }
+      ],
+      "sqlite": {
+        "path": "/tmp/checkweave-perf-rpn_gsix/large/.checkweave/cache.sqlite",
+        "file_bytes": 1646592,
+        "page_size": 4096,
+        "page_count": 402,
+        "allocated_bytes": 1646592,
+        "freelist_pages": 1,
+        "tables": {
+          "items": 8000,
+          "meta": 2,
+          "report_sources": 8,
+          "reports": 2
+        },
+        "reports_rows": 2,
+        "reports_payload_bytes_sum": 2752,
+        "family_bytes": 5807632
+      }
+    }
+  },
+  "cli_help": {
+    "wall_ms": {
+      "n": 8,
+      "min": 14.805353013798594,
+      "median": 15.33075503539294,
+      "p95_nearest_rank": 21.221731789410114,
+      "max": 21.221731789410114,
+      "samples_ms": [
+        14.948,
+        14.829,
+        15.367,
+        14.805,
+        15.294,
+        19.297,
+        17.352,
+        21.222
+      ]
+    }
+  },
+  "loadavg_end": "14.26 45.47 44.75 8/6444 4111228",
+  "agent_comparison": {
+    "status": "pending",
+    "reason": "Paired Cursor actor runs are not part of this harness. No token or outcome comparison is claimed here."
+  }
+}

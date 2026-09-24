@@ -1,0 +1,8 @@
+{"id":"d1","action":"allow","risk":10,"region":"us"}
+{"id":"d2","action":"allow","risk":80,"region":"eu"}
+{"id":"d3","action":"deny","risk":10,"region":"us"}
+{"id":"d4","action":"deny","risk":50,"region":"ap"}
+{"id":"d5","action":"allow","risk":69,"region":"us"}
+{"id":"d6","action":"allow","risk":70,"region":"eu"}
+{"id":"d7","action":"deny","risk":29,"region":"us"}
+{"id":"d8","action":"allow","risk":40,"region":"ap"}

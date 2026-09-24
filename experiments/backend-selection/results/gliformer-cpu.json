@@ -1,0 +1,994 @@
+{
+  "model": "knowledgator/gliformer-large-v1",
+  "revision": "d0a4e53d09cebe6bc963dd9be319d4279084bb2d",
+  "backend": "gliformer",
+  "device": "cpu",
+  "dtype": "float32",
+  "device_name": "x86_64",
+  "threads": 4,
+  "python": "3.12.9",
+  "platform": "Linux-6.8.0-138-generic-x86_64-with-glibc2.39",
+  "packages": {
+    "torch": "2.5.1+cpu",
+    "transformers": "5.16.1",
+    "gliner2": null,
+    "gliformer": "0.1.2",
+    "numpy": "2.5.3",
+    "huggingface-hub": "1.32.0",
+    "tokenizers": "0.23.2",
+    "safetensors": "0.8.0"
+  },
+  "cases_sha256": "4bc52172eb26612771f2050355b288581f80665b76ec7752120e1e580d8bc782",
+  "runner_sha256": "c73e505dc0e66638ce60273d9814aeb1cf77a319dd6506c7e41bb4c0d808e8ae",
+  "load_seconds": 25.584287887904793,
+  "rss_after_load_bytes": 3588042752,
+  "rss_peak_bytes": 3597742080,
+  "cuda_peak_allocated_bytes": null,
+  "cuda_peak_reserved_bytes": null,
+  "correct": 16,
+  "count": 24,
+  "by_task": {
+    "change_scope": {
+      "correct": 5,
+      "count": 6
+    },
+    "secret_exposure": {
+      "correct": 4,
+      "count": 6
+    },
+    "evidence_support": {
+      "correct": 3,
+      "count": 6
+    },
+    "urgency": {
+      "correct": 4,
+      "count": 6
+    }
+  },
+  "evidence": {
+    "decisive": {
+      "correct": 13,
+      "count": 19
+    },
+    "missing_evidence": {
+      "correct": 3,
+      "count": 5,
+      "false_decisive": 2
+    }
+  },
+  "median_seconds": 0.5708458540029824,
+  "p95_seconds": 0.7202055546920746,
+  "label_order_same": 21,
+  "label_order_count": 24,
+  "multi_question_same": 20,
+  "multi_question_count": 24,
+  "ordinal_probe": {
+    "forward": {
+      "predicted": "all_users",
+      "matches_obvious_level": true,
+      "seconds": 0.6152768388856202,
+      "raw": {
+        "raw_scores": {
+          "none": 0.0037450825329869986,
+          "some_users": 0.0024836654774844646,
+          "all_users": 0.99955815076828
+        },
+        "probabilities_t3_2": {
+          "none": 0.1313959032885848,
+          "some_users": 0.11556910061379085,
+          "all_users": 0.7530349960976244
+        },
+        "probability_origin": "independent-sigmoid-renormalized"
+      }
+    },
+    "reversed": {
+      "predicted": "all_users",
+      "matches_obvious_level": true,
+      "seconds": 0.5963144539855421,
+      "raw": {
+        "raw_scores": {
+          "all_users": 0.9996153116226196,
+          "some_users": 0.0031294149812310934,
+          "none": 0.009517521597445011
+        },
+        "probabilities_t3_2": {
+          "all_users": 0.7150563077637092,
+          "some_users": 0.11795726588023275,
+          "none": 0.16698642635605798
+        },
+        "probability_origin": "independent-sigmoid-renormalized"
+      }
+    }
+  },
+  "ordinal_probe_note": "One obvious ordered example, excluded from correct/count. It checks that a level can be selected; it is not an ordinal benchmark.",
+  "results": [
+    {
+      "id": "change_scope-1",
+      "task": "change_scope",
+      "expected": "documentation",
+      "predicted": "documentation",
+      "correct": true,
+      "seconds": 0.6505875270813704,
+      "raw": {
+        "raw_scores": {
+          "documentation": 0.998579740524292,
+          "behavior": 0.016978807747364044,
+          "unknown": 0.0028044464997947216
+        },
+        "probabilities_t3_2": {
+          "documentation": 0.6947432030252394,
+          "behavior": 0.1944747375670676,
+          "unknown": 0.11078205940769305
+        },
+        "probability_origin": "independent-sigmoid-renormalized"
+      }
+    },
+    {
+      "id": "change_scope-2",
+      "task": "change_scope",
+      "expected": "behavior",
+      "predicted": "behavior",
+      "correct": true,
+      "seconds": 0.6367354348767549,
+      "raw": {
+        "raw_scores": {
+          "documentation": 0.008973980322480202,
+          "behavior": 0.957801103591919,
+          "unknown": 0.0014961787965148687
+        },
+        "probabilities_t3_2": {
+          "documentation": 0.17021274670337314,
+          "behavior": 0.7325424114017571,
+          "unknown": 0.09724484189486973
+        },
+        "probability_origin": "independent-sigmoid-renormalized"
+      }
+    },
+    {
+      "id": "change_scope-3",
+      "task": "change_scope",
+      "expected": "documentation",
+      "predicted": "documentation",
+      "correct": true,
+      "seconds": 0.5602806531824172,
+      "raw": {
+        "raw_scores": {
+          "documentation": 0.9989738464355469,
+          "behavior": 0.0018170583061873913,
+          "unknown": 0.000675693794619292
+        },
+        "probabilities_t3_2": {
+          "documentation": 0.8055333779648809,
+          "behavior": 0.11214389816745166,
+          "unknown": 0.08232272386766747
+        },
+        "probability_origin": "independent-sigmoid-renormalized"
+      }
+    },
+    {
+      "id": "change_scope-4",
+      "task": "change_scope",
+      "expected": "unknown",
+      "predicted": "unknown",
+      "correct": true,
+      "seconds": 0.5876206278335303,
+      "raw": {
+        "raw_scores": {
+          "documentation": 0.01618731953203678,
+          "behavior": 0.01163320243358612,
+          "unknown": 0.9995193481445312
+        },
+        "probabilities_t3_2": {
+          "documentation": 0.180861960529695,
+          "behavior": 0.16312145715954948,
+          "unknown": 0.6560165823107554
+        },
+        "probability_origin": "independent-sigmoid-renormalized"
+      }
+    },
+    {
+      "id": "change_scope-5",
+      "task": "change_scope",
+      "expected": "documentation",
+      "predicted": "unknown",
+      "correct": false,
+      "seconds": 0.8150297969114035,
+      "raw": {
+        "raw_scores": {
+          "documentation": 0.13832110166549683,
+          "behavior": 0.0869680792093277,
+          "unknown": 0.4079577326774597
+        },
+        "probabilities_t3_2": {
+          "documentation": 0.30607747589046774,
+          "behavior": 0.26476080685864345,
+          "unknown": 0.4291617172508887
+        },
+        "probability_origin": "independent-sigmoid-renormalized"
+      }
+    },
+    {
+      "id": "change_scope-6",
+      "task": "change_scope",
+      "expected": "behavior",
+      "predicted": "behavior",
+      "correct": true,
+      "seconds": 0.6808942130301148,
+      "raw": {
+        "raw_scores": {
+          "documentation": 0.010330010205507278,
+          "behavior": 0.9978657364845276,
+          "unknown": 0.01030807662755251
+        },
+        "probabilities_t3_2": {
+          "documentation": 0.1620497465409648,
+          "behavior": 0.6760081099121373,
+          "unknown": 0.16194214354689784
+        },
+        "probability_origin": "independent-sigmoid-renormalized"
+      }
+    },
+    {
+      "id": "secret_exposure-1",
+      "task": "secret_exposure",
+      "expected": "yes",
+      "predicted": "no",
+      "correct": false,
+      "seconds": 0.5486788749694824,
+      "raw": {
+        "raw_scores": {
+          "yes": 0.00986639317125082,
+          "no": 0.35766899585723877,
+          "unknown": 0.2633562982082367
+        },
+        "probabilities_t3_2": {
+          "yes": 0.14573078872881057,
+          "no": 0.4475480968111559,
+          "unknown": 0.4067211144600335
+        },
+        "probability_origin": "independent-sigmoid-renormalized"
+      }
+    },
+    {
+      "id": "secret_exposure-2",
+      "task": "secret_exposure",
+      "expected": "no",
+      "predicted": "no",
+      "correct": true,
+      "seconds": 0.5442146379500628,
+      "raw": {
+        "raw_scores": {
+          "yes": 0.011871403083205223,
+          "no": 0.9331173896789551,
+          "unknown": 0.7226653695106506
+        },
+        "probabilities_t3_2": {
+          "yes": 0.1173379852028209,
+          "no": 0.4589462484208556,
+          "unknown": 0.42371576637632363
+        },
+        "probability_origin": "independent-sigmoid-renormalized"
+      }
+    },
+    {
+      "id": "secret_exposure-3",
+      "task": "secret_exposure",
+      "expected": "unknown",
+      "predicted": "unknown",
+      "correct": true,
+      "seconds": 0.5814110548235476,
+      "raw": {
+        "raw_scores": {
+          "yes": 0.0018572693224996328,
+          "no": 0.0052243564277887344,
+          "unknown": 0.9995149374008179
+        },
+        "probabilities_t3_2": {
+          "yes": 0.10507722165926217,
+          "no": 0.1451678447376072,
+          "unknown": 0.7497549336031306
+        },
+        "probability_origin": "independent-sigmoid-renormalized"
+      }
+    },
+    {
+      "id": "secret_exposure-4",
+      "task": "secret_exposure",
+      "expected": "no",
+      "predicted": "unknown",
+      "correct": false,
+      "seconds": 0.6859726239927113,
+      "raw": {
+        "raw_scores": {
+          "yes": 0.030333101749420166,
+          "no": 0.4785970449447632,
+          "unknown": 0.9107515215873718
+        },
+        "probabilities_t3_2": {
+          "yes": 0.1596554829585968,
+          "no": 0.37807282291612315,
+          "unknown": 0.46227169412527996
+        },
+        "probability_origin": "independent-sigmoid-renormalized"
+      }
+    },
+    {
+      "id": "secret_exposure-5",
+      "task": "secret_exposure",
+      "expected": "yes",
+      "predicted": "yes",
+      "correct": true,
+      "seconds": 0.6069475240074098,
+      "raw": {
+        "raw_scores": {
+          "yes": 0.9940067529678345,
+          "no": 0.041726186871528625,
+          "unknown": 0.05417509749531746
+        },
+        "probabilities_t3_2": {
+          "yes": 0.5636631852133615,
+          "no": 0.2092730103924215,
+          "unknown": 0.22706380439421708
+        },
+        "probability_origin": "independent-sigmoid-renormalized"
+      }
+    },
+    {
+      "id": "secret_exposure-6",
+      "task": "secret_exposure",
+      "expected": "unknown",
+      "predicted": "unknown",
+      "correct": true,
+      "seconds": 0.5490897849667817,
+      "raw": {
+        "raw_scores": {
+          "yes": 0.006630953401327133,
+          "no": 0.12937144935131073,
+          "unknown": 0.9882495403289795
+        },
+        "probabilities_t3_2": {
+          "yes": 0.12037340458047477,
+          "no": 0.3046053768742403,
+          "unknown": 0.575021218545285
+        },
+        "probability_origin": "independent-sigmoid-renormalized"
+      }
+    },
+    {
+      "id": "evidence_support-1",
+      "task": "evidence_support",
+      "expected": "supported",
+      "predicted": "contradicted",
+      "correct": false,
+      "seconds": 0.5488804588094354,
+      "raw": {
+        "raw_scores": {
+          "supported": 0.062480755150318146,
+          "contradicted": 0.9987576007843018,
+          "unknown": 0.005868781358003616
+        },
+        "probabilities_t3_2": {
+          "supported": 0.2593866127574774,
+          "contradicted": 0.6167485384774036,
+          "unknown": 0.12386484876511895
+        },
+        "probability_origin": "independent-sigmoid-renormalized"
+      }
+    },
+    {
+      "id": "evidence_support-2",
+      "task": "evidence_support",
+      "expected": "contradicted",
+      "predicted": "contradicted",
+      "correct": true,
+      "seconds": 0.5481939960736781,
+      "raw": {
+        "raw_scores": {
+          "supported": 0.021257054060697556,
+          "contradicted": 0.9954596161842346,
+          "unknown": 0.008344825357198715
+        },
+        "probabilities_t3_2": {
+          "supported": 0.1971025268516167,
+          "contradicted": 0.6557372723786218,
+          "unknown": 0.1471602007697615
+        },
+        "probability_origin": "independent-sigmoid-renormalized"
+      }
+    },
+    {
+      "id": "evidence_support-3",
+      "task": "evidence_support",
+      "expected": "unknown",
+      "predicted": "supported",
+      "correct": false,
+      "seconds": 0.5384041699580848,
+      "raw": {
+        "raw_scores": {
+          "supported": 0.9948800802230835,
+          "contradicted": 0.04760303348302841,
+          "unknown": 0.008559511974453926
+        },
+        "probabilities_t3_2": {
+          "supported": 0.619953837376409,
+          "contradicted": 0.2397821330319436,
+          "unknown": 0.14026402959164744
+        },
+        "probability_origin": "independent-sigmoid-renormalized"
+      }
+    },
+    {
+      "id": "evidence_support-4",
+      "task": "evidence_support",
+      "expected": "unknown",
+      "predicted": "contradicted",
+      "correct": false,
+      "seconds": 0.5383295700885355,
+      "raw": {
+        "raw_scores": {
+          "supported": 0.0028983980882912874,
+          "contradicted": 0.9997583031654358,
+          "unknown": 0.002192350337281823
+        },
+        "probabilities_t3_2": {
+          "supported": 0.12306548916617444,
+          "contradicted": 0.7641508317195362,
+          "unknown": 0.11278367911428937
+        },
+        "probability_origin": "independent-sigmoid-renormalized"
+      }
+    },
+    {
+      "id": "evidence_support-5",
+      "task": "evidence_support",
+      "expected": "contradicted",
+      "predicted": "contradicted",
+      "correct": true,
+      "seconds": 0.5393764819018543,
+      "raw": {
+        "raw_scores": {
+          "supported": 0.002114579314365983,
+          "contradicted": 0.9996758699417114,
+          "unknown": 0.0048473733477294445
+        },
+        "probabilities_t3_2": {
+          "supported": 0.1093129470506551,
+          "contradicted": 0.7490229286263753,
+          "unknown": 0.14166412432296957
+        },
+        "probability_origin": "independent-sigmoid-renormalized"
+      }
+    },
+    {
+      "id": "evidence_support-6",
+      "task": "evidence_support",
+      "expected": "supported",
+      "predicted": "supported",
+      "correct": true,
+      "seconds": 0.6091162119992077,
+      "raw": {
+        "raw_scores": {
+          "supported": 0.9787984490394592,
+          "contradicted": 0.3107512295246124,
+          "unknown": 0.020775649696588516
+        },
+        "probabilities_t3_2": {
+          "supported": 0.5003226075627706,
+          "contradicted": 0.3495726904741492,
+          "unknown": 0.15010470196308026
+        },
+        "probability_origin": "independent-sigmoid-renormalized"
+      }
+    },
+    {
+      "id": "urgency-1",
+      "task": "urgency",
+      "expected": "routine",
+      "predicted": "routine",
+      "correct": true,
+      "seconds": 0.7262466601096094,
+      "raw": {
+        "raw_scores": {
+          "routine": 0.9974212646484375,
+          "minor": 0.48672035336494446,
+          "major": 0.009650181047618389,
+          "critical": 0.0037212136667221785
+        },
+        "probabilities_t3_2": {
+          "routine": 0.4528772999035347,
+          "minor": 0.36191437142323624,
+          "major": 0.1062914458184337,
+          "critical": 0.07891688285479537
+        },
+        "probability_origin": "independent-sigmoid-renormalized"
+      }
+    },
+    {
+      "id": "urgency-2",
+      "task": "urgency",
+      "expected": "minor",
+      "predicted": "minor",
+      "correct": true,
+      "seconds": 0.5995133998803794,
+      "raw": {
+        "raw_scores": {
+          "routine": 0.2038184255361557,
+          "minor": 0.9959232807159424,
+          "major": 0.048978887498378754,
+          "critical": 0.017137374728918076
+        },
+        "probabilities_t3_2": {
+          "routine": 0.2671303701313065,
+          "minor": 0.4385612732595421,
+          "major": 0.17108521366459664,
+          "critical": 0.12322314294455483
+        },
+        "probability_origin": "independent-sigmoid-renormalized"
+      }
+    },
+    {
+      "id": "urgency-3",
+      "task": "urgency",
+      "expected": "major",
+      "predicted": "critical",
+      "correct": false,
+      "seconds": 0.552584185032174,
+      "raw": {
+        "raw_scores": {
+          "routine": 0.0023530314210802317,
+          "minor": 0.021614212542772293,
+          "major": 0.5983179807662964,
+          "critical": 0.950576663017273
+        },
+        "probabilities_t3_2": {
+          "routine": 0.06592717357298891,
+          "minor": 0.1318368629902666,
+          "major": 0.37215345871472616,
+          "critical": 0.4300825047220183
+        },
+        "probability_origin": "independent-sigmoid-renormalized"
+      }
+    },
+    {
+      "id": "urgency-4",
+      "task": "urgency",
+      "expected": "critical",
+      "predicted": "critical",
+      "correct": true,
+      "seconds": 0.5465710470452905,
+      "raw": {
+        "raw_scores": {
+          "routine": 0.0006629352574236691,
+          "minor": 0.0016387586947530508,
+          "major": 0.2690090239048004,
+          "critical": 0.9992960691452026
+        },
+        "probabilities_t3_2": {
+          "routine": 0.053464263551845886,
+          "minor": 0.07093977475478408,
+          "major": 0.3492657544462013,
+          "critical": 0.5263302072471687
+        },
+        "probability_origin": "independent-sigmoid-renormalized"
+      }
+    },
+    {
+      "id": "urgency-5",
+      "task": "urgency",
+      "expected": "routine",
+      "predicted": "routine",
+      "correct": true,
+      "seconds": 0.5365283940918744,
+      "raw": {
+        "raw_scores": {
+          "routine": 0.9549985527992249,
+          "minor": 0.7261040210723877,
+          "major": 0.02475256472826004,
+          "critical": 0.007940683513879776
+        },
+        "probabilities_t3_2": {
+          "routine": 0.40631841201006647,
+          "minor": 0.37297334249837283,
+          "major": 0.12975436258583906,
+          "critical": 0.09095388290572172
+        },
+        "probability_origin": "independent-sigmoid-renormalized"
+      }
+    },
+    {
+      "id": "urgency-6",
+      "task": "urgency",
+      "expected": "major",
+      "predicted": "critical",
+      "correct": false,
+      "seconds": 0.6199134388007224,
+      "raw": {
+        "raw_scores": {
+          "routine": 0.0012405236484482884,
+          "minor": 0.0152151333168149,
+          "major": 0.2282186895608902,
+          "critical": 0.992190420627594
+        },
+        "probabilities_t3_2": {
+          "routine": 0.06110038057570492,
+          "minor": 0.13373759639414562,
+          "major": 0.3117289166167717,
+          "critical": 0.49343310641337773
+        },
+        "probability_origin": "independent-sigmoid-renormalized"
+      }
+    }
+  ],
+  "label_order": [
+    {
+      "id": "change_scope-1",
+      "original": "documentation",
+      "reversed": "documentation",
+      "same_label": true,
+      "seconds": 0.5433098829817027
+    },
+    {
+      "id": "change_scope-2",
+      "original": "behavior",
+      "reversed": "behavior",
+      "same_label": true,
+      "seconds": 0.5683999229222536
+    },
+    {
+      "id": "change_scope-3",
+      "original": "documentation",
+      "reversed": "documentation",
+      "same_label": true,
+      "seconds": 0.6090570259839296
+    },
+    {
+      "id": "change_scope-4",
+      "original": "unknown",
+      "reversed": "unknown",
+      "same_label": true,
+      "seconds": 0.5837684059515595
+    },
+    {
+      "id": "change_scope-5",
+      "original": "unknown",
+      "reversed": "unknown",
+      "same_label": true,
+      "seconds": 0.6160020190291107
+    },
+    {
+      "id": "change_scope-6",
+      "original": "behavior",
+      "reversed": "behavior",
+      "same_label": true,
+      "seconds": 0.5647112969309092
+    },
+    {
+      "id": "secret_exposure-1",
+      "original": "no",
+      "reversed": "no",
+      "same_label": true,
+      "seconds": 0.5668151408899575
+    },
+    {
+      "id": "secret_exposure-2",
+      "original": "no",
+      "reversed": "no",
+      "same_label": true,
+      "seconds": 0.5586874990258366
+    },
+    {
+      "id": "secret_exposure-3",
+      "original": "unknown",
+      "reversed": "unknown",
+      "same_label": true,
+      "seconds": 0.5387377280276269
+    },
+    {
+      "id": "secret_exposure-4",
+      "original": "unknown",
+      "reversed": "no",
+      "same_label": false,
+      "seconds": 0.556991568999365
+    },
+    {
+      "id": "secret_exposure-5",
+      "original": "yes",
+      "reversed": "yes",
+      "same_label": true,
+      "seconds": 0.5484975778963417
+    },
+    {
+      "id": "secret_exposure-6",
+      "original": "unknown",
+      "reversed": "unknown",
+      "same_label": true,
+      "seconds": 0.5542316338978708
+    },
+    {
+      "id": "evidence_support-1",
+      "original": "contradicted",
+      "reversed": "contradicted",
+      "same_label": true,
+      "seconds": 0.5264723438303918
+    },
+    {
+      "id": "evidence_support-2",
+      "original": "contradicted",
+      "reversed": "contradicted",
+      "same_label": true,
+      "seconds": 0.5460329249035567
+    },
+    {
+      "id": "evidence_support-3",
+      "original": "supported",
+      "reversed": "supported",
+      "same_label": true,
+      "seconds": 0.5703055281192064
+    },
+    {
+      "id": "evidence_support-4",
+      "original": "contradicted",
+      "reversed": "contradicted",
+      "same_label": true,
+      "seconds": 0.5491165390703827
+    },
+    {
+      "id": "evidence_support-5",
+      "original": "contradicted",
+      "reversed": "contradicted",
+      "same_label": true,
+      "seconds": 0.5469671110622585
+    },
+    {
+      "id": "evidence_support-6",
+      "original": "supported",
+      "reversed": "supported",
+      "same_label": true,
+      "seconds": 0.5576969750691205
+    },
+    {
+      "id": "urgency-1",
+      "original": "routine",
+      "reversed": "routine",
+      "same_label": true,
+      "seconds": 0.5904411470983177
+    },
+    {
+      "id": "urgency-2",
+      "original": "minor",
+      "reversed": "minor",
+      "same_label": true,
+      "seconds": 0.5827066369820386
+    },
+    {
+      "id": "urgency-3",
+      "original": "critical",
+      "reversed": "major",
+      "same_label": false,
+      "seconds": 0.5624864539131522
+    },
+    {
+      "id": "urgency-4",
+      "original": "critical",
+      "reversed": "critical",
+      "same_label": true,
+      "seconds": 0.5396120860241354
+    },
+    {
+      "id": "urgency-5",
+      "original": "routine",
+      "reversed": "routine",
+      "same_label": true,
+      "seconds": 0.585628367960453
+    },
+    {
+      "id": "urgency-6",
+      "original": "critical",
+      "reversed": "major",
+      "same_label": false,
+      "seconds": 0.636999738169834
+    }
+  ],
+  "multi_question": [
+    {
+      "id": "change_scope-1",
+      "paired_with": "secret_exposure-1",
+      "alone": "documentation",
+      "together": "documentation",
+      "same_label": true,
+      "seconds": 1.2821740792132914
+    },
+    {
+      "id": "change_scope-2",
+      "paired_with": "secret_exposure-2",
+      "alone": "behavior",
+      "together": "behavior",
+      "same_label": true,
+      "seconds": 1.221909656189382
+    },
+    {
+      "id": "change_scope-3",
+      "paired_with": "secret_exposure-3",
+      "alone": "documentation",
+      "together": "documentation",
+      "same_label": true,
+      "seconds": 1.2601207268889993
+    },
+    {
+      "id": "change_scope-4",
+      "paired_with": "secret_exposure-4",
+      "alone": "unknown",
+      "together": "unknown",
+      "same_label": true,
+      "seconds": 1.2470769570209086
+    },
+    {
+      "id": "change_scope-5",
+      "paired_with": "secret_exposure-5",
+      "alone": "unknown",
+      "together": "documentation",
+      "same_label": false,
+      "seconds": 1.3034258079715073
+    },
+    {
+      "id": "change_scope-6",
+      "paired_with": "secret_exposure-6",
+      "alone": "behavior",
+      "together": "behavior",
+      "same_label": true,
+      "seconds": 1.367186755174771
+    },
+    {
+      "id": "secret_exposure-1",
+      "paired_with": "evidence_support-1",
+      "alone": "no",
+      "together": "unknown",
+      "same_label": false,
+      "seconds": 1.2921631240751594
+    },
+    {
+      "id": "secret_exposure-2",
+      "paired_with": "evidence_support-2",
+      "alone": "no",
+      "together": "no",
+      "same_label": true,
+      "seconds": 1.2844433228019625
+    },
+    {
+      "id": "secret_exposure-3",
+      "paired_with": "evidence_support-3",
+      "alone": "unknown",
+      "together": "unknown",
+      "same_label": true,
+      "seconds": 1.2557659631129354
+    },
+    {
+      "id": "secret_exposure-4",
+      "paired_with": "evidence_support-4",
+      "alone": "unknown",
+      "together": "no",
+      "same_label": false,
+      "seconds": 1.2987733881454915
+    },
+    {
+      "id": "secret_exposure-5",
+      "paired_with": "evidence_support-5",
+      "alone": "yes",
+      "together": "yes",
+      "same_label": true,
+      "seconds": 1.2903176399413496
+    },
+    {
+      "id": "secret_exposure-6",
+      "paired_with": "evidence_support-6",
+      "alone": "unknown",
+      "together": "no",
+      "same_label": false,
+      "seconds": 1.3176901289261878
+    },
+    {
+      "id": "evidence_support-1",
+      "paired_with": "urgency-1",
+      "alone": "contradicted",
+      "together": "contradicted",
+      "same_label": true,
+      "seconds": 1.451348408125341
+    },
+    {
+      "id": "evidence_support-2",
+      "paired_with": "urgency-2",
+      "alone": "contradicted",
+      "together": "contradicted",
+      "same_label": true,
+      "seconds": 1.352177738910541
+    },
+    {
+      "id": "evidence_support-3",
+      "paired_with": "urgency-3",
+      "alone": "supported",
+      "together": "supported",
+      "same_label": true,
+      "seconds": 1.2707412249874324
+    },
+    {
+      "id": "evidence_support-4",
+      "paired_with": "urgency-4",
+      "alone": "contradicted",
+      "together": "contradicted",
+      "same_label": true,
+      "seconds": 1.31656250404194
+    },
+    {
+      "id": "evidence_support-5",
+      "paired_with": "urgency-5",
+      "alone": "contradicted",
+      "together": "contradicted",
+      "same_label": true,
+      "seconds": 1.309260943904519
+    },
+    {
+      "id": "evidence_support-6",
+      "paired_with": "urgency-6",
+      "alone": "supported",
+      "together": "supported",
+      "same_label": true,
+      "seconds": 1.3779618870466948
+    },
+    {
+      "id": "urgency-1",
+      "paired_with": "change_scope-1",
+      "alone": "routine",
+      "together": "routine",
+      "same_label": true,
+      "seconds": 1.4179992249701172
+    },
+    {
+      "id": "urgency-2",
+      "paired_with": "change_scope-2",
+      "alone": "minor",
+      "together": "minor",
+      "same_label": true,
+      "seconds": 1.7675127740949392
+    },
+    {
+      "id": "urgency-3",
+      "paired_with": "change_scope-3",
+      "alone": "critical",
+      "together": "critical",
+      "same_label": true,
+      "seconds": 1.9597857580520213
+    },
+    {
+      "id": "urgency-4",
+      "paired_with": "change_scope-4",
+      "alone": "critical",
+      "together": "critical",
+      "same_label": true,
+      "seconds": 1.62063615093939
+    },
+    {
+      "id": "urgency-5",
+      "paired_with": "change_scope-5",
+      "alone": "routine",
+      "together": "routine",
+      "same_label": true,
+      "seconds": 1.3958382450509816
+    },
+    {
+      "id": "urgency-6",
+      "paired_with": "change_scope-6",
+      "alone": "critical",
+      "together": "critical",
+      "same_label": true,
+      "seconds": 1.5846515798475593
+    }
+  ],
+  "jevbench_mapping": {
+    "note": "GLiNER2 only. Official v1.2.2 packing on these fixtures. Not mixed into correct/count.",
+    "correct": 0,
+    "count": 0,
+    "by_task": {},
+    "evidence": {},
+    "results": []
+  }
+}

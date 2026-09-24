@@ -22,3 +22,6 @@ __pycache__/
 
 # Generated local code index
 .codegraph/
+
+# Hidden grader answers; regenerate with validate_submission.py --write-expected
+experiments/agent-tasks/private/

@@ -1,0 +1,64 @@
+{
+  "jevbench": {
+    "repository": "https://github.com/fstandhartinger/jevbench",
+    "tag": "v1.2.2",
+    "commit": "e105a48f8cdb7f3babb3594424f73e5d7bdc97b9",
+    "committed_utc": "2026-09-19T22:49:55Z",
+    "results_generated_utc": "2026-09-19T22:49:39+00:00",
+    "decisions": 534,
+    "tier_counts": {"easy": 72, "standard": 96, "judge": 146, "hard": 220},
+    "score": "geometric mean of intelligence, calibration, speed, and cost, 25 percent each",
+    "note": "Repository HEAD on 2026-09-21 is v1.3.0 (75e6224ed8103bbc3485ca74820a2eaf7ce8abe0). Numbers below are pinned to the v1.2.2 tag that matches the chart."
+  },
+  "jeff": {
+    "repository": "https://github.com/logan-markewich/jeff",
+    "benchmark_commit": "6f43d3ee32a150889125a62f3c2933bc421e9863",
+    "benchmark_committed_utc": "2026-09-19T17:57:00Z",
+    "results_commit_on_main": "34b32f99a727c47b679adde33f4702a001e02979",
+    "adapter": "jevbench/adapters/typesafe.py at jevbench e105a48, pointed at jeff's local /v1/systemone",
+    "server_defaults_recorded": "torch, fp32, temperature 3.2, JEFF_ISOLATE=nouls, JEFF_NOUL_MODE=yes_no, fold descriptions into labels",
+    "library_requirement": "gliformer>=0.1.1",
+    "library_used_here": "0.1.2",
+    "library_note": "0.1.2 was the newest PyPI release on the benchmark date (uploaded 2026-09-15). The official run does not record the installed gliformer version."
+  },
+  "gliformer": {
+    "checkpoint": "knowledgator/gliformer-large-v1",
+    "revision": "d0a4e53d09cebe6bc963dd9be319d4279084bb2d",
+    "revision_last_modified_utc": "2026-09-18T18:31:25.000Z",
+    "weight_file": "pytorch_model.bin",
+    "weight_bytes": 2302735855,
+    "parameters": "about 400M",
+    "license": "apache-2.0"
+  },
+  "gliner2": {
+    "checkpoint": "fastino/gliner2.5-base-v1",
+    "revision": "1a8bc24e00dc7300b9017c81d63e3dcdabb26596",
+    "package": "gliner2==2.0.0",
+    "parameters": "about 194M",
+    "license": "Apache-2.0",
+    "chart_identity": "The v1.2.2 row labeled GLiNER2 is this checkpoint and package, recorded in results/v1.2/additions/gliner2.json. The chart label does not say 2.5."
+  },
+  "jevbench_v1_3_0_rescore": {
+    "commit": "75e6224ed8103bbc3485ca74820a2eaf7ce8abe0",
+    "tag": "v1.3.0",
+    "artifact": "results/v1.2/jevbench-v1.2-results.json",
+    "generated_utc": "2026-09-21T22:55:40+00:00",
+    "note": "Same frozen runs as v1.2.2. Chance-corrected intelligence. Current board. Do not replace the v1.2.2 adapter pins above."
+  },
+  "semif": {
+    "repository_recorded": "https://github.com/TheoLeeCJ/openjev",
+    "adapter": "jevbench/adapters/semif_direct.py at jevbench e105a48",
+    "checkpoint_id": "Qwen/Qwen3.5-4B",
+    "precision_recorded": "BF16",
+    "hf_revision_in_v1_2_2_system_row": null,
+    "implementation_revision": "851bf6e806efd8d0a36b00ddf55e13ccb7b8cd0a",
+    "code_repository": "https://github.com/TheoLeeCJ/SemIf",
+    "code_commit": "1f2dea3e25379f9dfc98cb83c324f00ab5deda37",
+    "cpu_gguf": "bartowski/Qwen_Qwen3.5-4B-GGUF",
+    "cpu_gguf_revision": "4168f45a16a1290d65a4ec0fa312ae917a4c15d6",
+    "cpu_gguf_file": "Qwen_Qwen3.5-4B-Q4_K_M.gguf",
+    "downloaded_for_this_comparison": false,
+    "local_inference": "not_measured",
+    "reason": "Adopted as the practical open default from the v1.3.0 board and the CPU GGUF path. This experiment did not download the 4B weights. BF16 does not fit one Tesla M10. Q4 CPU quality is not a second JevBench score."
+  }
+}
