@@ -132,6 +132,49 @@ fn preserves_unrelated_files_and_is_idempotent() {
 }
 
 #[test]
+fn upgraded_managed_rule_preserves_unrelated_configuration() {
+    let dir = TempTree::new();
+    let root = dir.path();
+    Workspace::initialize(root, "cursor").unwrap();
+
+    let current_rule = read(&root.join(".cursor/rules/checkweave.mdc"));
+    let stale = "---\ndescription: old check only\nalwaysApply: true\n---\nOLD_GUIDANCE_TOKEN\n<!-- checkweave:managed -->\n";
+    fs::write(root.join(".cursor/rules/checkweave.mdc"), stale).unwrap();
+    let team_rule = b"---\ndescription: team\n---\nLeave the team rule alone.\n";
+    fs::write(root.join(".cursor/rules/team.mdc"), team_rule).unwrap();
+    let settings = b"{\"editor.fontSize\": 14}\n";
+    fs::write(root.join(".cursor/settings.json"), settings).unwrap();
+
+    let mcp_path = root.join(".cursor/mcp.json");
+    let mut mcp: serde_json::Value = serde_json::from_str(&read(&mcp_path)).unwrap();
+    mcp["extra"] = serde_json::json!(true);
+    mcp["mcpServers"]["other"] = serde_json::json!({"command": "other", "args": ["stay"]});
+    let mcp_bytes = serde_json::to_vec_pretty(&mcp).unwrap();
+    fs::write(&mcp_path, &mcp_bytes).unwrap();
+    let gitignore = fs::read(root.join(".gitignore")).unwrap();
+
+    Workspace::initialize(root, "cursor").unwrap();
+
+    let rule = read(&root.join(".cursor/rules/checkweave.mdc"));
+    assert!(!rule.contains("OLD_GUIDANCE_TOKEN"), "{rule}");
+    assert!(rule.contains("checkweave:managed"));
+    assert_eq!(rule, current_rule);
+    assert_eq!(
+        fs::read(root.join(".cursor/rules/team.mdc")).unwrap(),
+        team_rule
+    );
+    assert_eq!(
+        fs::read(root.join(".cursor/settings.json")).unwrap(),
+        settings
+    );
+    assert_eq!(fs::read(&mcp_path).unwrap(), mcp_bytes);
+    let kept: serde_json::Value = serde_json::from_str(&read(&mcp_path)).unwrap();
+    assert_eq!(kept["extra"], true);
+    assert_eq!(kept["mcpServers"]["other"]["args"][0], "stay");
+    assert_eq!(fs::read(root.join(".gitignore")).unwrap(), gitignore);
+}
+
+#[test]
 fn malformed_mcp_json_is_not_replaced() {
     let dir = TempTree::new();
     let root = dir.path();

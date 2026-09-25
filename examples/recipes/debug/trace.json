@@ -1,0 +1,4 @@
+{
+  "script": "discount.py",
+  "input": {"price": 80, "percent": 20}
+}

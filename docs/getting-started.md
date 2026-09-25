@@ -18,7 +18,11 @@ command -v checkweave
 
 `cargo install` places the program in `~/.cargo/bin`. The `export` line is for this shell. Add that directory to your shell startup file if you want it in later sessions. `command -v` should print a path ending in `checkweave`.
 
-There is no published download yet, so install from this checkout.
+There is no published download yet. If you are inspecting an archive from the
+release workflow, extract it and add the extracted directory to `PATH` instead
+of compiling. The binary runs directly; the included `docs` and `examples/recipes`
+provide this tutorial and the [recipes](recipes.md). Python 3 is needed for the
+Python recipes. Rust is needed only for the source installation above.
 
 ## 2. Create a temporary folder
 

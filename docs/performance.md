@@ -1,10 +1,81 @@
 # Performance
 
-This page records one debug-binary sample from `experiments/agent-tasks/perf_harness.py` and one paired actor run. The host was busy. The numbers describe that run. They are not an intrinsic latency of the CLI, and they are not a release qualification by themselves.
+This page records release-profile and historical debug samples, plus fresh Cursor CLI task studies. The host was busy. The numbers describe that run. They are not an intrinsic latency of the CLI, and they are not a release qualification by themselves.
 
 A same-sha256 debug binary had already failed a four-client cold start on this ext4 volume in `/tmp/checkweave-development/startup-audit/result.json` (about 15s, `No such file or directory` while a daemon was already running). A separate `/dev/shm` run of that audit passed. The client-side cause is fixed; see [verification](verification.md). This harness does not replace that audit. Its ext4 sample is the physical-filesystem result. `experiments/agent-tasks/results/debug-tmpfs-diagnostic.json` is a second run of the same harness on tmpfs, kept as a diagnostic.
 
-## Environment
+## Release-profile sample, 2026-09-25
+
+The current local `checkweave 0.1.0` release-profile binary is 17,321,496 bytes,
+sha256 `fafa7780aac9116a239999c1c828b17a7e6e95ac985942b70c1f563da77ad67a`.
+It includes the MCP text-evidence fix and is not a published asset. Full samples
+and fixture hashes: [release measurement](../experiments/agent-tasks/results/release-with-mcp-text-20260925.json).
+Linux x86_64, ext4 under `/tmp`, other work running; one-minute load rose from
+8.33 to 9.72. The earlier same-day sample remains in
+[release-20260925.json](../experiments/agent-tasks/results/release-20260925.json).
+
+| Measurement | Result | Scope |
+| --- | --- | --- |
+| Warm check, 40 records | 21.85 ms median, 53.82 ms p95 | 20 samples, 40 hits, same daemon |
+| Cold check after shutdown | 75.83 ms median, 88.89 ms p95 | 8 samples, process and worker startup, cached rows |
+| Idle CPU | 0.04 CPU seconds / 5.000 seconds (0.80% of one core) | One window, 100 Hz process accounting |
+| Idle RSS | 14,155,776 bytes at both endpoints | Resident memory, not peak memory |
+| SQLite family, 40 records / 29 checks | 4,247,032 bytes | Main database, WAL, and SHM |
+| SQLite family, 8,000 records / 2 checks | 5,807,632 bytes | 8,000 cached items |
+| Discount-script trace overhead | 4.382 ms median, 8.372 ms maximum | 5 samples, 12 events each, no dropped events |
+
+Trace timing compares the code body without hooks to the traced code body,
+inside the same interpreter; the baseline runs first and may warm imports.
+It excludes interpreter startup. The CLI wall times remain in the raw artifact.
+This tiny script does not qualify instrumentation overhead on a large application.
+Native calls, subprocess events, async scheduling, pre-existing threads, and
+causal event ordering remain unsupported, as recorded in each trace.
+
+## Cursor discovery and evidence delivery, 2026-09-25
+
+Three fresh sessions used `grok-4.7-medium-fast`: baseline, ordinary-language
+discovery with the managed Cursor rule/MCP server, and explicitly guided use.
+Each solved the same policy-count, differing-invoice, and originating-exception
+tasks. The fixture hashes match; no external MCP calls were recorded. The grader
+checks the counts/evidence, runs the submitted reproduction, and checks the
+originating exception location. It found no missed seeded bugs in any arm.
+This is one run per arm, with the baseline shared by the two comparisons.
+
+The [initial study](../experiments/agent-tasks/results/agent-study-20260925.json)
+passed all three arms. Discovery invoked check, compare, trace, and replay,
+but Cursor's recorded tool responses exposed only our summary text. Evidence
+was present in `structuredContent`, which that client did not expose. The study
+also recorded a rejected `max_results=100000` and a compare id mistakenly passed
+to collection evidence. The server now includes the bounded report as JSON text,
+mentions the result cap, and clarifies which ids the supporting tools accept.
+
+The [follow-up study](../experiments/agent-tasks/results/agent-study-text-20260925.json)
+used the fixed binary above. Both treatment sessions received two text blocks,
+including detailed check, comparison, and trace evidence. No MCP tool errors
+were recorded. The exception fixture correctly produced a trace of a failed
+program; that is evidence, not a tool failure.
+
+| Arm | Tasks passed | Process wall time | Input tokens | Output tokens | Cache-read tokens |
+| --- | --- | --- | --- | --- | --- |
+| baseline | 3/3 | 38.73 s | 35,677 | 3,737 | 99,840 |
+| discovery | 3/3 | 53.02 s | 81,731 | 4,441 | 162,816 |
+| guided | 3/3 | 58.93 s | 51,111 | 5,678 | 256,000 |
+
+Discovery used check twice, compare once, and trace once. Guided use called
+check, evidence, compare, and trace once each. Both remained slower and used more
+tokens than baseline. The earlier treatment wall times were 78.53 and 90.84 seconds;
+the follow-up was shorter, but single runs do not establish a causal speedup.
+No dollar-cost or general quality advantage is claimed. All raw usage fields,
+including cache writes (zero), grades, tool summaries, and binary hashes are in
+the artifacts. Source logs and submissions remain in the temporary study folders.
+
+The next integration work is reducing evidence volume and unnecessary calls on
+larger tasks. The trace response in this sample was about 30 KB. A result limit
+is not by itself a useful token budget.
+
+## Historical debug sample
+
+### Environment
 
 | Item | Value |
 | --- | --- |
@@ -79,7 +150,7 @@ Private expected values stay in `experiments/agent-tasks/private/expected.json`,
 
 ### Paired actor sample
 
-Two fresh actors, model `grok-4.7-medium-fast`, immutable debug binary sha256 `eed0e864724ea8a110add1d2dec6a09076d34128196401f7f117268336c1cf09` (`/tmp/checkweave-agent-study/launch-metadata.json`). This binary is not the earlier harness binary `109f1f71…`. `target/release/checkweave` was not present, so the release harness was not rerun.
+Two fresh actors, model `grok-4.7-medium-fast`, immutable debug binary sha256 `eed0e864724ea8a110add1d2dec6a09076d34128196401f7f117268336c1cf09` (`/tmp/checkweave-agent-study/launch-metadata.json`). This binary is not the earlier harness binary `109f1f71…`. `target/release/checkweave` was not present during that historical study; the later release-profile sample is above.
 
 Both submissions passed `validate_submission.py` after the grader was fixed to keep `TASK/` beside `submission/repro.py`. Reports: `experiments/agent-tasks/results/baseline-validation.json` and `experiments/agent-tasks/results/checkweave-validation.json`.
 
@@ -101,4 +172,18 @@ python3 experiments/agent-tasks/perf_harness.py \
   --out experiments/agent-tasks/results/debug-baseline.json
 ```
 
-Point `--binary` at a release binary and write `experiments/agent-tasks/results/release.json`. Leave `debug-baseline.json` and `debug-tmpfs-diagnostic.json` in place. The paired agent study is finished: both arms solved all three tasks, and the Checkweave arm only ran `--help`, so no functional benefit is demonstrated. Efficacy stays open. A release-binary harness row is recorded when `release.json` exists.
+For the current harness, use `target/release/checkweave` and a new output path.
+Do not overwrite the historical results. To reproduce the fresh Cursor study:
+
+```sh
+python3 experiments/agent-tasks/run_study.py --study /tmp/checkweave-new-study prepare --binary target/release/checkweave
+python3 experiments/agent-tasks/run_study.py --study /tmp/checkweave-new-study run baseline
+python3 experiments/agent-tasks/run_study.py --study /tmp/checkweave-new-study run discovery
+python3 experiments/agent-tasks/run_study.py --study /tmp/checkweave-new-study run guided
+python3 experiments/agent-tasks/run_study.py --study /tmp/checkweave-new-study summarize --out /tmp/checkweave-new-study/results.json
+```
+
+The runner refuses to overwrite sessions. It uses the current Cursor account,
+model access, and global MCP configuration; it does not change HOME. The actor
+is instructed to stay in its fixture workspace, and the summary flags external
+MCP calls. That instruction is not a security sandbox.

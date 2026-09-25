@@ -1,0 +1,234 @@
+{
+  "manifest": {
+    "model": "grok-4.7-medium-fast",
+    "binary_sha256": "fafa7780aac9116a239999c1c828b17a7e6e95ac985942b70c1f563da77ad67a",
+    "source_commit": "1aee3b4828bc2be617b193582c9d86708804b817",
+    "working_tree_diff_sha256": "076ae43373ab991457be8eacabe2f050d7abdd19ba8bd7775cebaf57b3836032",
+    "task_hashes": {
+      "baseline": "3604e3f81dbfbda670cb9f03c18cb3dfe07d8643452ae99c38027853b723f9b6",
+      "discovery": "3604e3f81dbfbda670cb9f03c18cb3dfe07d8643452ae99c38027853b723f9b6",
+      "guided": "3604e3f81dbfbda670cb9f03c18cb3dfe07d8643452ae99c38027853b723f9b6"
+    },
+    "rule_sha256": "d562565d1101202b1b473605d386b3c9830f427d0acda04fc68241d07ac4b4e2",
+    "design": "One baseline, one discovery arm, and one guided arm; fresh sessions, same tasks/model. No statistical inference."
+  },
+  "arms": {
+    "baseline": {
+      "process": {
+        "returncode": 0,
+        "timed_out": false,
+        "wall_ms": 38728
+      },
+      "usage": {
+        "status": "parsed",
+        "path": "/tmp/checkweave-study-20260925-text/baseline/agent-stream.jsonl",
+        "json_events": 154,
+        "tool_call_events": 32,
+        "tool_call_started": 16,
+        "tool_call_completed": 16,
+        "duration_ms": 35131.0,
+        "usage": {
+          "input_tokens": 35677,
+          "output_tokens": 3737,
+          "cache_read_tokens": 99840,
+          "cache_write_tokens": 0
+        },
+        "usage_raw": {
+          "inputTokens": 35677,
+          "outputTokens": 3737,
+          "cacheReadTokens": 99840,
+          "cacheWriteTokens": 0
+        },
+        "result_type": "result",
+        "is_error": false
+      },
+      "completed_mcp_operation_calls": [],
+      "mcp_results": [],
+      "cli_use": {
+        "functional_calls": 0,
+        "help_calls": 0,
+        "functional_argv": [],
+        "help_argv": [],
+        "adoption": "not_invoked"
+      },
+      "external_mcp_calls": [],
+      "fixture_unchanged": true,
+      "grading": {
+        "passed": true,
+        "errors": [],
+        "snapshot": "private snapshot matches derivation",
+        "tasks": 3
+      },
+      "accepted_submission": true
+    },
+    "discovery": {
+      "process": {
+        "returncode": 0,
+        "timed_out": false,
+        "wall_ms": 53015
+      },
+      "usage": {
+        "status": "parsed",
+        "path": "/tmp/checkweave-study-20260925-text/discovery/agent-stream.jsonl",
+        "json_events": 217,
+        "tool_call_events": 32,
+        "tool_call_started": 16,
+        "tool_call_completed": 16,
+        "duration_ms": 49200.0,
+        "usage": {
+          "input_tokens": 81731,
+          "output_tokens": 4441,
+          "cache_read_tokens": 162816,
+          "cache_write_tokens": 0
+        },
+        "usage_raw": {
+          "inputTokens": 81731,
+          "outputTokens": 4441,
+          "cacheReadTokens": 162816,
+          "cacheWriteTokens": 0
+        },
+        "result_type": "result",
+        "is_error": false
+      },
+      "completed_mcp_operation_calls": [
+        "checkweave-checkweave_check",
+        "checkweave-checkweave_check",
+        "checkweave-checkweave_compare",
+        "checkweave-checkweave_trace"
+      ],
+      "mcp_results": [
+        {
+          "name": "checkweave-checkweave_check",
+          "is_error": false,
+          "text_blocks": 2,
+          "summary": "execution=complete freshness=validated matched=4 unresolved=0 id=0db5272b-c257-497c-8d32-acbd9cfcd5ac",
+          "text_bytes": 1627
+        },
+        {
+          "name": "checkweave-checkweave_check",
+          "is_error": false,
+          "text_blocks": 2,
+          "summary": "execution=complete freshness=validated matched=17 unresolved=0 id=24eaf99c-7679-4fc7-9c4e-6c81fa0f7b98",
+          "text_bytes": 4702
+        },
+        {
+          "name": "checkweave-checkweave_compare",
+          "is_error": false,
+          "text_blocks": 2,
+          "summary": "freshness=validated outcome=observed_difference id=5ca9f8f9-dccf-4147-b919-c124e0bb0e60 warning=unix_process_group_sigkill; descendants in the spawned group are killed with the leader; not a sandbox; verified only on hosts that ran the suite",
+          "text_bytes": 5774
+        },
+        {
+          "name": "checkweave-checkweave_trace",
+          "is_error": false,
+          "text_blocks": 2,
+          "summary": "execution=failed freshness=validated id=5e1cc8b9761e43f695c73d5227771aa1 warning=script status failed: RuntimeError",
+          "text_bytes": 30683
+        }
+      ],
+      "cli_use": {
+        "functional_calls": 0,
+        "help_calls": 0,
+        "functional_argv": [],
+        "help_argv": [],
+        "adoption": "not_invoked"
+      },
+      "external_mcp_calls": [],
+      "fixture_unchanged": true,
+      "grading": {
+        "passed": true,
+        "errors": [],
+        "snapshot": "private snapshot matches derivation",
+        "tasks": 3
+      },
+      "accepted_submission": true
+    },
+    "guided": {
+      "process": {
+        "returncode": 0,
+        "timed_out": false,
+        "wall_ms": 58928
+      },
+      "usage": {
+        "status": "parsed",
+        "path": "/tmp/checkweave-study-20260925-text/guided/agent-stream.jsonl",
+        "json_events": 311,
+        "tool_call_events": 38,
+        "tool_call_started": 19,
+        "tool_call_completed": 19,
+        "duration_ms": 55220.0,
+        "usage": {
+          "input_tokens": 51111,
+          "output_tokens": 5678,
+          "cache_read_tokens": 256000,
+          "cache_write_tokens": 0
+        },
+        "usage_raw": {
+          "inputTokens": 51111,
+          "outputTokens": 5678,
+          "cacheReadTokens": 256000,
+          "cacheWriteTokens": 0
+        },
+        "result_type": "result",
+        "is_error": false
+      },
+      "completed_mcp_operation_calls": [
+        "checkweave-checkweave_check",
+        "checkweave-checkweave_trace",
+        "checkweave-checkweave_compare"
+      ],
+      "mcp_results": [
+        {
+          "name": "checkweave-checkweave_check",
+          "is_error": false,
+          "text_blocks": 2,
+          "summary": "execution=complete freshness=validated matched=4 unresolved=0 id=bb4c0400-697b-4ef5-96fb-1d8f7df252df",
+          "text_bytes": 1624
+        },
+        {
+          "name": "checkweave-checkweave_evidence",
+          "is_error": false,
+          "text_blocks": 2,
+          "summary": "execution=complete freshness=validated matched=4 unresolved=0 id=bb4c0400-697b-4ef5-96fb-1d8f7df252df",
+          "text_bytes": 1624
+        },
+        {
+          "name": "checkweave-checkweave_trace",
+          "is_error": false,
+          "text_blocks": 2,
+          "summary": "execution=failed freshness=validated id=7d97bee7424b4952b2747a791fe728e7 warning=script status failed: RuntimeError",
+          "text_bytes": 30596
+        },
+        {
+          "name": "checkweave-checkweave_compare",
+          "is_error": false,
+          "text_blocks": 2,
+          "summary": "freshness=validated outcome=observed_difference id=1a4e8fb9-8c41-47af-8790-c5389cb01629 warning=unix_process_group_sigkill; descendants in the spawned group are killed with the leader; not a sandbox; verified only on hosts that ran the suite",
+          "text_bytes": 5772
+        }
+      ],
+      "cli_use": {
+        "functional_calls": 0,
+        "help_calls": 0,
+        "functional_argv": [],
+        "help_argv": [],
+        "adoption": "not_invoked"
+      },
+      "external_mcp_calls": [],
+      "fixture_unchanged": true,
+      "grading": {
+        "passed": true,
+        "errors": [],
+        "snapshot": "private snapshot matches derivation",
+        "tasks": 3
+      },
+      "accepted_submission": true
+    }
+  },
+  "limits": [
+    "One run per arm; baseline shared by the two comparisons.",
+    "Same host/account; workspace restriction is instructed, not a security sandbox.",
+    "Token fields are reported raw; no dollar-cost or statistical benefit claim.",
+    "A completed tool call may report an error; inspect tool results and grade separately."
+  ]
+}

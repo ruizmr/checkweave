@@ -1,0 +1,285 @@
+{
+  "manifest": {
+    "model": "grok-4.7-medium-fast",
+    "binary_sha256": "110d6f19cfefc70fc9dbd337617967396620e0f55e36689b58c56eada65a39f4",
+    "source_commit": "1aee3b4828bc2be617b193582c9d86708804b817",
+    "working_tree_diff_sha256": "970d1be9b0623f3275549436dbc4397570c0255de0e5d6d59c1d0628743df56b",
+    "task_hashes": {
+      "baseline": "3604e3f81dbfbda670cb9f03c18cb3dfe07d8643452ae99c38027853b723f9b6",
+      "discovery": "3604e3f81dbfbda670cb9f03c18cb3dfe07d8643452ae99c38027853b723f9b6",
+      "guided": "3604e3f81dbfbda670cb9f03c18cb3dfe07d8643452ae99c38027853b723f9b6"
+    },
+    "rule_sha256": "d562565d1101202b1b473605d386b3c9830f427d0acda04fc68241d07ac4b4e2",
+    "design": "One baseline, one discovery arm, and one guided arm; fresh sessions, same tasks/model. No statistical inference."
+  },
+  "arms": {
+    "baseline": {
+      "process": {
+        "returncode": 0,
+        "timed_out": false,
+        "wall_ms": 38473
+      },
+      "usage": {
+        "status": "parsed",
+        "path": "/tmp/checkweave-study-20260925/baseline/agent-stream.jsonl",
+        "json_events": 154,
+        "tool_call_events": 28,
+        "tool_call_started": 14,
+        "tool_call_completed": 14,
+        "duration_ms": 34889.0,
+        "usage": {
+          "input_tokens": 28378,
+          "output_tokens": 3698,
+          "cache_read_tokens": 104832,
+          "cache_write_tokens": 0
+        },
+        "usage_raw": {
+          "inputTokens": 28378,
+          "outputTokens": 3698,
+          "cacheReadTokens": 104832,
+          "cacheWriteTokens": 0
+        },
+        "result_type": "result",
+        "is_error": false
+      },
+      "completed_mcp_operation_calls": [],
+      "mcp_results": [],
+      "cli_use": {
+        "functional_calls": 0,
+        "help_calls": 0,
+        "functional_argv": [],
+        "help_argv": [],
+        "adoption": "not_invoked"
+      },
+      "external_mcp_calls": [],
+      "fixture_unchanged": true,
+      "grading": {
+        "passed": true,
+        "errors": [],
+        "snapshot": "private snapshot matches derivation",
+        "tasks": 3
+      },
+      "accepted_submission": true
+    },
+    "discovery": {
+      "process": {
+        "returncode": 0,
+        "timed_out": false,
+        "wall_ms": 78528
+      },
+      "usage": {
+        "status": "parsed",
+        "path": "/tmp/checkweave-study-20260925/discovery/agent-stream.jsonl",
+        "json_events": 388,
+        "tool_call_events": 66,
+        "tool_call_started": 33,
+        "tool_call_completed": 33,
+        "duration_ms": 74551.0,
+        "usage": {
+          "input_tokens": 47713,
+          "output_tokens": 7056,
+          "cache_read_tokens": 347904,
+          "cache_write_tokens": 0
+        },
+        "usage_raw": {
+          "inputTokens": 47713,
+          "outputTokens": 7056,
+          "cacheReadTokens": 347904,
+          "cacheWriteTokens": 0
+        },
+        "result_type": "result",
+        "is_error": false
+      },
+      "completed_mcp_operation_calls": [
+        "checkweave-checkweave_check",
+        "checkweave-checkweave_check",
+        "checkweave-checkweave_compare",
+        "checkweave-checkweave_trace",
+        "checkweave-checkweave_replay"
+      ],
+      "mcp_results": [
+        {
+          "name": "checkweave-checkweave_check",
+          "is_error": true,
+          "text_blocks": 1,
+          "summary": "checkweave: checkweave request failed: max_results 100000 exceeds hard cap 5000",
+          "text_bytes": 79
+        },
+        {
+          "name": "checkweave-checkweave_check",
+          "is_error": false,
+          "text_blocks": 1,
+          "summary": "execution=complete freshness=validated matched=4 unresolved=0 id=219a0805-dd04-4616-88e2-fe93a9c44e55",
+          "text_bytes": 101
+        },
+        {
+          "name": "checkweave-checkweave_compare",
+          "is_error": false,
+          "text_blocks": 1,
+          "summary": "freshness=validated outcome=observed_difference id=fb061d5c-2009-44fc-8bcb-50b003a895f6 warning=unix_process_group_sigkill; descendants in the spawned group are killed with the leader; not a sandbox; verified only on hosts that ran the suite",
+          "text_bytes": 241
+        },
+        {
+          "name": "checkweave-checkweave_trace",
+          "is_error": false,
+          "text_blocks": 1,
+          "summary": "execution=failed freshness=validated id=d09958e5126a42cc9cdda29e012f229b warning=script status failed: RuntimeError",
+          "text_bytes": 115
+        },
+        {
+          "name": "checkweave-checkweave_evidence",
+          "is_error": false,
+          "text_blocks": 1,
+          "summary": "execution=complete freshness=validated matched=4 unresolved=0 id=219a0805-dd04-4616-88e2-fe93a9c44e55",
+          "text_bytes": 101
+        },
+        {
+          "name": "checkweave-checkweave_trace_page",
+          "is_error": false,
+          "text_blocks": 1,
+          "summary": "execution=failed freshness=validated id=d09958e5126a42cc9cdda29e012f229b warning=script status failed: RuntimeError",
+          "text_bytes": 115
+        },
+        {
+          "name": "checkweave-checkweave_replay",
+          "is_error": false,
+          "text_blocks": 1,
+          "summary": "freshness=validated outcome=observed_difference id=eb86d405-2f36-4b75-ad86-e4ba6e0e034a warning=unix_process_group_sigkill; descendants in the spawned group are killed with the leader; not a sandbox; verified only on hosts that ran the suite",
+          "text_bytes": 241
+        }
+      ],
+      "cli_use": {
+        "functional_calls": 0,
+        "help_calls": 0,
+        "functional_argv": [],
+        "help_argv": [],
+        "adoption": "not_invoked"
+      },
+      "external_mcp_calls": [],
+      "fixture_unchanged": true,
+      "grading": {
+        "passed": true,
+        "errors": [],
+        "snapshot": "private snapshot matches derivation",
+        "tasks": 3
+      },
+      "accepted_submission": true
+    },
+    "guided": {
+      "process": {
+        "returncode": 0,
+        "timed_out": false,
+        "wall_ms": 90836
+      },
+      "usage": {
+        "status": "parsed",
+        "path": "/tmp/checkweave-study-20260925/guided/agent-stream.jsonl",
+        "json_events": 461,
+        "tool_call_events": 62,
+        "tool_call_started": 31,
+        "tool_call_completed": 31,
+        "duration_ms": 87309.0,
+        "usage": {
+          "input_tokens": 82343,
+          "output_tokens": 8120,
+          "cache_read_tokens": 442752,
+          "cache_write_tokens": 0
+        },
+        "usage_raw": {
+          "inputTokens": 82343,
+          "outputTokens": 8120,
+          "cacheReadTokens": 442752,
+          "cacheWriteTokens": 0
+        },
+        "result_type": "result",
+        "is_error": false
+      },
+      "completed_mcp_operation_calls": [
+        "checkweave-checkweave_check",
+        "checkweave-checkweave_trace",
+        "checkweave-checkweave_compare",
+        "checkweave-checkweave_replay"
+      ],
+      "mcp_results": [
+        {
+          "name": "checkweave-checkweave_check",
+          "is_error": false,
+          "text_blocks": 1,
+          "summary": "execution=complete freshness=validated matched=4 unresolved=0 id=d23dcfd6-a39f-4ffa-ab78-e652639302a3",
+          "text_bytes": 101
+        },
+        {
+          "name": "checkweave-checkweave_trace",
+          "is_error": false,
+          "text_blocks": 1,
+          "summary": "execution=failed freshness=validated id=895e993103ec40c99a6a1c2cf97d8ba6 warning=script status failed: RuntimeError",
+          "text_bytes": 115
+        },
+        {
+          "name": "checkweave-checkweave_trace_page",
+          "is_error": false,
+          "text_blocks": 1,
+          "summary": "execution=failed freshness=validated id=895e993103ec40c99a6a1c2cf97d8ba6 warning=script status failed: RuntimeError",
+          "text_bytes": 115
+        },
+        {
+          "name": "checkweave-checkweave_evidence",
+          "is_error": false,
+          "text_blocks": 1,
+          "summary": "execution=complete freshness=validated matched=4 unresolved=0 id=d23dcfd6-a39f-4ffa-ab78-e652639302a3",
+          "text_bytes": 101
+        },
+        {
+          "name": "checkweave-checkweave_trace_page",
+          "is_error": false,
+          "text_blocks": 1,
+          "summary": "execution=failed freshness=validated id=895e993103ec40c99a6a1c2cf97d8ba6 warning=script status failed: RuntimeError",
+          "text_bytes": 115
+        },
+        {
+          "name": "checkweave-checkweave_compare",
+          "is_error": false,
+          "text_blocks": 1,
+          "summary": "freshness=validated outcome=observed_difference id=0363a2be-d20e-491e-9411-ea50c591fd62 warning=unix_process_group_sigkill; descendants in the spawned group are killed with the leader; not a sandbox; verified only on hosts that ran the suite",
+          "text_bytes": 241
+        },
+        {
+          "name": "checkweave-checkweave_replay",
+          "is_error": false,
+          "text_blocks": 1,
+          "summary": "freshness=validated outcome=observed_difference id=77957e81-9271-4a72-a51a-39fbbcecb535 warning=unix_process_group_sigkill; descendants in the spawned group are killed with the leader; not a sandbox; verified only on hosts that ran the suite",
+          "text_bytes": 241
+        },
+        {
+          "name": "checkweave-checkweave_evidence",
+          "is_error": true,
+          "text_blocks": 1,
+          "summary": "checkweave: checkweave request failed: evidence expired or not found",
+          "text_bytes": 68
+        }
+      ],
+      "cli_use": {
+        "functional_calls": 0,
+        "help_calls": 0,
+        "functional_argv": [],
+        "help_argv": [],
+        "adoption": "not_invoked"
+      },
+      "external_mcp_calls": [],
+      "fixture_unchanged": true,
+      "grading": {
+        "passed": true,
+        "errors": [],
+        "snapshot": "private snapshot matches derivation",
+        "tasks": 3
+      },
+      "accepted_submission": true
+    }
+  },
+  "limits": [
+    "One run per arm; baseline shared by the two comparisons.",
+    "Same host/account; workspace restriction is instructed, not a security sandbox.",
+    "Token fields are reported raw; no dollar-cost or statistical benefit claim.",
+    "A completed tool call may report an error; inspect tool results and grade separately."
+  ]
+}

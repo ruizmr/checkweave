@@ -710,6 +710,34 @@ fn init_check_and_evidence_match_across_cli_and_mcp() {
     let mcp_status = tool_success(&mcp_status_response, "mcp status");
     assert!(mcp_status.is_object(), "{mcp_status}");
 
+    std::fs::write(
+        fix.path().join("probe.py"),
+        "import json,sys\nprint(json.dumps(json.load(sys.stdin)))\n",
+    )
+    .unwrap();
+    let trace_response = mcp.request(
+        9,
+        "tools/call",
+        json!({
+            "name": "checkweave_trace", "arguments": {"script": "probe.py", "input": {"n": 7}}
+        }),
+    );
+    let trace = tool_success(&trace_response, "mcp trace");
+    assert!(!trace["events"].as_array().unwrap().is_empty());
+    assert!(trace["stdout"].as_str().unwrap().contains('7'));
+    let target = json!({"argv": ["python3", "probe.py"], "sources": ["probe.py"]});
+    let compare_response = mcp.request(
+        10,
+        "tools/call",
+        json!({
+            "name": "checkweave_compare", "arguments": {
+                "before": target, "after": target, "inputs": [{"n": 7}]
+            }
+        }),
+    );
+    let compare = tool_success(&compare_response, "mcp compare");
+    assert_eq!(compare["outcome"], "bounded_no_difference");
+
     let bad_evidence = mcp.request(
         6,
         "tools/call",
@@ -852,9 +880,21 @@ fn tool_success<'a>(response: &'a Value, context: &str) -> &'a Value {
         text.len() <= 420,
         "{context} text fallback is not small: {text}"
     );
-    result
+    let structured = result
         .get("structuredContent")
-        .unwrap_or_else(|| panic!("{context} missing structured content: {result}"))
+        .unwrap_or_else(|| panic!("{context} missing structured content: {result}"));
+    // A client that drops structuredContent must still receive the same evidence.
+    let fallback: Value = serde_json::from_str(
+        result["content"][1]["text"]
+            .as_str()
+            .expect("JSON text report"),
+    )
+    .expect("text report is valid JSON");
+    assert_eq!(
+        &fallback, structured,
+        "{context}: text-only client lost evidence"
+    );
+    structured
 }
 
 fn assert_tool_error(response: &Value) {

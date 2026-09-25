@@ -8,6 +8,7 @@ Start with the overview, then the tutorial. Command details stay in the referenc
 | --- | --- |
 | [README](../README.md) | What Checkweave does, how an assistant uses it, and the current release status |
 | [Getting started](getting-started.md) | Install from a checkout, check a small JSONL file, and optionally compare two programs |
+| [Recipes](recipes.md) | Data-quality checks, refactor comparisons, and debugging with concrete examples |
 | [MCP](mcp.md) | Connect a coding assistant and see an example tool call |
 | [Platforms](platforms.md) | The operating systems and CPUs covered by the 2026-09-24 build |
 | [Roadmap](roadmap.md) | Current capability and the next priorities |

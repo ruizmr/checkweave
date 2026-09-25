@@ -254,13 +254,13 @@ impl CheckweaveServer {
 
 #[tool_router]
 impl CheckweaveServer {
-    /// Check JSON Lines records selected by include globs.
+    /// Check fixture or config-export JSONL against a predicate.
     ///
     /// A match is a normal result. Unresolved records stay in the report.
     /// Coverage counts processed records and is not a measure of model accuracy.
     #[tool(
         name = "checkweave_check",
-        description = "Check JSON Lines records in files matching include globs against a predicate. Returns coverage, per-record matches, source pointers, and an evidence id. A match is a normal result, not a failure. Unresolved records stay visible. Limits bound files, bytes, records, results, and time.",
+        description = "Use when validating fixture or config-export JSONL: which rows match a field rule, which are unresolved, and whether freshness is validated. Check JSON Lines records in files matching include globs against a predicate. Returns coverage, per-record matches, source pointers, and an evidence id. A match is a normal result, not a failure. Unresolved records stay visible. Limits bound files, bytes, records, results, and time. max_results defaults to 50 and must be at most 5000.",
         annotations(
             title = "Check collection",
             read_only_hint = true,
@@ -332,10 +332,10 @@ impl CheckweaveServer {
         self.finish(dispatch(&self.workspace, Request::Status).await)
     }
 
-    /// Compare behavior. This runs the requested programs. It does not run on file changes.
+    /// Compare two JSON-in/JSON-out commands. This runs only when called.
     #[tool(
         name = "checkweave_compare",
-        description = "Compare before and after behavior for an explicit CompareRequest. Runs programs only because this tool was called. A difference is an observation, not a regression or an equivalence result. The response is bounded.",
+        description = "Use when a refactor may change behavior or you are comparing two alternatives. Compare before and after commands that read one JSON value and write one JSON document, with their declared sources. Runs programs only because this tool was called. A difference is an observation, not a regression or an equivalence result. The retained case is the witness input. The response is bounded.",
         annotations(
             title = "Compare behavior",
             read_only_hint = false,
@@ -356,10 +356,10 @@ impl CheckweaveServer {
         }
     }
 
-    /// Replay retained compare or trace evidence by executing it again.
+    /// Replay a retained compare on current targets, or a trace snapshot.
     #[tool(
         name = "checkweave_replay",
-        description = "Replay retained compare or trace evidence by id. This executes the retained request again. It does not claim the environment is a sandbox.",
+        description = "Replay retained evidence by id. Compare replay re-runs the retained case against the current targets or the originally requested Git revisions. Trace replay executes the saved source snapshot, so after edits run a fresh trace instead of treating replay as the new code. This executes the retained request again. It does not claim the environment is a sandbox.",
         annotations(
             title = "Replay evidence",
             read_only_hint = false,
@@ -375,10 +375,10 @@ impl CheckweaveServer {
         self.finish(dispatch(&self.workspace, Request::Replay { kind, id }).await)
     }
 
-    /// Trace a Python script. This runs the script only because the tool was called.
+    /// Trace a Python script for a known input. This runs only when called.
     #[tool(
         name = "checkweave_trace",
-        description = "Capture source-linked Python execution events for an explicit TraceRequest. The script runs only because this tool was called, not because files changed. Event order is not causation.",
+        description = "Use when debugging a Python script that produced a wrong value or exception for a known input. Capture call, line, return, and exception events and scalar locals for an explicit TraceRequest. The script runs only because this tool was called, not because files changed. After edits, run a fresh trace; replay uses the saved snapshot. Event order is not causation.",
         annotations(
             title = "Trace execution",
             read_only_hint = false,
@@ -400,7 +400,7 @@ impl CheckweaveServer {
     /// Install or reuse the model runtime.
     #[tool(
         name = "checkweave_model_setup",
-        description = "Prepare the configured decision model. Offline refuses downloads. Local failure does not send data to a hosted provider.",
+        description = "Prepare the configured decision model when a semantic or evaluate request needs it. Do not run this on every session. Offline refuses downloads. Local failure does not send data to a hosted provider.",
         annotations(
             title = "Set up model",
             read_only_hint = false,
@@ -443,7 +443,7 @@ impl CheckweaveServer {
     /// Check a JSONL collection with the shared model provider.
     #[tool(
         name = "checkweave_semantic",
-        description = "Judge JSON Lines records with the configured model. text_pointer is a JSON Pointer; the empty string is the whole record. Reuses the daemon's model provider and cached row judgments. A hosted provider is used only when configured. Unsupported questions stay visible. This does not run because files changed.",
+        description = "Use only when the question needs interpretation of text. Exact field checks use checkweave_check. Judge JSON Lines records with the configured model, local by default. text_pointer is a JSON Pointer; the empty string is the whole record. Reuses the daemon's model provider and cached row judgments. A hosted provider is used only when configured. Do not set up a model on every session. Unsupported questions stay visible. This does not run because files changed.",
         annotations(
             title = "Semantic collection check",
             read_only_hint = false,
@@ -532,14 +532,17 @@ impl CheckweaveServer {
 #[tool_handler(
     router = self.tool_router,
     name = "checkweave",
-    instructions = "Checkweave checks JSON Lines collections in this workspace. Each record includes a source pointer with a path, line, and content fingerprint. Coverage counts records processed and is not model accuracy. A match means the record satisfied the predicate you supplied. Details are bounded; follow the evidence id for retained input. Freshness validated means the result was checked against the recorded snapshot, not that files stay unchanged. Checkweave does not run project programs and is not an execution sandbox."
+    instructions = "Checkweave checks JSON Lines collections in this workspace. Compare, trace, and replay run programs only when that tool is called. Each record includes a source pointer with a path, line, and content fingerprint. Coverage counts records processed and is not model accuracy. A match means the record satisfied the predicate you supplied. For fixture or config-export JSONL, use checkweave_check and read coverage, unresolved, and freshness. For a refactor or two alternatives, use checkweave_compare on JSON-in/JSON-out commands with declared sources; a difference is not a regression and no difference is not equivalence. Compare replay re-runs the retained case on current targets or the originally requested Git revisions. For a wrong Python value or exception, use checkweave_trace on the known script and input and read scalar locals; after edits run a fresh trace because trace replay uses the saved snapshot. Use checkweave_semantic only for interpretation; the model is local by default and is not set up every session. Prefer the deterministic tool when it is enough. Do not call every tool. Detailed bounded JSON follows the summary in each result. Reuse that result before fetching again. checkweave_evidence accepts collection-check ids; trace_page accepts trace ids; compare replay accepts compare ids. Freshness validated means the result was checked against the recorded snapshot, not that files stay unchanged. Checkweave is not an execution sandbox."
 )]
 impl ServerHandler for CheckweaveServer {}
 
 fn tool_success(value: Value) -> CallToolResult {
     let summary = summarize(&value);
+    // Some clients expose only content to the assistant, not structuredContent.
+    // Keep the bounded report available to both kinds of client.
+    let text_report = value.to_string();
     let mut result = CallToolResult::structured(value);
-    result.content = vec![ContentBlock::text(summary)];
+    result.content = vec![ContentBlock::text(summary), ContentBlock::text(text_report)];
     result
 }
 

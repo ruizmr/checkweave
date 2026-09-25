@@ -6,7 +6,7 @@ Checkweave runs on your machine today. You can check JSON Lines with an explicit
 
 On 2026-09-24, [GitHub Actions run 36070429830](https://github.com/ruizmr/checkweave/actions/runs/36070429830) built, tested, and packaged Linux x86_64, Linux ARM64, macOS Intel, and macOS Apple silicon. The Windows installer smoke passed with Ubuntu 24.04 on a Windows runner. Publish was skipped. There is no GitHub Release and no tag. Platform limits are in [platforms](platforms.md). What that run establishes is in [verification](verification.md).
 
-Those builds and their tests passed. Model judgments are a separate qualification. An assistant benefit is a separate measurement. In the paired study in [performance](performance.md), both arms solved three tasks, and the Checkweave arm ran only `--help`.
+Those builds and their tests passed. Model judgments are a separate qualification. An assistant benefit is a separate measurement. The fresh three-arm study in [performance](performance.md) solved three tasks per arm and exercised the operations. It uncovered and verified a fix for missing evidence in text-only MCP clients; it did not show a time or token advantage.
 
 ## Usable today
 
@@ -20,6 +20,14 @@ Those builds and their tests passed. Model judgments are a separate qualificatio
 | Cross-platform build | The dry-run archives above. A published download is still ahead. | [verification](verification.md), [platforms](platforms.md) |
 
 A test name records the scenario it ran. It does not close every clause of an original gate. The gate list, the mapping, and what is still open are in [verification](verification.md).
+
+## Progress on 2026-09-25
+
+- Added [runnable recipes](recipes.md) for data checks, refactor comparison, and debugging.
+- Reworked task guidance and fixed MCP evidence delivery for clients that expose only text.
+- Added five recovery tests and documented the boundary around external dependencies and interpreters.
+- Added archive install/upgrade/removal smoke to all native jobs and the WSL installer flow.
+- Recorded [release-profile measurements and fresh Cursor studies](performance.md). The study supports discovery and compatibility, not a general cost advantage.
 
 ## Priorities
 
@@ -51,7 +59,7 @@ Acceptance:
 
 **Done when:** the assistant uses the operations and the results show where
 Checkweave improves correctness or reduces effort, and where it does not. Use
-those findings to revise the integration before adding more adapters. The study in [performance](performance.md), where the Checkweave arm ran only `--help`, leaves this open.
+those findings to revise the integration before adding more adapters. Recipes and the baseline/discovery/guided sample are now recorded in [performance](performance.md). All tasks passed, but the treatment arms used more time and tokens. Reducing evidence volume and testing larger tasks remain open.
 
 ### 3. Harden everyday use and measure the released artifacts
 
@@ -94,10 +102,10 @@ Another language, test runner, or source index waits on use from the priorities 
 | Area | Standing |
 | --- | --- |
 | Runtime, initialization, shared worker, collection, cache, limits, compare, Git reads, trace | Named tests ran in the release workflow. Mapping is in [verification](verification.md). |
-| Checkout and missed watch events | No recorded end-to-end match yet. Priority 3. |
+| Checkout and missed watch events | Five recovery tests cover live checkout, watcherless validation, restart after missed changes, and undeclared environment changes. Native event-loss injection in a live worker remains open. |
 | Semantic quality and devices | The Q4 sample is recorded. Qualification is priority 4. |
-| Assistant benefit | The study ran `--help` only. Priority 2. |
-| Published install, upgrade, removal, and release performance | The dry run packaged the targets. Priorities 1 and 3. |
+| Assistant benefit | Actual check/compare/trace use is recorded, including ordinary-language discovery. All arms passed; no cost or correctness advantage yet. Priority 2. |
+| Published install, upgrade, removal, and release performance | Archive lifecycle smoke is automated; local release-profile idle, latency, disk, and trace figures are recorded. Published assets and representative application measurements remain open. |
 
 ## Out of scope
 

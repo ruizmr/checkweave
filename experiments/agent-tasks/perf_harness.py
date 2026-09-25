@@ -90,6 +90,7 @@ def binary_fingerprint(path: Path) -> dict[str, Any]:
     return {
         "path": str(path.resolve()),
         "size_bytes": path.stat().st_size,
+        "version": subprocess.check_output([str(path.resolve()), "--version"], text=True, timeout=10).strip(),
         "sha256": sha256_file(path),
         "file": file_out,
         "build_id": build_id,
@@ -317,6 +318,57 @@ def loadavg() -> str:
     return Path("/proc/loadavg").read_text().strip()
 
 
+def idle_resources(cli: Cli, seconds: float = 5.0) -> dict[str, Any]:
+    """Linux process CPU and resident pages, with no client calls during the window."""
+    if platform.system() != "Linux":
+        return {"status": "unsupported", "reason": "requires Linux /proc"}
+    pid = cli.daemon_pid()
+    if pid is None:
+        raise RuntimeError("no daemon to measure")
+
+    def read_process() -> tuple[int, int, int]:
+        # comm may contain spaces or parentheses; fields after its last ')' start at 3.
+        fields = Path(f"/proc/{pid}/stat").read_text().rsplit(")", 1)[1].split()
+        return int(fields[11]) + int(fields[12]), int(fields[19]), int(fields[21])
+
+    ticks0, birth0, rss0 = read_process()
+    start = time.perf_counter()
+    time.sleep(seconds)
+    ticks1, birth1, rss1 = read_process()
+    elapsed = time.perf_counter() - start
+    if birth0 != birth1:
+        raise RuntimeError("daemon pid was reused during idle measurement")
+    hz = os.sysconf("SC_CLK_TCK")
+    cpu_seconds = (ticks1 - ticks0) / hz
+    return {"status": "measured", "pid": pid, "window_seconds": elapsed,
+            "cpu_ticks": ticks1 - ticks0, "ticks_per_second": hz,
+            "cpu_seconds": cpu_seconds, "cpu_percent_one_core": 100 * cpu_seconds / elapsed,
+            "rss_start_bytes": rss0 * os.sysconf("SC_PAGE_SIZE"),
+            "rss_end_bytes": rss1 * os.sysconf("SC_PAGE_SIZE"),
+            "meaning": "One five-second window; RSS endpoints, not peak memory. CPU is tick-quantized."}
+
+
+def trace_overhead(cli: Cli) -> dict[str, Any]:
+    script = Path(__file__).resolve().parents[2] / "examples/recipes/debug/discount.py"
+    source = script.read_text()
+    (cli.root / "discount.py").write_text(source)
+    request = {"script": "discount.py", "input": {"price": 80, "percent": 20}, "baseline": True}
+    request_path = cli.root / "trace-perf.json"
+    request_path.write_text(json.dumps(request))
+    samples = []
+    for _ in range(5):
+        wall, report = cli.run("trace", "--request-file", str(request_path))
+        if report["execution"] != "complete" or report["freshness"] != "validated":
+            raise RuntimeError(f"trace measurement failed: {report}")
+        samples.append({"wall_ms": wall, **{k: report[k] for k in
+                        ("baseline_us", "traced_us", "overhead_us", "event_total", "dropped", "unsupported")}})
+    return {"fixture_sha256": sha256_text(source), "request": request, "samples": samples,
+            "baseline_ms": summarize([v["baseline_us"] / 1000 for v in samples]),
+            "traced_ms": summarize([v["traced_us"] / 1000 for v in samples]),
+            "overhead_ms": summarize([v["overhead_us"] / 1000 for v in samples]),
+            "meaning": "Each sample executes the script twice (baseline first); in-process run_code timings; excludes interpreter startup. Baseline runs first in the same interpreter and may warm imports. Tiny fixture, five samples."}
+
+
 def run_suite(binary: Path, parent: Path) -> dict[str, Any]:
     base_env = os.environ.copy()
     base_env.pop("CHECKWEAVE_IDLE_SECONDS", None)
@@ -431,7 +483,9 @@ def run_suite(binary: Path, parent: Path) -> dict[str, Any]:
                 "cache_misses": 1,
                 "daemon_pid_unchanged": cli.daemon_pid() == daemon_pid,
             }
+            result["idle_resources"] = idle_resources(cli)
             result["disk_small"] = disk_report(root)
+            result["trace_overhead"] = trace_overhead(cli)
             cli.shutdown()
 
             cold_wall: list[float] = []

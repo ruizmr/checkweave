@@ -2,8 +2,11 @@
 # the same artifacts and does not create a release. Nothing here publishes on
 # pull requests. Targets are native runners from the GitHub-hosted runners
 # reference (checked 2026-09-21); cross toolchains are not required.
-# Windows is supported through WSL2 with the Linux archive; the wsl-install
-# job runs install.ps1 against that archive on a Windows runner.
+# Each native job packages the archive, then smoke-tests that archive with
+# scripts/release_smoke.py before upload. Windows is supported through WSL2
+# with the Linux archive; the wsl-install job runs install.ps1 against that
+# archive on a Windows runner and then the same smoke harness inside WSL.
+# That job does not claim a native Windows binary.
 name: Release
 on:
   push:
@@ -73,46 +76,20 @@ jobs:
           VERSION: ${{ steps.ver.outputs.version }}
           TARGET: ${{ matrix.target }}
           ARCHIVE_EXT: ${{ matrix.ext }}
+          COMMIT: ${{ github.sha }}
+        run: scripts/package-release.sh
+      - name: Smoke packaged archive
+        shell: bash
+        env:
+          VERSION: ${{ steps.ver.outputs.version }}
+          TARGET: ${{ matrix.target }}
+          ARCHIVE_EXT: ${{ matrix.ext }}
         run: |
           set -euo pipefail
-          if [ "$ARCHIVE_EXT" = "zip" ]; then
-            bin_name="checkweave.exe"
-          else
-            bin_name="checkweave"
-          fi
-          built="target/${TARGET}/release/${bin_name}"
-          test -f "$built"
-          stage=$(mktemp -d)
-          root="${stage}/checkweave-${VERSION}-${TARGET}"
-          mkdir -p "${root}/docs"
-          cp "$built" "${root}/${bin_name}"
-          cp LICENSE "${root}/LICENSE"
-          cp docs/usage.md docs/platforms.md "${root}/docs/"
-          chmod 755 "${root}/${bin_name}"
-          mkdir -p dist
-          archive="${PWD}/dist/checkweave-${VERSION}-${TARGET}.${ARCHIVE_EXT}"
-          member="checkweave-${VERSION}-${TARGET}"
-          if [ "$ARCHIVE_EXT" = "zip" ]; then
-            # Windows bsdtar supports zip. Prefer tar.exe over Git's tar.
-            if command -v tar.exe >/dev/null 2>&1; then
-              tar.exe -a -cf "$archive" -C "$stage" "$member"
-              list=$(tar.exe -tf "$archive")
-            else
-              tar -a -cf "$archive" -C "$stage" "$member"
-              list=$(tar -tf "$archive")
-            fi
-            needle="checkweave.exe"
-          else
-            tar -C "$stage" -czf "$archive" "$member"
-            list=$(tar -tzf "$archive")
-            needle="checkweave"
-          fi
-          if ! printf '%s\n' "$list" | grep -q "/${needle}$"; then
-            echo "archive is missing ${needle}" >&2
-            printf '%s\n' "$list" >&2
-            exit 1
-          fi
-          rm -rf "$stage"
+          archive="dist/checkweave-${VERSION}-${TARGET}.${ARCHIVE_EXT}"
+          test -f "$archive"
+          sum=$(python3 -c 'import hashlib, pathlib, sys; print(hashlib.sha256(pathlib.Path(sys.argv[1]).read_bytes()).hexdigest())' "$archive")
+          python3 scripts/release_smoke.py --archive "$archive" --checksum "$sum"
       - uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.target }}
@@ -133,30 +110,61 @@ jobs:
       - uses: Vampire/setup-wsl@v7
         with:
           distribution: Ubuntu-24.04
-      - name: install.ps1 into WSL, then check a collection
+      - name: install.ps1 into WSL, then smoke init and upgrade
         shell: pwsh
         run: |
           $ErrorActionPreference = "Stop"
+          function Invoke-WslScript([string]$Body) {
+            $Body = $Body -replace "`r", ""
+            $file = Join-Path $PWD "wsl-step.sh"
+            [IO.File]::WriteAllText($file, $Body)
+            $path = (wsl.exe -e wslpath -a -u "$file").Trim()
+            $lines = & wsl.exe -e sh $path
+            if ($LASTEXITCODE -ne 0) { throw "WSL command failed ($LASTEXITCODE)`n$($lines | Out-String)" }
+            Write-Output (($lines | Out-String).Trim())
+          }
           $archive = Get-ChildItem dist -Filter "checkweave-*-x86_64-unknown-linux-gnu.tar.gz" | Select-Object -First 1
-          $sum = (Get-FileHash -Algorithm SHA256 -LiteralPath $archive.FullName).Hash
+          if (-not $archive) { throw "Linux archive artifact is missing" }
+          $sum = (Get-FileHash -Algorithm SHA256 -LiteralPath $archive.FullName).Hash.ToLowerInvariant()
           .\scripts\install.ps1 -Archive $archive.FullName -Checksum $sum
           .\scripts\install.ps1 -Archive $archive.FullName -Checksum $sum
-          $check = @'
+          $before = Invoke-WslScript @'
           set -eu
-          export PATH="$HOME/.local/bin:$PATH"
-          ws=$(mktemp -d)
-          printf '%s\n' '{"n":1}' '{"n":2}' > "$ws/items.jsonl"
-          checkweave --workspace "$ws" init --agent none
-          checkweave --workspace "$ws" check --include items.jsonl --predicate '{"op":"gt","path":"/n","value":1}' | tee "$ws/out.json"
-          grep -q '"execution": "complete"' "$ws/out.json"
-          grep -q '"matched": 1,' "$ws/out.json"
-          checkweave --workspace "$ws" shutdown
+          sha256sum "$HOME/.local/bin/checkweave" | awk '{print $1}'
           '@
-          $check = $check -replace "`r", ""
-          [IO.File]::WriteAllText("$PWD\wsl-check.sh", $check)
-          $path = (wsl.exe -e wslpath -a -u "$PWD\wsl-check.sh").Trim()
-          wsl.exe -e sh $path
-          if ($LASTEXITCODE -ne 0) { throw "WSL check failed" }
+          if ($before -notmatch '^[0-9a-f]{64}$') { throw "could not hash the WSL binary: $before" }
+          $bad = "f" * 64
+          if ($sum -eq $bad) { $bad = "e" * 64 }
+          $rejected = $false
+          try {
+            .\scripts\install.ps1 -Archive $archive.FullName -Checksum $bad
+          } catch {
+            $rejected = $true
+          }
+          if (-not $rejected) { throw "wrong checksum was accepted" }
+          $afterBad = Invoke-WslScript @'
+          set -eu
+          sha256sum "$HOME/.local/bin/checkweave" | awk '{print $1}'
+          '@
+          if ($afterBad -ne $before) { throw "wrong checksum changed the WSL binary" }
+          Invoke-WslScript @'
+          set -eu
+          printf '%s\n' '#!/bin/sh' 'echo stub' > "$HOME/.local/bin/checkweave"
+          chmod 755 "$HOME/.local/bin/checkweave"
+          grep -q stub "$HOME/.local/bin/checkweave"
+          '@
+          .\scripts\install.ps1 -Archive $archive.FullName -Checksum $sum
+          $upgraded = Invoke-WslScript @'
+          set -eu
+          sha256sum "$HOME/.local/bin/checkweave" | awk '{print $1}'
+          '@
+          if ($upgraded -ne $before) { throw "install.ps1 did not replace the stub binary" }
+          $archiveWsl = (wsl.exe -e wslpath -a -u $archive.FullName).Trim()
+          $scriptWsl = (wsl.exe -e wslpath -a -u "$PWD\scripts\release_smoke.py").Trim()
+          Invoke-WslScript @"
+          set -eu
+          python3 "$scriptWsl" --archive "$archiveWsl" --checksum "$sum" --skip-installer --skip-uninstall --bin "`$HOME/.local/bin/checkweave"
+          "@
           .\scripts\uninstall.ps1
           .\scripts\uninstall.ps1
 
@@ -209,7 +217,7 @@ jobs:
             dist/uninstall.ps1
             dist/SHA256SUMS
           body: |
-            Native archives for Linux and macOS. Windows runs the Linux archive through WSL2: run install.ps1 from PowerShell. Each archive contains the checkweave binary, LICENSE, and docs.
+            Native archives for Linux and macOS. Windows runs the Linux archive through WSL2: run install.ps1 from PowerShell. Each archive contains the checkweave binary, LICENSE, README, CONTRIBUTING, the Markdown guides under docs, and runnable recipes.
             SHA256SUMS lists the archives and the install scripts.
             Assets were produced by `cargo test --locked --all-targets` and `cargo build --locked --release` on the runners in `.github/workflows/release.yml`.
             Review `install.sh` or `install.ps1` before running either one. See `docs/platforms.md` for which targets a given release actually built.

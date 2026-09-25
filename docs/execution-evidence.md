@@ -67,6 +67,13 @@ not repeat the baseline run.
 
 ## Freshness, snapshots, and replay
 
+The snapshot covers retained workspace source files. It does not freeze installed
+packages, the Python interpreter, environment variables, or files outside the
+workspace. Those can change replay behavior while source freshness remains
+`validated`. The dependency-change case in [tests/recovery.rs](../tests/recovery.rs)
+records this explicitly: old trace events stay old, while a new trace and replay
+observe the changed external dependency.
+
 The main script, and workspace modules loaded through the adapter's import
 hook, are copied under `.checkweave/traces/<id>/snapshot/`. Those bytes are
 what replay executes.

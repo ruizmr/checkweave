@@ -37,6 +37,8 @@ and arguments, with their own configuration format. Use absolute paths:
 
 ## What you can ask
 
+The [runnable recipes](recipes.md) pair these prompts with small example projects.
+
 These are the tools for everyday checks. Say what you want in normal language, and name Checkweave so the assistant calls it.
 
 | You can say | Tool |
@@ -123,4 +125,13 @@ they do not isolate the program from the rest of your machine.
 
 ## What has been tested
 
-Integration tests exercise the MCP protocol and the Cursor configuration that `init` writes. They do not open a real Cursor agent session. Real agent use is not established yet.
+Integration tests exercise the protocol, Cursor configuration preservation, and
+parity between the structured response and its JSON text copy. The JSON copy
+matters for clients that expose only text to the assistant. Reports retain the
+operation's normal result limits; reuse a returned report before fetching it again.
+
+Fresh Cursor CLI sessions using `grok-4.7-medium-fast` on 2026-09-25 exercised
+check, compare, trace, and replay on three tasks, including an ordinary-language
+prompt. Correctness, tool errors, timing, tokens, and the text-compatibility issue
+found by that study are recorded in [performance](performance.md). This is a small
+usability sample, not a demonstrated general cost or correctness advantage.

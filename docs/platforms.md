@@ -83,8 +83,10 @@ Each archive contains one top-level directory of the same stem:
 checkweave-0.1.0-x86_64-unknown-linux-gnu/
   checkweave
   LICENSE
-  docs/usage.md
-  docs/platforms.md
+  README.md
+  CONTRIBUTING.md
+  docs/*.md
+  examples/recipes/
 ```
 
 `SHA256SUMS` uses the `sha256sum` text format: 64 hex digits, two spaces, and
@@ -108,7 +110,15 @@ Those URLs are the installer's default. They do not mean a release is present
 now. Set `CHECKWEAVE_RELEASE_BASE` to a mirror that serves the same
 `/v<version>/` paths.
 
-The archive is the binary, `LICENSE`, and these two docs. The Python tracer
+The archive includes the binary, `LICENSE`, the README and contributor guide,
+all Markdown guides under `docs`, and the runnable recipes. Links to shipped
+pages stay relative; other documentation links point to the exact packaged
+commit. The release jobs run `scripts/release_smoke.py` against each archive
+before uploading: install, same-bytes reinstall, rejected checksum, upgrade,
+relocated execution, init, cold/warm/edited check, evidence, compare, trace,
+deinit, and removal. The WSL job exercises the PowerShell installers and runs
+the functional checks inside Linux. A workflow change is not a recorded pass;
+see [verification](verification.md) for runs. The Python tracer
 is inside the binary. `trace` writes
 `trace-helper/trace-python-v1/checkweave_trace.py` under
 `$CHECKWEAVE_CACHE_DIR`, `$XDG_CACHE_HOME/checkweave`, or

@@ -21,25 +21,27 @@ const INIT_LOCK_FILE: &str = "init.lock";
 const MANAGED_RULE: &str = "checkweave.mdc";
 
 const MANAGED_RULE_BODY: &str = r#"---
-description: Check JSONL collections with Checkweave and inspect evidence by id
+description: Choose one Checkweave tool for a JSONL check, a behavior comparison, or a Python trace
 alwaysApply: true
 ---
 
-When a task depends on records in JSONL files, use Checkweave instead of scanning the collection by hand.
+Choose the Checkweave operation that matches each task. Run only the programs and checks relevant to the user request.
 
 <!-- checkweave:managed -->
 
-Call the collection check with workspace-relative globs and a predicate. Each predicate `path` is a JSON Pointer (RFC 6901). The empty string is the whole record. `/status`, `/user/id`, and `/items/0/name` are members. `/` is the empty-name member, not the record. `~0` and `~1` escape `~` and `/`.
+Validating fixture or config-export JSONL: call the collection check with workspace-relative globs and a predicate. Read coverage (`evaluated`, `matched`, `unmatched`, `unresolved`, `skipped`) and `freshness` before the sample. Coverage counts processing only. It is not classification accuracy. `matched: true` or `false` is that record against the predicate. `matched: null` means the record was unresolved (invalid JSON or a value the predicate cannot compare). Use `reason` and `source` (path, line, fingerprint). Each predicate `path` is a JSON Pointer (RFC 6901). The empty string is the whole record. `/status`, `/user/id`, and `/items/0/name` are members. `/` is the empty-name member, not the record. `~0` and `~1` escape `~` and `/`.
 
-Read coverage before the sample. `evaluated`, `matched`, `unmatched`, `unresolved`, and `skipped` describe processing coverage only. They are not a measure of classification accuracy.
-
-`matched: true` or `false` is a direct observation of that record against the predicate. `matched: null` means the record was unresolved (invalid JSON or a value the predicate cannot compare). Use `reason` and `source` (path, line, fingerprint) to explain it.
-
-Use evidence with the report `id` to open the retained result. If the response says the evidence expired or was not found, say that. Do not treat a missing handle as a pass, and do not invent records.
+Use evidence with the report `id`. If the evidence expired or was not found, say that. Do not treat a missing handle as a pass, and do not invent records.
 
 Trust scope is the fingerprinted snapshot in `sources` plus the predicate you submitted. A result does not cover files outside `include`, fields the predicate did not read, or edits made after the check. `freshness: validated` means that snapshot, not that the workspace is frozen. Do not present evidence from an older check as the current workspace; run a check again.
 
-Prefer the check and evidence tools over copying large collections into the conversation.
+A refactor that might regress, or a comparison of two alternatives: call compare with two commands that each read one JSON value on stdin and write one JSON document on stdout, and pass their declared `sources`. Keep the retained case. A difference is an observation, not proof of a regression. No difference on the supplied inputs is not equivalence. Compare replay re-runs that retained case against the current targets or the originally requested Git revisions. It is not a frozen copy of the original processes.
+
+Debugging a Python script that returns a wrong value or raises an exception for a known input: call trace with that script and input. Read `call`, `line`, `return`, and `exception` events and scalar locals (`None`, bool, int, float, str, bytes). Event order is not causation. Trace replay runs the saved source snapshot. After you edit the script, run a fresh trace.
+
+Use semantic only when the question needs interpretation of text. Exact fields use the collection check. The optional model is local by default. Do not set up a model on every session. Do not claim a speed or cost change the report did not measure.
+
+Prefer a deterministic tool when it is sufficient. Return compact evidence (coverage or outcome, the retained id, and the rows or case that matter), and explain what it shows. If asked to fix the problem, make the edit and run the relevant check again.
 "#;
 
 #[derive(Debug, Clone)]

@@ -1,0 +1,11 @@
+{
+  "before": {
+    "argv": ["python3", "before.py"],
+    "sources": ["before.py"]
+  },
+  "after": {
+    "argv": ["python3", "after.py"],
+    "sources": ["after.py"]
+  },
+  "inputs": [{"values": [1, -2, 3]}]
+}

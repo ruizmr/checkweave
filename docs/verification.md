@@ -6,7 +6,20 @@ Current implementation results are recorded in [implementation.md](implementatio
 The evidence below covers specific scenarios; requirements beyond that scope
 remain open.
 
-## Current cross-platform baseline
+## Local roadmap validation — 2026-09-25
+
+`cargo test --locked --all-targets --no-fail-fast` passed 159 tests; the two
+real-model installation/inference tests remain explicitly opt-in. This includes
+the five new recovery cases and text-only MCP evidence checks. The relocated
+release archive passed install, reinstall, bad-checksum refusal, upgrade,
+init/config preservation, cold/warm/edited checks, evidence freshness, compare,
+embedded trace, deinit, and repeated uninstall on Linux x86_64.
+
+Fresh Cursor sessions and release-profile CPU, memory, latency, disk, and trace
+measurements are in [performance](performance.md), with binary hashes. These
+local results do not replace a run of the updated platform workflow.
+
+## Previous cross-platform baseline
 
 Authoritative for release status as of 2026-09-24.
 
@@ -14,7 +27,7 @@ Authoritative for release status as of 2026-09-24.
 
 `gh release list` was empty, and the tags API was empty. No GitHub Release and no tag exist. The matrix and the WSL install path are in [platforms](platforms.md).
 
-Source and tests are that release tree, plus documentation. On this Linux x86_64 host, `cargo build --locked --release` passed, and `cargo test --locked --test interface --test workspace` passed interface 5 and workspace 12. This page does not record a binary hash. The local binary is not the set of archives from the Actions run, and it is not a release asset.
+At that baseline, source and tests were the release tree plus documentation. On this Linux x86_64 host, `cargo build --locked --release` passed, and `cargo test --locked --test interface --test workspace` passed interface 5 and workspace 12. That local binary was not the set of archives from the Actions run and was not a release asset. The later measurements above record their own binary hashes.
 
 This baseline covers the combinations those jobs built. It does not cover native Windows, every WSL architecture, or any semantic CPU or GPU device.
 
@@ -69,18 +82,18 @@ identifies relevant regression coverage; broader validation work is listed in
 | Initialization | [tests/workspace.rs](../tests/workspace.rs): `preserves_unrelated_files_and_is_idempotent`, `concurrent_initialization_preserves_other_servers`, `linked_worktrees_have_distinct_roots`. |
 | Shared worker | [tests/daemon.rs](../tests/daemon.rs): `concurrent_clients_share_one_daemon`, `idle_shutdown_removes_socket`, `protocol_version_mismatch_is_rejected_and_worker_stays_up`, `client_waits_past_ready_timeout_while_lock_is_held`. [tests/adversarial.rs](../tests/adversarial.rs): `concurrent_daemon_startup_shutdown_and_crash_reconnect`. |
 | Incremental collection checks | [tests/collection.rs](../tests/collection.rs): `cold_warm_counts_and_one_changed_record`, `limits_partial_cancel_and_predicate_validation`. |
-| Freshness | `same_size_same_mtime_is_a_content_change`, `additions_deletions_renames_and_ignore_rules`, `mutation_during_check_cannot_publish_a_false_snapshot`, `evidence_missing_and_stale_after_edit`, `cancelled_check_does_not_publish_complete_and_restart_keeps_prior`. Git checkout of the checked collection, and a missed watch event, have no matching name in this list. |
+| Freshness | `same_size_same_mtime_is_a_content_change`, `additions_deletions_renames_and_ignore_rules`, `mutation_during_check_cannot_publish_a_false_snapshot`, `evidence_missing_and_stale_after_edit`, `cancelled_check_does_not_publish_complete_and_restart_keeps_prior`. The new [recovery suite](../tests/recovery.rs) adds live-worker A/B/A Git checkout, a watcherless engine query, and restart after unwatched membership/ignore changes. See the scope below. |
 | Bounded disposable cache | `corrupt_cache_recovers_without_hiding_permission_errors`, `reopen_keeps_cache_and_corrupt_db_is_quarantined`, `cancelled_check_does_not_publish_complete_and_restart_keeps_prior`. |
-| Automatic upkeep | Queries in the collection tests read the bytes they check. A missed-watch-event end-to-end case is not in this list. |
+| Automatic upkeep | Watcherless engine and stopped-watcher/restart cases verify byte validation without relying on an event. Dropping a native watch event while the daemon stays live is still untested. |
 | Resource limits | `limits_partial_cancel_and_predicate_validation`, `max_records_is_global_across_files`, [tests/trace.rs](../tests/trace.rs) `event_limit_drops_and_marks_partial`, `timeout_cancels_the_process_group`. |
 | Behavior comparison | [examples/behavior](../examples/behavior/) holds the preserving and differing programs. [tests/compare.rs](../tests/compare.rs): `corpus_preserving_change_is_not_a_regression`, `corpus_difference_reduces_and_replays_after_edit`, `crashes_and_parser_failures_are_unsupported`, `unstable_stdout_is_nondeterministic`, `generated_arrays_use_the_seed_and_retention_is_bounded`, `generated_integer_range_is_deterministic_and_shrinks`, `reproduction_argv_replays_with_the_built_binary`. |
-| Git history | `historical_revision_does_not_switch_checkout_or_mix_dirty_bytes`. That case keeps the user's checkout stable during a historical compare. It is not a collection recheck after checkout. |
+| Git history | `historical_revision_does_not_switch_checkout_or_mix_dirty_bytes`. That case keeps the user's checkout stable during a historical compare. The separate `live_worker_follows_detached_git_checkout_of_the_checked_collection` now covers the latter with one daemon and source fingerprints. |
 | Semantic provider boundary | [integration](integration.md) already routes semantic through the shared provider. Its targeted `end_to_end` run passed 5, including `compare_trace_and_semantic_predicate_round_trip`. The historical root suite included semantic 9. |
 | Local inference | Managed CPU install and the Q4 sample in the historical table below. Those runs are CPU evidence, not a device matrix. |
 | Optional hosted inference | The same targeted integration run posts one hosted request to a local HTTP mock. That is a wiring check. |
 | Semantic qualification | [Semantic validation](semantic-validation.md): 63/64 supported labels, predicate gold 11/12. `release_qualified` stays false. The 534-item board is not in that note. |
 | Execution evidence | [tests/trace.rs](../tests/trace.rs): `wrong_intermediate_is_tied_to_the_executed_line`, `baseline_overhead_is_measured_only_when_requested`, `edit_marks_evidence_stale_and_replay_uses_snapshot`, `source_modified_during_run_is_never_validated`, `nested_script_imports_its_sibling_and_replay_keeps_that_module`. |
-| Agent experience | `init` writes the Cursor entry ([usage](usage.md)). The paired study finished three tasks in both arms, and the Checkweave arm ran only `--help` ([performance](performance.md)). |
+| Agent experience | `init` writes the Cursor entry ([usage](usage.md)). Fresh baseline, discovery, and guided sessions are recorded in [performance](performance.md); the treatments now use the operations. A text-only-client evidence gap found in the first sample was fixed and retested. |
 | Release | The four native package jobs and the WSL installer smoke passed in the baseline above. Publish was skipped. The 2026-09-22 local archive install in the historical table is an earlier Linux artifact, not those published assets. |
 
 ## Recorded, not closed
@@ -106,6 +119,6 @@ are not current release assets.
 
 - **Published assets.** A tag and a GitHub Release. Install, upgrade, and removal of those published archives on the release platforms. The 2026-09-22 Linux archive log is an earlier host artifact.
 - **Semantic qualification.** The independent labeled set, baseline, and device runs named in the qualification row. The 63/64 local Q4 sample is not the 534-item BF16 board. `release_qualified` stays false. Hardware qualification is only for devices that were actually run.
-- **Agent efficacy.** A complete task with and without Checkweave where the tool arm uses the operations, with correctness, missed bugs, time, and tokens. The paired study ran `--help` only ([performance](performance.md)).
-- **Release measurements.** Idle CPU and memory, cold startup, repeated-query latency, and disk use of the version to be released; trace usefulness and overhead on representative debugging tasks. The 82.33 ms debug median and the ext4 cold-client note above are historical.
-- **Recovery evidence to extend.** A Git checkout that the collection check must follow, a missed watch event through to a byte-validated result, and environment regressions outside the tests listed above. Worker crash reconnect, corrupt-cache recovery, and the compare corpus in [examples/behavior](../examples/behavior/) already have the names in the mapping.
+- **Agent efficacy.** The three-arm sample now records functional use and grades, but it does not demonstrate a general benefit. Larger tasks, more seeds, and avoided mistakes remain to be measured ([performance](performance.md)).
+- **Release measurements.** Local release-profile idle CPU/RSS, cold/warm latency, disk use, and a tiny trace-overhead sample are now in [performance](performance.md), with the binary hash and version. Measurements of published binaries and representative application traces remain open. Historical debug figures stay historical.
+- **Recovery evidence to extend.** Native event-loss injection with a live daemon remains open. The five new recovery tests cover live Git checkout, watcherless queries, restart after unwatched changes, external dependency changes, and an external interpreter wrapper. Source freshness does not fingerprint an undeclared environment. Existing crash reconnect, corrupt-cache recovery, and comparison tests remain in the suite.

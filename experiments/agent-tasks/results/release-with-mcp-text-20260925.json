@@ -1,0 +1,617 @@
+{
+  "harness": "experiments/agent-tasks/perf_harness.py",
+  "measured_at_unix": 1790352359.7056808,
+  "loadavg_start": "8.33 6.71 5.69 18/4967 3732875",
+  "filesystem": {
+    "path": "/tmp",
+    "target": "/",
+    "source": "/dev/mapper/ubuntu--vg-ubuntu--lv",
+    "fstype": "ext4",
+    "role": "physical_filesystem_sample"
+  },
+  "conditions": "Samples were taken on this host while other work was running. They describe this run. They are not an intrinsic latency of the CLI. A tmpfs result is a diagnostic and does not replace a physical-filesystem sample.",
+  "platform": {
+    "system": "Linux",
+    "release": "6.8.0-138-generic",
+    "machine": "x86_64",
+    "python": "3.12.9",
+    "uname": "Linux guardian 6.8.0-138-generic #138-Ubuntu SMP PREEMPT_DYNAMIC Fri Jul 31 22:41:49 UTC 2026 x86_64"
+  },
+  "binary": {
+    "path": "/home/overseer1/projects/jevish/target/release/checkweave",
+    "size_bytes": 17321496,
+    "sha256": "fafa7780aac9116a239999c1c828b17a7e6e95ac985942b70c1f563da77ad67a",
+    "file": "ELF 64-bit LSB pie executable, x86-64, version 1 (SYSV), dynamically linked, interpreter /lib64/ld-linux-x86-64.so.2, for GNU/Linux 3.2.0, BuildID[sha1]=11b8d4b676ad7a5ff98ac231778fb782474a727d, stripped",
+    "build_id": "11b8d4b676ad7a5ff98ac231778fb782474a727d",
+    "profile": "release",
+    "profile_signals": {
+      "path_has_debug": false,
+      "path_has_release": true,
+      "file_mentions_debug_info": false,
+      "file_mentions_stripped": true
+    },
+    "version": "checkweave 0.1.0"
+  },
+  "limits": {
+    "predicate": {
+      "op": "gt",
+      "path": "/n",
+      "value": 1
+    },
+    "include": "**/*.jsonl",
+    "max_results": 1,
+    "other_limits": "CLI defaults (max_files 1000, max_bytes 33554432, max_records 100000, timeout_ms 30000) except the large corpus timeout_ms",
+    "large_timeout_ms": 120000,
+    "small_records": 40,
+    "large_files": 4,
+    "large_records_per_file": 2000,
+    "cold_samples": 8,
+    "warm_samples": 20,
+    "changed_samples": 8,
+    "help_samples": 8,
+    "idle_samples": 4,
+    "idle_seconds": 2
+  },
+  "fixture_spec_sha256": "6005b0cea5f7314040353c0a260cce5ef0c23fa3d3b8f68c7396c4ce717e9c0d",
+  "notes": [
+    "Wall-clock samples include process spawn and JSON printing.",
+    "elapsed_ms is the value the check report itself records.",
+    "Warm samples reuse one daemon process. Cold check samples shut that process down first.",
+    "A changed row uses a record body that has not been seen before, so the record cache misses once.",
+    "Idle exit is the daemon process leaving after CHECKWEAVE_IDLE_SECONDS with no further client calls.",
+    "Recovery, crash, and cache-corruption cases are left to scripts/acceptance.py."
+  ],
+  "small_fixture_sha256": "ba265fcd68dcdaa27be460bff6cdf793fa80f4cb1f660d901488104724e3c93b",
+  "empty_cache_first_check": {
+    "wall_ms": 79.748,
+    "elapsed_ms": 3,
+    "coverage": {
+      "cache_hits": 0,
+      "cache_misses": 40,
+      "evaluated": 40,
+      "files": 1,
+      "matched": 38,
+      "records": 40,
+      "skipped": 0,
+      "unmatched": 2,
+      "unresolved": 0
+    }
+  },
+  "warm_unchanged": {
+    "wall_ms": {
+      "n": 20,
+      "min": 19.184222910553217,
+      "median": 21.848699310794473,
+      "p95_nearest_rank": 53.816167172044516,
+      "max": 56.99016805738211,
+      "samples_ms": [
+        22.043,
+        20.983,
+        25.801,
+        34.233,
+        24.77,
+        25.057,
+        21.192,
+        27.554,
+        20.24,
+        20.83,
+        23.068,
+        56.99,
+        19.184,
+        21.622,
+        21.572,
+        21.655,
+        53.816,
+        21.416,
+        22.076,
+        20.794
+      ]
+    },
+    "report_elapsed_ms": {
+      "n": 20,
+      "min": 2.0,
+      "median": 3.0,
+      "p95_nearest_rank": 7.0,
+      "max": 28.0,
+      "samples_ms": [
+        4.0,
+        3.0,
+        6.0,
+        6.0,
+        6.0,
+        3.0,
+        3.0,
+        6.0,
+        3.0,
+        3.0,
+        3.0,
+        28.0,
+        4.0,
+        2.0,
+        2.0,
+        2.0,
+        7.0,
+        3.0,
+        2.0,
+        2.0
+      ]
+    },
+    "daemon_pid": 3733091,
+    "daemon_pid_stable": true,
+    "cache_hits": 40,
+    "cache_misses": 0
+  },
+  "changed_one_record": {
+    "wall_ms": {
+      "n": 8,
+      "min": 20.154401659965515,
+      "median": 22.3667798563838,
+      "p95_nearest_rank": 58.71804803609848,
+      "max": 58.71804803609848,
+      "samples_ms": [
+        25.51,
+        23.169,
+        58.718,
+        20.154,
+        21.458,
+        40.26,
+        21.564,
+        20.675
+      ]
+    },
+    "report_elapsed_ms": {
+      "n": 8,
+      "min": 3.0,
+      "median": 3.5,
+      "p95_nearest_rank": 24.0,
+      "max": 24.0,
+      "samples_ms": [
+        3.0,
+        3.0,
+        24.0,
+        3.0,
+        5.0,
+        4.0,
+        4.0,
+        3.0
+      ]
+    },
+    "cache_hits": 39,
+    "cache_misses": 1,
+    "daemon_pid_unchanged": true
+  },
+  "idle_resources": {
+    "status": "measured",
+    "pid": 3733091,
+    "window_seconds": 5.0003463928587735,
+    "cpu_ticks": 4,
+    "ticks_per_second": 100,
+    "cpu_seconds": 0.04,
+    "cpu_percent_one_core": 0.7999445809819467,
+    "rss_start_bytes": 14155776,
+    "rss_end_bytes": 14155776,
+    "meaning": "One five-second window; RSS endpoints, not peak memory. CPU is tick-quantized."
+  },
+  "disk_small": {
+    "state_dir_bytes": 4247509,
+    "workspace_bytes": 4248456,
+    "state_files": [
+      {
+        "name": ".gitignore",
+        "bytes": 2
+      },
+      {
+        "name": "cache.sqlite",
+        "bytes": 90112
+      },
+      {
+        "name": "cache.sqlite-shm",
+        "bytes": 32768
+      },
+      {
+        "name": "cache.sqlite-wal",
+        "bytes": 4124152
+      },
+      {
+        "name": "daemon.json",
+        "bytes": 256
+      },
+      {
+        "name": "daemon.lock",
+        "bytes": 0
+      },
+      {
+        "name": "daemon.log",
+        "bytes": 149
+      },
+      {
+        "name": "init.lock",
+        "bytes": 0
+      },
+      {
+        "name": "workspace.json",
+        "bytes": 70
+      }
+    ],
+    "sqlite": {
+      "path": "/tmp/checkweave-perf-sleb47i8/latency/.checkweave/cache.sqlite",
+      "file_bytes": 90112,
+      "page_size": 4096,
+      "page_count": 24,
+      "allocated_bytes": 98304,
+      "freelist_pages": 0,
+      "tables": {
+        "items": 48,
+        "meta": 2,
+        "report_sources": 29,
+        "reports": 29
+      },
+      "reports_rows": 29,
+      "reports_payload_bytes_sum": 23672,
+      "family_bytes": 4247032
+    }
+  },
+  "trace_overhead": {
+    "fixture_sha256": "b90714f6427f952dd031a9c84bb03e4287fd5745bba460c0009a9b8103dfb05c",
+    "request": {
+      "script": "discount.py",
+      "input": {
+        "price": 80,
+        "percent": 20
+      },
+      "baseline": true
+    },
+    "samples": [
+      {
+        "wall_ms": 198.43017822131515,
+        "baseline_us": 144,
+        "traced_us": 8516,
+        "overhead_us": 8372,
+        "event_total": 12,
+        "dropped": 0,
+        "unsupported": [
+          "native_calls",
+          "subprocess_events",
+          "async_scheduling",
+          "threads_started_before_the_hook",
+          "event_order_is_not_causal",
+          "not_sandboxed"
+        ]
+      },
+      {
+        "wall_ms": 381.78606890141964,
+        "baseline_us": 105,
+        "traced_us": 5996,
+        "overhead_us": 5891,
+        "event_total": 12,
+        "dropped": 0,
+        "unsupported": [
+          "native_calls",
+          "subprocess_events",
+          "async_scheduling",
+          "threads_started_before_the_hook",
+          "event_order_is_not_causal",
+          "not_sandboxed"
+        ]
+      },
+      {
+        "wall_ms": 191.76594400778413,
+        "baseline_us": 82,
+        "traced_us": 4444,
+        "overhead_us": 4362,
+        "event_total": 12,
+        "dropped": 0,
+        "unsupported": [
+          "native_calls",
+          "subprocess_events",
+          "async_scheduling",
+          "threads_started_before_the_hook",
+          "event_order_is_not_causal",
+          "not_sandboxed"
+        ]
+      },
+      {
+        "wall_ms": 114.33400586247444,
+        "baseline_us": 91,
+        "traced_us": 4473,
+        "overhead_us": 4382,
+        "event_total": 12,
+        "dropped": 0,
+        "unsupported": [
+          "native_calls",
+          "subprocess_events",
+          "async_scheduling",
+          "threads_started_before_the_hook",
+          "event_order_is_not_causal",
+          "not_sandboxed"
+        ]
+      },
+      {
+        "wall_ms": 133.05381778627634,
+        "baseline_us": 78,
+        "traced_us": 4399,
+        "overhead_us": 4321,
+        "event_total": 12,
+        "dropped": 0,
+        "unsupported": [
+          "native_calls",
+          "subprocess_events",
+          "async_scheduling",
+          "threads_started_before_the_hook",
+          "event_order_is_not_causal",
+          "not_sandboxed"
+        ]
+      }
+    ],
+    "baseline_ms": {
+      "n": 5,
+      "min": 0.078,
+      "median": 0.091,
+      "p95_nearest_rank": 0.144,
+      "max": 0.144,
+      "samples_ms": [
+        0.144,
+        0.105,
+        0.082,
+        0.091,
+        0.078
+      ]
+    },
+    "traced_ms": {
+      "n": 5,
+      "min": 4.399,
+      "median": 4.473,
+      "p95_nearest_rank": 8.516,
+      "max": 8.516,
+      "samples_ms": [
+        8.516,
+        5.996,
+        4.444,
+        4.473,
+        4.399
+      ]
+    },
+    "overhead_ms": {
+      "n": 5,
+      "min": 4.321,
+      "median": 4.382,
+      "p95_nearest_rank": 8.372,
+      "max": 8.372,
+      "samples_ms": [
+        8.372,
+        5.891,
+        4.362,
+        4.382,
+        4.321
+      ]
+    },
+    "meaning": "Each sample executes the script twice (baseline first in the same interpreter, which can warm imports); in-process run_code timings exclude interpreter startup. Tiny fixture, five samples."
+  },
+  "cold_check_daemon_respawn": {
+    "wall_ms": {
+      "n": 8,
+      "min": 71.96030672639608,
+      "median": 75.8287354838103,
+      "p95_nearest_rank": 88.88671873137355,
+      "max": 88.88671873137355,
+      "samples_ms": [
+        73.619,
+        88.887,
+        81.12,
+        80.032,
+        74.637,
+        71.96,
+        77.02,
+        73.803
+      ]
+    },
+    "report_elapsed_ms": {
+      "n": 8,
+      "min": 3.0,
+      "median": 3.5,
+      "p95_nearest_rank": 5.0,
+      "max": 5.0,
+      "samples_ms": [
+        3.0,
+        3.0,
+        4.0,
+        3.0,
+        3.0,
+        4.0,
+        5.0,
+        4.0
+      ]
+    },
+    "meaning": "CLI process plus daemon spawn plus a fully cached check"
+  },
+  "idle_exit": {
+    "configured_idle_seconds": 2,
+    "observed_from_check_return_ms": {
+      "n": 4,
+      "min": 2055.0167467445135,
+      "median": 2055.2373395767063,
+      "p95_nearest_rank": 2055.486740078777,
+      "max": 2055.486740078777,
+      "samples_ms": [
+        2055.104,
+        2055.017,
+        2055.487,
+        2055.371
+      ]
+    },
+    "meaning": "time from check process return until daemon pid is no longer alive"
+  },
+  "disk_large": {
+    "files": 4,
+    "records": 8000,
+    "input_sha256": "860b8911a8454e7be0d187b7ed0e813fc8801b988013d37d17ccfa6afa0f6158",
+    "first_check_wall_ms": 445.379,
+    "first_check_elapsed_ms": 244,
+    "first_coverage": {
+      "cache_hits": 0,
+      "cache_misses": 8000,
+      "evaluated": 8000,
+      "files": 4,
+      "matched": 5716,
+      "records": 8000,
+      "skipped": 0,
+      "unmatched": 2284,
+      "unresolved": 0
+    },
+    "after_first_check": {
+      "state_dir_bytes": 2876047,
+      "workspace_bytes": 3068060,
+      "state_files": [
+        {
+          "name": ".gitignore",
+          "bytes": 2
+        },
+        {
+          "name": "cache.sqlite",
+          "bytes": 4096
+        },
+        {
+          "name": "cache.sqlite-shm",
+          "bytes": 32768
+        },
+        {
+          "name": "cache.sqlite-wal",
+          "bytes": 2838712
+        },
+        {
+          "name": "daemon.json",
+          "bytes": 252
+        },
+        {
+          "name": "daemon.lock",
+          "bytes": 0
+        },
+        {
+          "name": "daemon.log",
+          "bytes": 149
+        },
+        {
+          "name": "init.lock",
+          "bytes": 0
+        },
+        {
+          "name": "workspace.json",
+          "bytes": 68
+        }
+      ],
+      "sqlite": {
+        "path": "/tmp/checkweave-perf-sleb47i8/large/.checkweave/cache.sqlite",
+        "file_bytes": 4096,
+        "page_size": 4096,
+        "page_count": 400,
+        "allocated_bytes": 1638400,
+        "freelist_pages": 0,
+        "tables": {
+          "items": 8000,
+          "meta": 2,
+          "report_sources": 4,
+          "reports": 1
+        },
+        "reports_rows": 1,
+        "reports_payload_bytes_sum": 1375,
+        "family_bytes": 2875576
+      }
+    },
+    "second_check_wall_ms": 1466.356,
+    "second_check_elapsed_ms": 1408,
+    "second_coverage": {
+      "cache_hits": 8000,
+      "cache_misses": 0,
+      "evaluated": 8000,
+      "files": 4,
+      "matched": 5716,
+      "records": 8000,
+      "skipped": 0,
+      "unmatched": 2284,
+      "unresolved": 0
+    },
+    "after_second_check": {
+      "state_dir_bytes": 5808103,
+      "workspace_bytes": 6000116,
+      "state_files": [
+        {
+          "name": ".gitignore",
+          "bytes": 2
+        },
+        {
+          "name": "cache.sqlite",
+          "bytes": 1646592
+        },
+        {
+          "name": "cache.sqlite-shm",
+          "bytes": 32768
+        },
+        {
+          "name": "cache.sqlite-wal",
+          "bytes": 4128272
+        },
+        {
+          "name": "daemon.json",
+          "bytes": 252
+        },
+        {
+          "name": "daemon.lock",
+          "bytes": 0
+        },
+        {
+          "name": "daemon.log",
+          "bytes": 149
+        },
+        {
+          "name": "init.lock",
+          "bytes": 0
+        },
+        {
+          "name": "workspace.json",
+          "bytes": 68
+        }
+      ],
+      "sqlite": {
+        "path": "/tmp/checkweave-perf-sleb47i8/large/.checkweave/cache.sqlite",
+        "file_bytes": 1646592,
+        "page_size": 4096,
+        "page_count": 402,
+        "allocated_bytes": 1646592,
+        "freelist_pages": 1,
+        "tables": {
+          "items": 8000,
+          "meta": 2,
+          "report_sources": 8,
+          "reports": 2
+        },
+        "reports_rows": 2,
+        "reports_payload_bytes_sum": 2751,
+        "family_bytes": 5807632
+      }
+    }
+  },
+  "cli_help": {
+    "wall_ms": {
+      "n": 8,
+      "min": 10.205093771219254,
+      "median": 11.229953495785594,
+      "p95_nearest_rank": 14.238085132092237,
+      "max": 14.238085132092237,
+      "samples_ms": [
+        10.205,
+        11.072,
+        13.231,
+        14.238,
+        11.388,
+        10.43,
+        13.732,
+        10.611
+      ]
+    }
+  },
+  "loadavg_end": "9.72 7.15 5.85 8/5462 3743837",
+  "agent_comparison": {
+    "status": "pending",
+    "reason": "Paired Cursor actor runs are not part of this harness. No token or outcome comparison is claimed here."
+  }
+}
